@@ -1,0 +1,330 @@
+---
+layout: page
+title: Maven
+---
+
+Maven is the wonderful, confusing build tool for Java.
+
+{% include toc.html %}
+
+## Installation
+
+Installing Maven through Software Collections on CentOS:
+
+```
+$ sudo yum install -y centos-release-scl
+$ sudo yum install -y rh-maven35
+$ scl enable rh-maven35 bash
+```
+
+Basic, non-packaged installation on Linux:
+
+```
+MAVEN_VERSION=3.6.3
+sudo mkdir -p /usr/share/maven /usr/share/maven/ref
+sudo curl -fsSL -o /tmp/apache-maven.tar.gz https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+sudo tar -zxf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1
+sudo rm -f /tmp/apache-maven.tar.gz
+sudo ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+```
+
+## Concepts
+
+### Goals and phases
+
+- When you run Maven, you can specify a **goal** or a **phase**:
+
+  - When executing Maven with a **phase**, it will pass/execute all phases up to and including the given phase.
+  - When executing Maven with a **goal**, it will pass/execute all phases up to the phase for that goal.
+
+- **Goals** are executed in **phases**; Maven's _default lifecycle bindings_ show which goals will run in which phases.
+
+## Defaults
+
+### Built-in lifecycles
+
+There are **three** built-in lifecycles:
+
+- `default`
+- `clean`
+- `site`
+
+### `default` build phases
+
+The standard build phases for the `default` lifecycle are:
+
+- `validate`
+- `initialize`
+- `generate-sources` - generate any source code for inclusion in compilation
+- `process-sources`
+- `generate-resources` - generate resources for inclusion in the package
+- `process-resources`
+- `compile`
+- `process-classes`
+- `generate-test-sources`
+- `process-test-sources`
+- `generate-test-resources`
+- `process-test-resources`
+- `test-compile`
+- `process-test-classes`
+- `test`
+- `prepare-package`
+- `package`
+- `pre-integration-test`
+- `integration-test`
+- `post-integration-test`
+- `verify`
+- `install`
+- `deploy`
+
+### Lifecycle bindings
+
+- The `packaging` type dictates which goals are bound to each phase.
+- e.g. `jar`: binds `jar:jar` to the `package` phase, `surefire:test` to the `test` phase, etc.
+
+### Super POM
+
+All projects implicitly inherit from the Maven **Super POM**. This is located in:
+
+```
+lib/maven-model-builder-3.0.3.jar:org/apache/maven/model/pom-4.0.0.xml
+```
+
+The Super POM defines things like:
+
+- default repository - `central` (Maven Central) - this is defined in the Super POM, and points to <http://repo1.maven.org>
+- default plugin repository - also `central`, pointing to <https://repo.maven.apache.org/maven2>
+- default build directories - e.g. `sourceDirectory` (`src/main/java`), `target/`, etc.
+
+## Managing dependencies
+
+### Optional dependencies
+
+`<optional>true</optional>` on a dependency means that the dependency will not get pulled down (as _transitive dependency_) by default - unless, for example, the artifact is downloaded explicitly, or using `dependency:go-offline`.
+
+## Multi-module projects
+
+An **aggregator POM** provides **composition** - Use an aggregator project to join several modules together under one project. An aggregator doesn't include any information about dependencies, it's only a way of grouping projects together.
+
+- It is better to **not inherit from aggregator POMs**
+
+A **parent POM** provides **inheritance** - Use this to specify dependencies/dependencyManagement sections.
+
+This example project setup shows an Aggregator POM and a Parent POM.
+
+```
+my-app/           (Aggregator POM)
+├── pom.xml
+├── module-1/
+│   └── pom.xml
+├── module-2/
+│   └── pom.xml
+└── app-parent/   (Parent POM)
+    └── pom.xml
+```
+
+## Cookbook
+
+### Getting help for a Maven plugin
+
+Listing all goals and parameters:
+
+```
+$ mvn help:describe -DgroupId=org.apache.maven.plugins \
+    -DartifactId=maven-war-plugin \
+    -Ddetail=true
+```
+
+Getting detailed help on a plugin goal and its parameters:
+
+```
+$ mvn help:describe -Dcmd=<plugin-prefix>:<goal> -Ddetail
+```
+
+### Working with plugin goals
+
+To run a specific `execution` which you've defined in your POM:
+
+```
+$ mvn <plugin-prefix>:<goal>@your-execution-id
+```
+
+### Binding a plugin goal to a Maven phase
+
+```xml
+<plugin>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-restdsl-openapi-plugin</artifactId>
+    <version>2.23.2.fuse-770010-redhat-00001</version>
+    <executions>
+        <!-- Create an execution and bind it to Maven's 'generate-sources' phase -->
+        <execution>
+            <id>generate-camel-stuff</id>
+            <goals>
+                <goal>generate-with-dto</goal>
+            </goals>
+            <phase>generate-sources</phase>
+        </execution>
+    </executions>
+    <configuration>
+       <!-- .... configure as usual .... -->
+    </configuration>
+</plugin>
+```
+
+### Getting the effective POM - show all plugin and dependency versions
+
+The **effective POM** is the POM which is ultimately generated by Maven, by resolving all of your parent relationships, dependencyManagement (BOM) sections, and so on. It shows exactly which versions of artifacts and plugins you're using:
+
+```
+$ mvn help:effective-pom
+$ mvn help:effective-pom -Doutput=fileToWriteTo.xml
+```
+
+### Installing a file into local repository
+
+```
+mvn install:install-file -Dfile=path/to/myjar.jar -DgroupId=com.example -DartifactId=artifact-name -Dversion=1.0.0 -Dpackaging=jar
+```
+
+### Working offline
+
+Download the artifacts required to build a project into a temporary location and produce a TAR:
+
+```
+$ rm -rf ~/.m2/repository
+$ mvn dependency:go-offline -Dmaven.repo.local=/path/to/repository
+$ tar cvfz offline-repository.tgz /path/to/repository
+```
+
+Download a specific artifact to a temporary location:
+
+```
+$ mvn dependency:get \
+    -Dartifact=org.arquillian.cube:arquillian-cube-openshift:1.9.0 \
+    -Dmaven.repo.local=/home/tdonohue/tmp/arq190
+```
+
+Download a specific artifact **and its dependencies** to a temporary location (_NB:_ This will also attempt to download any dependencies marked as _optional=true_) and produce a TAR:
+
+```
+$ mvn dependency:get -Dartifact=org.arquillian.cube:arquillian-cube-openshift:1.9.0
+$ mvn -f /home/tdonohue/.m2/repository/org/arquillian/cube/arquillian-cube-openshift/1.9.0/arquillian-cube-openshift-1.9.0.pom \
+    dependency:go-offline \
+    -Dmaven.repo.local=/path/to/temporary/location
+$ tar cvfz artifact-dependencies.tgz /path/to/temporary/location
+```
+
+Copy a project's dependencies:
+
+```
+$ mvn dependency:copy-dependencies
+```
+
+### Configure a temporary mirror and test downloading an artifact
+
+To see whether your Nexus repository is correctly configured to mirror artifacts, create a _settings.xml_ file with a mirror configured to point to your Nexus. Then, use that settings file to try to download an artifact:
+
+```
+cat << EOF > ~/.m2/settings-test-mirror.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <mirrors>
+    <mirror>
+      <mirrorOf>*</mirrorOf>
+      <name>A Nexus to Mirror All The Artifacts</name>
+      <url>https://your-nexus.example.com/repositories/maven-public/</url>
+      <id>mynexus</id>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+
+mvn -s ~/.m2/settings-test-mirror.xml dependency:get \
+    -Dartifact=org.arquillian.cube:arquillian-cube-openshift:1.9.0
+```
+
+This is an alternative to trying to specify a Maven mirror at the command line (because I don't think that's possible....?).
+
+### Deploying an artifact to a repository
+
+Deploy the compiled artifact to a repository, specifying the URL explicitly at the command line:
+
+```
+$ mvn clean deploy -DaltDeploymentRepository=internalSnapshots::default::http://localhost:8081/nexus/content/repositories/snapshots/
+$ mvn clean deploy -DaltDeploymentRepository=internalReleases::default::http://localhost:8081/nexus/content/repositories/releases/
+```
+
+### Debugging
+
+To debug a Maven goal, use the `mvnDebug` command - this will start a debug listener on port 8000:
+
+```
+$ alias mvnDebug=/usr/share/maven/bin/mvnDebug
+$ mvnDebug <plugin:goal>
+```
+
+### Analysing dependencies
+
+To find which dependency pulls in a particular transitive dependency:
+
+```
+$ mvn dependency:tree -Dincludes=org.apache.tomcat:tomcat-jdbc
+...
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ my-application ---
+[INFO] com.example:my-application:jar:1.0-SNAPSHOT
+[INFO] \- org.springframework.boot:spring-boot-starter-jdbc:jar:1.5.16.RELEASE:compile
+[INFO]    \- org.apache.tomcat:tomcat-jdbc:jar:8.0.36.redhat-30:compile
+```
+
+### Plugin configuration
+
+#### Overriding plugin configuration in a child POM
+
+In a child POM, to override the configuration for a plugin which may be defined on a parent, use the `combine.self` attribute, either on the `configuration` attribute or its children:
+
+```xml
+<configuration combine.self="override">
+  <!-- Your config here will override config defined in the parent POM -->
+</configuration>
+```
+
+## Plugins
+
+### Failsafe Plugin for integration testing
+
+Sample configuration for a Spring Boot application. This will run integration tests following the naming standard (i.e. `*IT.java`) when executing `mvn verify`:
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <version>2.22.0</version>
+    <configuration>
+        <!-- Configure plugin to play nicely with Spring Boot -->
+        <!-- https://github.com/spring-projects/spring-boot/issues/6254#issuecomment-307151464 -->
+        <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+## Troubleshooting
+
+When fetching an artifact from a local Maven repository, you get the error: _"Could not find artifact org.xx.x:xx-xx-xx:jar:2.23.2 in xxx"_ - but you know it should work:
+
+- Maven has probably already tried once to fetch the artifact, and **cached the failure**. Re-run the build with Maven's `-U` switch to **force** updates (try again).
+
+[_maven-failsafe-plugin_][failsafe] does not run any integration tests, even when there are tests matching the pattern `**/**IT.java`:
+
+- Failsafe Plugin does not play nicely with Spring Boot. Add this line into the `configuration` section: `<classesDirectory>${project.build.outputDirectory}</classesDirectory>`
+
+[failsafe]: https://maven.apache.org/surefire/maven-failsafe-plugin/
