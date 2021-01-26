@@ -2,7 +2,7 @@
 
 A static site of knowledge, tips and tricks that I've learned over the years, and wanted to gather together in a central place.
 
-You can access the site without building it here: <https://kb.tomd.xyz>
+You don't need to build this repo. You can just browse the site here: <https://kb.tomd.xyz>
 
 ## A small disclaimer
 
@@ -16,7 +16,8 @@ You can access the site without building it here: <https://kb.tomd.xyz>
 
 To install and run:
 
-    $ bundle install --path vendor/bundle
+    $ bundle config set path 'vendor/bundle'
+    $ bundle install
     $ bundle exec jekyll serve
 
 ## Writing
@@ -28,6 +29,10 @@ Internal links look like this:
 ```
 [maven]: {{ site.baseurl }}{% link _articles/maven.md %}
 ```
+
+## Contributing
+
+Pull requests are welcome! If you see anything that needs improvement, please feel free to submit a PR.
 
 ## Licence
 
