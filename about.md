@@ -13,6 +13,8 @@ I hope you find what you need, and wish you the best of luck with whatever proje
 
 This site is written in Markdown, and generated using the [Jekyll][jekyll] static publishing tool, with the [minima][minima] theme.
 
+You can make edit suggestions for any page by clicking the Edit link at the top of each page. Or [head straight to the source repo on GitHub][repo] and feel free to make a pull request.
+
 If you want to send some feedback, you can contact me on Twitter - I'm [@monodot][twitter].
 
 Cheers!
@@ -24,3 +26,5 @@ Tom Donohue
 [minima]: https://github.com/jekyll/minima
 [swizec]: https://swizec.com/blog/write-down-everything/swizec/8851
 [excellentprogrammingblog]: https://emptysqua.re/blog/write-an-excellent-programming-blog/
+[repo]: https://github.com/monodot/knowledge-base
+
