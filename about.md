@@ -3,7 +3,7 @@ layout: page
 title: About this site
 ---
 
-Welcome to my knowledge base! You are a very special person for stumbling upon this little corner of the internet, and I thank you for visiting.
+Hiya! Welcome to my knowledge base! You are a very special person for stumbling upon this little corner of the internet, and I thank you for visiting.
 
 This sparse-looking web site is my _(slightly opinionated)_ place where I keep my programming notes, examples and best practices. I tend to [write a lot of notes][swizec] when I work. I use these notes myself in my day-to-day work, and I try to keep them updated when I can. I wanted to share all my notes online, rather than in some locked-away file in Dropbox, in the hope that they will help people like you.
 
