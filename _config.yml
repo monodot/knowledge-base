@@ -30,6 +30,7 @@ exclude:
   - vendor
   - Gemfile
   - Gemfile.lock
+  - README.md
 
 kramdown:
   parse_block_html: true
