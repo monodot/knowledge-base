@@ -12,13 +12,29 @@ You don't need to build this repo. You can just browse the site here: <https://k
 
 **And of course, no warranty provided or liability assumed.**
 
-## Building the site
+## Building for production
 
-To install and run:
+Create a local directory to cache build dependencies:
 
-    $ bundle config set path 'vendor/bundle'
+    sudo mkdir /usr/local/bundle
+
+Then run a build in a _ruby_ container:
+
+    podman run --rm \
+        -v "$PWD":/usr/src/site \
+        -v /usr/local/bundle:/usr/local/bundle \
+        -w /usr/src/site \
+        -e JEKYLL_ENV=production \
+        docker.io/library/ruby:2.7 /bin/bash -c "bundle install && bundle exec jekyll build"
+
+## Developing
+
+To build the site and serve locally:
+
     $ bundle install
-    $ bundle exec jekyll serve
+    $ bundle exec jekyll serve --livereload
+
+The site will now be available at <http://localhost:4000>.
 
 ## Writing
 
