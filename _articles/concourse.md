@@ -5,6 +5,11 @@ title: Concourse CI
 
 A CICD tool.
 
+## Terminology
+
+- **Pipelines**
+- **Jobs** - a job can contain several _Tasks_
+
 ## Quickstart
 
 ### Deploy on OpenShift with Helm
@@ -129,16 +134,79 @@ _big frown and shrug_
 
 ## Demos
 
-### Basic demo
+### Run a task that prints a message
 
 From [concourse-tutorial](https://concoursetutorial.com/). Using `-k` to skip verification of SSL:
 
 ```
-git clone https://github.com/starkandwayne/concourse-tutorial.git
-cd concourse-tutorial
-cd tutorials/basic/task-hello-world
+cat << EOF > task.yml
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: ubuntu}
+
+run:
+  path: uname
+  args: [-a]
+EOF
+
 fly -t tutorial login -k -c ${CONCOURSE_EXTERNAL_URL} -u ${CONCOURSE_USER} -p ${CONCOURSE_PASSWORD}
-fly -t tutorial execute -c task_hello_world.yml
+fly -t tutorial execute -c task.yml
+```
+
+### Create and run a job that prints hello world
+
+```
+cat << EOF > pipeline.yml
+---
+jobs:
+  - name: job-hello-world
+    public: true
+    plan:
+      - task: hello-world
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: busybox}
+          run:
+            path: echo
+            args: [hello world]
+EOF
+
+fly -t tutorial set-pipeline -c pipeline.yml -p hello-world
+
+# There should now be 1 job listed in the output of this:
+fly -t tutorial jobs -p hello-world
+
+# Unpause the pipeline and job
+fly -t tutorial unpause-pipeline -p hello-world
+fly -t tutorial unpause-job --job hello-world/job-hello-world
+
+# The pipeline job should now run...
+# To run the job again:
+fly -t tutorial trigger-job --job hello-world/job-hello-world
+```
+
+### Build a Java app
+
+This will attempt to build the app at <https://github.com/monodot/hello-java>.
+
+The actual `build` _Task_ definition is contained within the application's repository itself.
+
+```
+git clone https://github.com/monodot/hello-java
+cd hello-java
+
+fly -t tutorial set-pipeline -c concourse/pipeline.yml -p hello-java
+
+# Unpause the job - it will go grey
+fly -t tutorial unpause-pipeline -p hello-java
+
+# Run
+fly -t tutorial unpause-job --job hello-java/build
 ```
 
 ## Cookbook
