@@ -621,33 +621,88 @@ oc deploy docker-registry --retry
 
 ### Security
 
-To grant permissions to users, you can add them to a group, and then define a role binding. To creae the group and add members:
+#### Get information about rolebindings
+
+See information about all _ClusterRoleBindings_:
+
+```
+oc describe clusterrolebinding.rbac
+```
+
+Looking at a _ClusterRoleBinding_ named `admin` (although it can be named anything):
+
+```
+$ oc describe clusterrolebinding.rbac/admin
+Name:         admin
+Labels:       <none>
+Annotations:  <none>
+Role:
+  Kind:  ClusterRole
+  Name:  admin
+Subjects:
+  Kind  Name                 Namespace
+  ----  ----                 ---------
+  User  tdonohue@example.com  
+```
+
+Means that I have the `admin` _ClusterRole_. Which is:
+
+```
+$ oc describe clusterrole/admin
+Name:         admin
+Labels:       kubernetes.io/bootstrapping=rbac-defaults
+Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+PolicyRule:
+  Resources                                                  Non-Resource URLs  Resource Names                                Verbs
+  ---------                                                  -----------------  --------------                                -----
+  applications.argoproj.io                                   []                 []                                            [* create update patch delete get list watch]
+
+  ....snip....
+
+  builds/details                                             []                 []                                            [update]
+  builds.build.openshift.io/details                          []                 []                                            [update]
+```
+
+#### Create a group and add users
+
+To grant permissions to individual users, you can add them to a **group**, and then define a **role binding** for that group. To create the group and add members:
 
 ```
 oc adm groups new my-new-group
 oc adm groups add-users my-new-group dave barry
 ```
 
-Grant the _admin_ cluster role to the `jenkins` service account user and the `ocp-devs` group, and allow images to be pulled from another namespace:
+#### Give Jenkins permissions to do stuff outside its namespace
+
+Grant the _admin_ cluster role to the `jenkins` service account user and the `ocp-devs` group, and allow images to be pulled from another namespace.
+
+Bind user groups to roles for each of the new project - i.e. give "ocp-devs" edit permissions in the projects:
 
 ```
-#  Bind user groups to roles for each of the new project i.e. giving ocp-devs edit access in the projects
 oc create rolebinding ocp-devs_admin_role --clusterrole=admin --group=ocp-devs -n myapp-dev
 oc create rolebinding ocp-devs_admin_role --clusterrole=admin --group=ocp-devs -n myapp-test
 oc create rolebinding ocp-devs_admin_role --clusterrole=admin --group=ocp-devs -n myapp-perftest
+```
 
-# Bindings to allow Jenkins operate outside of the project he's created in
+Allow Jenkins to operate outside of the project he's created in:
+
+```
 oc create rolebinding serviceaccount-labs-ci-cd-jenkins-edit-role --clusterrole=admin --serviceaccount=labs-ci-cd:jenkins -n myapp-dev
 oc create rolebinding serviceaccount-labs-ci-cd-jenkins-edit-role --clusterrole=admin --serviceaccount=labs-ci-cd:jenkins -n myapp-test
 oc create rolebinding serviceaccount-labs-ci-cd-jenkins-edit-role --clusterrole=admin --serviceaccount=labs-ci-cd:jenkins -n myapp-perftest
+```
 
-# Add image puller role to be able to fetch Docker images stored in another namespace
+Give Jenkins the `image-puller` role, so he can fetch Docker images stored in another namespace:
+
+```
 oc create rolebinding serviceaccount-labs-ci-cd-default-edit-role --clusterrole=system:image-puller --serviceaccount=labs-ci-cd:default -n myapp-dev
 oc create rolebinding serviceaccount-labs-ci-cd-default-edit-role --clusterrole=system:image-puller --serviceaccount=labs-ci-cd:default -n myapp-test
 oc create rolebinding serviceaccount-labs-ci-cd-default-edit-role --clusterrole=system:image-puller --serviceaccount=labs-ci-cd:default -n myapp-perftest
 ```
 
-Role bindings in YAML: to define a role binding which grants the `admin` role to the group `junior-devs` in the project `development`:
+#### Create a rolebinding in YAML
+
+Role bindings in YAML: to define a role binding which grants the `admin` **Role** to the group `junior-devs` in the project `development`:
 
 ```
 apiVersion: authorization.openshift.io/v1
@@ -665,11 +720,17 @@ subjects:
 userNames: null
 ```
 
-To allow a basic user to impersonate a privileged user (e.g. when running a local cluster using `oc cluster up` and granting `system:admin` impersonation):
+#### View information about a role
+
+#### Grant a user sudoer / system:admin
+
+Create a **clusterrolebinding**, to allow a basic user to impersonate a privileged user (e.g. when running a local cluster using `oc cluster up` and granting `system:admin` impersonation):
 
 ```
-oc create clusterrolebinding developer-sudo --clusterrole=sudoer --user=developer
+oc create clusterrolebinding willsmith-sudo --clusterrole=sudoer --user=will-smith
 ```
+
+#### Allow a container to run as root
 
 Need to run a container as root? Or you're running a RH container as a random user, which seems to have no write access to the filesystem inside the container? Then create a service account which allows a pod to run as root, then configure the DeploymentConfig to use that service account:
 
@@ -679,7 +740,9 @@ oc adm policy add-scc-to-user anyuid -z useroot
 oc patch dc/appthatneedsroot --patch '{"spec":{"template":{"spec":{"serviceAccountName": "useroot"}}}}'
 ```
 
-#### Set up htpasswd provider and a user
+#### Set up an _htpasswd_ provider and create a user
+
+Create an _htpasswd_ file and define a user:
 
 ```
 $ touch htpasswd
@@ -715,6 +778,9 @@ oc get groups
 
 oc adm policy add-cluster-role-to-group cluster-admin mylocaladmins
 ```
+
+#### Create a custom resource and grant permissions
+
 
 
 ### oc patch-fu
@@ -1126,3 +1192,9 @@ docker stats $(docker ps | awk '{if(NR>1) print $NF}')
 [runasuser]: https://docs.openshift.com/container-platform/3.11/admin_guide/manage_scc.html#example-security-context-constraints
 [sdn]: https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html#architecture-additional-concepts-sdn
 [wrapper]: https://github.com/openshift-evangelists/oc-cluster-wrapper
+
+
+DSI-C = "our client"
+suboffice pu north which is site C.
+other areas which we don't worry about.
+also have a cousin in London - NCSC. public-facing side of what we do. (DSI-N) - a subset of DSI-C.
