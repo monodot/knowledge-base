@@ -7,19 +7,24 @@ title: Red Hat Fuse (JBoss Fuse) and Fuse Fabric
 
 ## Super-quick quickstart
 
-A super-quick, quickstart for how to create and deploy a Fuse application on OpenShift. This assumes you're a developer without cluster-admin access:
+A super-quick, quickstart to create and deploy a Fuse application on OpenShift. This assumes you're a developer without cluster-admin access:
 
 1.  Create a new application from the Fuse Maven archetype, e.g.:
 
+    For Fuse 7.8 / Spring Boot 2.x:
+
     ```
     mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate \
-      -DarchetypeCatalog=https://maven.repository.redhat.com/ga/io/fabric8/archetypes/archetypes-catalog/2.2.0.fuse-750020-redhat-00002/archetypes-catalog-2.2.0.fuse-750020-redhat-00002-archetype-catalog.xml \
-      -DarchetypeGroupId=org.jboss.fuse.fis.archetypes \
-      -DarchetypeArtifactId=spring-boot-camel-xml-archetype \
-      -DarchetypeVersion=2.2.0.fuse-750020-redhat-00002
+    -DarchetypeCatalog=https://maven.repository.redhat.com/ga/io/fabric8/archetypes/archetypes-catalog/2.2.0.fuse-sb2-780040-redhat-00001/archetypes-catalog-2.2.0.fuse-sb2-780040-redhat-00001-archetype-catalog.xml \
+    -DarchetypeGroupId=org.jboss.fuse.fis.archetypes \
+    -DarchetypeArtifactId=spring-boot-camel-config-archetype \
+    -DarchetypeVersion=2.2.0.fuse-sb2-780040-redhat-00001 \
+    -DgroupId=foo \
+    -DartifactId=bar \
+    -Dpackage=com.foo.bar
     ```
 
-1.  Create a secret containing your Red Hat credentials - this will allow OpenShift to pull the Fuse image from the registry:
+2.  Create a secret containing your Red Hat credentials - this will allow OpenShift to pull the Fuse image from the registry:
 
     ```
     export RH_USERNAME=
@@ -27,14 +32,14 @@ A super-quick, quickstart for how to create and deploy a Fuse application on Ope
     oc create secret docker-registry redhat-secret --docker-username=${RH_USERNAME} --docker-password=${RH_PASSWORD} --docker-server=registry.redhat.io
     ```
 
-1.  Install the Fuse imagestreams to your OpenShift cluster. This assumes you don't have cluster-admin permissions, and will just install the image streams into your local namespace:
+3.  Install the Fuse imagestreams to your OpenShift cluster. This assumes you don't have cluster-admin permissions, and will just install the image streams into your local namespace:
 
     ```
     BASEURL=https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-750056-redhat-00004
     oc create [-n openshift] -f ${BASEURL}/fis-image-streams.json
     ```
 
-1.  Log in to OpenShift, build and deploy the application:
+4.  Log in to OpenShift, build and deploy the application:
 
     ```
     oc login -u ...
