@@ -68,6 +68,28 @@ To force an update to `/etc/resolv.conf` after updating settings on a connection
 sudo nmcli con up "Hyperoptic 1Gb Fibre 5Ghz"
 ```
 
+#### VPN connections
+
+To import a VPN connection from an _.ovpn_ file:
+
+```
+nmcli connection import type openvpn file /path/to/your.ovpn
+```
+
+To make a connection from the command line:
+
+```
+nmcli connection up <connection_name>
+```
+
+To see the logs, in case something goes wrong when trying to connect:
+
+```
+journalctl -u NetworkManager.service
+```
+
+Then press `G` to see the most recent log entries.
+
 ### Bluetooth 
 
 Show all paired Bluetooth devices:

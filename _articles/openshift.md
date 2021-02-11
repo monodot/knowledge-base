@@ -663,6 +663,37 @@ PolicyRule:
   builds.build.openshift.io/details                          []                 []                                            [update]
 ```
 
+Get `role` or `clusterrole` for a specific user:
+
+```
+$ oc get clusterrolebindings.authorization \
+  -ocustom-columns=name:.metadata.name,role:.roleRef.name,user:.userNames.* | \
+  awk -v user=JEFF_MILLS '$3 == user {print}'
+edit-21           edit     JEFF_MILLS
+```
+
+Which shows that the user only has the clusterrolebinding `edit-21` assigned to them, which is:
+
+```
+$ oc describe clusterrolebinding edit-21
+Name:         edit-21
+Labels:       <none>
+Annotations:  <none>
+Role:
+  Kind:  ClusterRole
+  Name:  edit
+Subjects:
+  Kind  Name                     Namespace
+  ----  ----                     ---------
+  User  JEFF_MILLS
+```
+
+This will give you the `clusterrole` that has been assigned to the user. You can figure out what permissions that role has:
+
+```
+$ oc describe clusterrole edit
+```
+
 #### Create a group and add users
 
 To grant permissions to individual users, you can add them to a **group**, and then define a **role binding** for that group. To create the group and add members:
@@ -781,7 +812,35 @@ oc adm policy add-cluster-role-to-group cluster-admin mylocaladmins
 
 #### Create a custom resource and grant permissions
 
+Once you've created a _CustomResourceDefinition_ (e.g. `pizzas.dominos.io`), you can grant users with the _ClusterRoles_ `admin` or `edit` permissions to create/delete instances of the CRD with this YAML below.
 
+Use the special _aggregate-to-admin_ and _aggregate-to-edit_ labels to make sure these permissions are added into the `admin` and `edit` roles:
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+items:
+  - metadata:
+      name: aggregate-pizzas-admin-edit
+      labels:
+        rbac.authorization.k8s.io/aggregate-to-admin: "true"
+        rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rules:
+      - apiGroups: ["dominos.io"]
+        resources: ["pizzas"]
+        verbs: ["get", "list", "watch", "create",
+                "update", "patch", "delete", "deletecollection"]
+  - metadata:
+      name: aggregate-pizzas-view
+      labels:
+        # Add these permissions to the "view" default role.
+        rbac.authorization.k8s.io/aggregate-to-view: "true"
+        rbac.authorization.k8s.io/aggregate-to-cluster-reader: "true"
+    rules:
+      - apiGroups: ["dominos.io"]
+        resources: ["pizzas"]
+        verbs: ["get", "list", "watch"]
+```
 
 ### oc patch-fu
 
