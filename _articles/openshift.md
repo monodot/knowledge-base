@@ -136,6 +136,14 @@ sudo subscription-manager repos --enable rhel-7-server-devtools-rpms
 sudo rm -r /var/cache/dnf
 ```
 
+### Installing on AWS using Installer-Provisioned Infrastructure (IPI)
+
+Follow a process like this:
+
+1.  Create a dedicated _public hosted zone_ in Route 53. The zone must be authoritative for the domain.
+
+1.  Create a _bastion host_ in AWS. This is preferable, because the installer will spit out
+
 ### Installing Helm
 
 ```

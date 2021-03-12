@@ -5,10 +5,12 @@ title: Concourse CI
 
 A CICD tool.
 
+{% include toc.html %}
+
 ## Terminology
 
 - **Pipelines**
-- **Jobs** - a job can contain several _Tasks_
+- **Jobs** - a job can contain several _Tasks_, e.g. "build", test", "create image", etc.
 
 ## Quickstart
 
@@ -145,14 +147,17 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: {repository: ubuntu}
+  source: {repository: docker/whalesay}
 
 run:
-  path: uname
-  args: [-a]
+  path: cowsay
+  args: ["boooooooo-urns!!!"]
 EOF
 
+# Log in to team 'main'
 fly -t tutorial login -k -c ${CONCOURSE_EXTERNAL_URL} -u ${CONCOURSE_USER} -p ${CONCOURSE_PASSWORD}
+
+# Execute the task
 fly -t tutorial execute -c task.yml
 ```
 
@@ -190,24 +195,9 @@ fly -t tutorial unpause-job --job hello-world/job-hello-world
 fly -t tutorial trigger-job --job hello-world/job-hello-world
 ```
 
-### Build a Java app
+### Example: Build a Java app
 
-This will attempt to build the app at <https://github.com/monodot/hello-java>.
-
-The actual `build` _Task_ definition is contained within the application's repository itself.
-
-```
-git clone https://github.com/monodot/hello-java
-cd hello-java
-
-fly -t tutorial set-pipeline -c concourse/pipeline.yml -p hello-java
-
-# Unpause the job - it will go grey
-fly -t tutorial unpause-pipeline -p hello-java
-
-# Run
-fly -t tutorial unpause-job --job hello-java/build
-```
+See the demo and README at <https://github.com/monodot/hello-java>.
 
 ## Cookbook
 
@@ -216,5 +206,14 @@ List/remove targets:
 ```
 $ fly ts
 $ fly delete-target -t tutorial
+```
+
+List pipelines:
+
+```
+$ fly -t tutorial ps
+name         paused  public  last updated                 
+hello-world  no      no      2021-02-04 15:05:56 +0000 GMT
+hello-java   no      no      2021-02-04 16:04:51 +0000 GMT
 ```
 
