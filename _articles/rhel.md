@@ -43,6 +43,14 @@ To reload Nginx:
 sudo service nginx reload
 ```
 
+### sshd
+
+Check the sshd logs (to see why you're being denied a log on):
+
+    journalctl --follow --unit sshd
+
+This will show the latest sshd logs. Press **Shift+G** to show the latest logs (at the bottom).
+
 ## Subscription Manager
 
 Get all the employee SKU subscriptions:
