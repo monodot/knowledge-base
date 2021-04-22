@@ -1260,8 +1260,3 @@ docker stats $(docker ps | awk '{if(NR>1) print $NF}')
 [sdn]: https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html#architecture-additional-concepts-sdn
 [wrapper]: https://github.com/openshift-evangelists/oc-cluster-wrapper
 
-
-DSI-C = "our client"
-suboffice pu north which is site C.
-other areas which we don't worry about.
-also have a cousin in London - NCSC. public-facing side of what we do. (DSI-N) - a subset of DSI-C.
