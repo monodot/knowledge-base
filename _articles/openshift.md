@@ -1068,6 +1068,17 @@ kubernetes
 kube-scheduler
 ```
 
+### OpenShift 4.x on AWS
+
+#### Delete a Machine that's causing problems
+
+If there are problems with a Node (e.g. status of `NotReady`), you can delete the underlying Machine (a Machine represents an underlying virtual machine, or EC2 Instance in the case of AWS):
+
+- Check which nodes have problems, using `oc get nodes`. Look for a status of `NotReady`.
+- `oc get machines -n openshift-machine-api -o wide` will show all Machines and which Node each corresponds to.
+- `oc delete machine xxx -n openshift-machine-api` to delete a specific Machine. The _machine-api_ Operator will create a new machine in AWS to replace it.
+- For further info, `oc get machineset -n openshift-machine-api` will show all of the configured MachineSets and their replica counts (there is usually 1 MachineSet for each AWS availability zone)
+
 ### Other problems and solutions
 
 **Q. My computer starts burning up and/or running out of RAM. Also, Java containers are hanging on startup.**
@@ -1166,6 +1177,10 @@ If so, update your template or deploymentconfig and set `ImagePullPolicy` to `Al
 
 - You can use the `mount` command to see that some directories are still mounted: `mount | grep openshift`
 - Unmount using: `for i in $(mount | grep openshift | awk '{ print $3}'); do sudo umount "$i"; done && sudo rm -rf ./openshift.local.clusterup`
+
+**Q. Binary builds fail when they pull images from Docker Hub, due to reaching rate limits.**
+
+- Set the build secret explicitly using `oc set build-secret --pull bc/<build config name> <secret name>`
 
 ### General troubleshooting tips
 
