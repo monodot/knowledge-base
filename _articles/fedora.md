@@ -90,7 +90,7 @@ journalctl -u NetworkManager.service
 
 Then press `G` to see the most recent log entries.
 
-### Bluetooth 
+### Bluetooth
 
 Show all paired Bluetooth devices:
 
@@ -509,6 +509,15 @@ Why the hell is my default editor now nano? Why are Git commit prompts opening N
 - You can see what package installs this file: `dnf provides /etc/profile.d/nano-default-editor.sh` - it's the `nano-default-editor` package.
 - To find out when this package was installed: `dnf repoquery --installed --qf '%{installtime}' nano-default-editor`
 - Cross-referencing that with the output from `dnf history` shows that it was installed **when I upgraded to Fedora 33**. [CONTROVERSIAL.][nano]
+
+Some websites aren't loading, and resolve to IP address 0.0.0.0:
+
+- Some websites/scripts don't load in the browser.
+- Trying to look up these domains, e.g. `nslookup pagead2.googlesyndication.com`, gives a result of 0.0.0.0
+- Have a look at `/etc/resolv.conf`, to see which _nameserver_ you're using. When I looked, mine was showing 127.0.0.53
+- 127.0.0.53 is (probably) the address of a caching DNS resolver. Probably _resolved_. Check its status with: `systemd-resolve --status`
+- There is a command `resolvectl flush-caches`, but this didn't seem to do anything for me. Instead, you might clear the cache by just restarting _resolved_.
+- **To reset the _resolved_ DNS cache, just restart _resolved_: `sudo systemctl restart systemd-resolved`**
 
 [searchprovider]: https://developer.gnome.org/SearchProvider/
 [nano]: https://fedoraproject.org/wiki/Changes/UseNanoByDefault

@@ -1182,6 +1182,14 @@ If so, update your template or deploymentconfig and set `ImagePullPolicy` to `Al
 
 - Set the build secret explicitly using `oc set build-secret --pull bc/<build config name> <secret name>`
 
+### oc new-app doesn't deploy your app
+
+_error: unable to locate any images in image streams, image stream images with a 'supports' annotation, local docker images with name "jee"_:
+
+- OpenShift is trying to find an image stream in the cluster which will let it build your app, which it's detected as being a Java app (`jee`).
+- Look in the `openshift` project for any Image Stream Tags that have an annotation `supports` which contains the string `jee`.
+- TODO: Complete this bit.
+
 ### General troubleshooting tips
 
 If something's not working, or not deploying:

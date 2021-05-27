@@ -27,3 +27,13 @@ And then the function would be defined as:
     function handleClick(arg1, arg2) {
         // Do stuff here...
     }
+
+
+## Troubleshooting
+
+### Server quits immediately when using `rollup-plugin-dev`
+
+- Dev server seems to exit immediately with a message like: _[2021-05-15 11:06:37] waiting for changes..._
+- Check whether another process is already running on the same port. If so, the server start might fail silently like this.
+
+
