@@ -892,6 +892,29 @@ Get the version of OpenShift:
 oc get clusterversion
 ```
 
+#### Get a shell onto an OpenShift node / SSH into a node
+
+You can get a shell onto an OpenShift node (e.g. a worker machine) using the `oc debug` command.
+
+First find the node where a Pod is running (if you want to debug a specific container):
+
+```
+oc get pod prometheus-k8s-0 --template="{{ .spec.nodeName }}"
+```
+
+Then _oc debug_ that Node:
+
+```
+oc debug node/ip-10-1-1-1.eu-west-2.compute.internal
+```
+
+Once on the node, use _chroot_ to access the node's binaries, then you can look at which containers are running, with _crictl_:
+
+```
+chroot /host
+crictl ps
+```
+
 ### Monitoring
 
 #### Get pod usage statistics for a project (memory)
