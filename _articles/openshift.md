@@ -779,6 +779,30 @@ oc adm policy add-scc-to-user anyuid -z useroot
 oc patch dc/appthatneedsroot --patch '{"spec":{"template":{"spec":{"serviceAccountName": "useroot"}}}}'
 ```
 
+The `add-scc-to-user` is actually a shortcut to add the user to the special _ClusterRoleBinding_ object called  `system:openshift:scc:anyuid`, which grants the anyuid role to the _ServiceAccount_:
+
+```
+$ oc get clusterrolebinding/system:openshift:scc:anyuid -o yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system:openshift:scc:anyuid
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: toms-temp
+- kind: ServiceAccount
+  name: default
+  namespace: my-dev
+- kind: ServiceAccount
+  name: default
+  namespace: argocd
+```
+
 #### Set up an _htpasswd_ provider and create a user
 
 Create an _htpasswd_ file and define a user:
