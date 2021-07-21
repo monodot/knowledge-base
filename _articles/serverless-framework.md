@@ -7,7 +7,7 @@ The project named _Serverless_ that helps you build "serverless" apps (with a na
 
 ## Concepts/Things to Know
 
-- **Serverless Framework** (Traditional) - This is the client-side tool which turns your YAML into
+- **Serverless Framework** (Traditional) - This is the client-side tool which turns your YAML into CloudFormation templates??
 
 - **Serverless Components** - This is where your code is pushed up to _serverless.com_ to the "Components Engine", where it does some magic and pushes it to the cloud provider. Note that this means that _serverless.com_ will receive your AWS credentials.
   - All the [Serverless Components are on GitHub](https://github.com/serverless-components)

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "OpenShift Install Knative"
+title: "OpenShift: Install Knative"
 ---
 
 # Install Knative on OpenShift

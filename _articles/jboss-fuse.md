@@ -176,6 +176,15 @@ The standalone (non-containerised) distribution of JBoss Fuse uses Apache Karaf 
 
 JBoss Fuse uses Apache Felix as the [OSGi][osgi] framework (this is configured in `etc/config.properties`)
 
+### Red Hat Fuse default web port
+
+The default port for web applications (e.g. CXF REST/SOAP services) is **8181**, as set in `org.ops4j.pax.web.cfg`:
+
+````
+cd $FUSE_HOME
+grep 'http.port' etc/org.ops4j.pax.web.cfg
+````
+
 ### Using Hot-deploy (Felix file installer)
 
 Hot-deploy allows components to be dropped into a folder, automatically discovered and started. To debug this behaviour, set a logger in `org.ops4j.pax.logging.cfg`:

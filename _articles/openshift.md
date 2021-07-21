@@ -1125,6 +1125,15 @@ If there are problems with a Node (e.g. status of `NotReady`), you can delete th
 - `oc get machines -n openshift-machine-api -o wide` will show all Machines and which Node each corresponds to.
 - `oc delete machine xxx -n openshift-machine-api` to delete a specific Machine. The _machine-api_ Operator will create a new machine in AWS to replace it.
 - For further info, `oc get machineset -n openshift-machine-api` will show all of the configured MachineSets and their replica counts (there is usually 1 MachineSet for each AWS availability zone)
+- Once things are back up, check the status of the cluster operators - `oc get co`
+
+#### Debugging an AWS cluster where the API is down
+
+If the API is down, then you probably won't be able to use `oc` at all. Sad. This calls for desperate measures.
+
+- See if you can access the cluster from the original machine which installed OpenShift. The installer leaves a _kubeconfig_ file, somewhere after the installation. Run `export KUBECONFIG=/path/tokubeconfig`, then `oc get pods` or something similar.
+- `oc get nodes` to get the list of nodes. Look for a status of _NotReady_.
+- Get node logs using `oc adm node-logs ip-1-2-3-4.eu-west-2.compute.internal -u crio`
 
 ### Other problems and solutions
 
