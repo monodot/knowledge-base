@@ -878,13 +878,15 @@ items:
 
 Fun uses of `oc patch`.
 
-Modify a BuildConfig to [not use cached layers in a Docker build][nocache]:
+#### Modify a BuildConfig to not use cached layers in a Docker build
+
+[Don't use cached layers in a Docker build][nocache]:
 
 ```
 oc patch bc/myapp -p '{"spec":{"strategy":{"dockerStrategy":{"noCache":true}}}}'
 ```
 
-Modify the timeout of a Knative Service to 20 seconds:
+#### Modify the timeout of a Knative Service to 20 seconds:
 
 ```
 oc patch ksvc greeter -n knativetutorial --type=json -p='[{"op": "replace", "path": "/spec/template/spec/timeoutSeconds", "value":20}]'
