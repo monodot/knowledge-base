@@ -184,6 +184,31 @@ $ podman exec -it myjenkins curl -v http://${IP_ADDR}:8085/nexus
 HTTP/1.1 302 Found
 ```
 
+### Find and remove orphaned files in volumes ('Permission denied' issue)
+
+<https://github.com/containers/podman/issues/3799>
+
+Sometimes Podman will create some files in your `.local/share/containers/storage` directory which are not owned by you, and which you cannot delete.
+
+To list these files, use `podman unshare` and find any files not owned by the _root_ user (`0`):
+
+```
+$ podman unshare find ~/.local/share/containers ! -uid 0
+/home/tdonohue/.local/share/containers/storage/vfs/dir/9d4902....d68e83a2/var/cache/apt/archives/partial
+/home/tdonohue/.local/share/containers/storage/vfs/dir/e69a89....5ab29f85/var/cache/apt/archives/partial
+...
+```
+
+To delete each volume one-by-one:
+
+```
+# Change owner/group to root:root
+podman unshare chown root:root /home/tdonohue/.local/share/containers/storage/vfs/dir/9d4902....d68e83a2/var/cache/apt/archives/partial
+
+# Then delete.
+rm -rf ...
+```
+
 ## Security troubleshooting
 
 Set a user's mapping ranges in `subuid` and `subgid` to allow rootless Podman to run containers which have multiple UIDs:

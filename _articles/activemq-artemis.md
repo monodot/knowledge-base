@@ -212,6 +212,82 @@ Here is an extract from `top` during a test of 50,000 messages with 200 concurre
     13775 tdonohue  20   0 8437244 688292  21864 S 105.3   4.2  18:23.80 java (Artemis)
     29153 tdonohue  20   0 7122824 394800  18092 S  30.2   2.4   5:46.77 java (Spring Boot/Fuse)
 
+## Security
+
+### Configuring authentication with Keycloak
+
+There is an example that shows how to hook up Keycloak to Artemis. It's included with the Artemis distribution in the `examples` folder.
+
+#### Example authentication flow with Keycloak + Artemis web console (Hawtio)
+
+1. Browser visits `http://localhost:8161`
+2. Browser gets redirected to Keycloak login page.
+3. Enter user credentials on the Keycloak login page.
+4. On success, user is redirected back to Hawtio, now authenticated as user (e.g. `jdoe`)
+5. When executing an operation in Hawtio (e.g. _Send Message to Queue_), the browser will actually send a request to Jolokia, with a JWT token in the header, e.g.:
+  - URL: http://localhost:8161/console/jolokia/?maxDepth=7&maxCollectionSize=50000&ignoreErrors=true&canonicalNaming=false
+  - with HTTP header: `Authorization: Basic amRvZ....`
+    - where `amRvZ...` is a base64-encoded string.
+    - The decoded string is: `jdoe:eyJhbGci...`, which is a username followed by a JSON Web Token, which includes the user's info and roles in each of the Client apps in in the realm (i.e. _artemis-broker_, _artemis-console_, _account_)
+    - You can use the Debugger tool at <https://jwt.io/> to decode the token and view its contents.
+  - with HTTP body: `{"type":"exec","mbean":"org.apache.activemq.artemis:broker=\"localhost\",component=addresses,address=\"Info\"","operation":"sendMessage(java.util.Map, int, java.lang.String, boolean, java.lang.String, java.lang.String)","arguments":[{},3,"{ \"Henlo\" }",true,null,null]}`
+
+#### Example JSON Web Token
+
+```json
+{
+  "exp": 1632317552,
+  "iat": 1632317252,
+  "auth_time": 1632317251,
+  "jti": "9cfb241b-1f25-47f6-bb32-c13a689b7df4",
+  "iss": "http://localhost:8080/auth/realms/artemis-keycloak-demo",
+  "aud": [
+    "artemis-broker",
+    "account"
+  ],
+  "sub": "563d5f9b-9119-430e-8963-89e86c22c855",
+  "typ": "Bearer",
+  "azp": "artemis-console",
+  "nonce": "ae440c6e-b029-46bb-8df8-de67215508eb",
+  "session_state": "4f3c613d-7d85-4ec7-b66b-229970f485cc",
+  "acr": "1",
+  "allowed-origins": [
+    "http://localhost:8161"
+  ],
+  "realm_access": {
+    "roles": [
+      "offline_access",
+      "uma_authorization"
+    ]
+  },
+  "resource_access": {
+    "artemis-broker": {
+      "roles": [
+        "guest"
+      ]
+    },
+    "artemis-console": {
+      "roles": [
+        "guest"
+      ]
+    },
+    "account": {
+      "roles": [
+        "manage-account",
+        "manage-account-links",
+        "view-profile"
+      ]
+    }
+  },
+  "scope": "openid email profile",
+  "email_verified": false,
+  "name": "John doe",
+  "preferred_username": "jdoe",
+  "given_name": "John",
+  "family_name": "doe"
+}
+```
+
 ## Troubleshooting
 
 _"constructor threw exception; nested exception is java.lang.NoClassDefFoundError: javax/json/JsonValue."_ when using the Artemis JMS Client dependency and the Red Hat Fuse Spring Boot BOM:
