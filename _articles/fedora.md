@@ -188,16 +188,38 @@ $ dnf update gnome-software
 
 ### Disk housekeeping
 
-**Checking disk space.** Use _Disk Usage Analyzer_ app for a visual analysis of disk space in use. Or use `df`:
+#### Check free disk space
+
+Use _Disk Usage Analyzer_ app for a visual analysis of disk space in use. Or use `df`:
 
 ```
 $ df -h /
 Filesystem               Size  Used Avail Use% Mounted on
 /dev/mapper/fedora-root   49G   46G  834M  99% /
-# Yikes I have hardly any space left! Damn those Docker images.
+# Yikes I have hardly any space left! Damn those Docker images
 ```
 
-**Keeping the fedora-root partition down to size.** Files in `/var/cache/PackageKit` can reach double-digit GBs. These files are used by GNOME PackageKit (an alternative to `dnf`?).
+#### Check sizes of directories
+
+See the total sizes of files in directories, starting at the root (/):
+
+```
+du -h -d 1 /
+```
+
+#### View disk usage interactively
+
+Use package `ncdu` to view disk usage interactively**, using an _ncurses_ style app:
+
+```
+$ sudo dnf install ncdu
+```
+
+#### Delete Docker images and stuff
+
+Delete Docker stuff to keep the fedora-root partition down to size.
+
+Files in `/var/cache/PackageKit` can reach double-digit GBs. These files are used by GNOME PackageKit (an alternative to `dnf`?).
 
 - Prune using `pkcon refresh force -c 2592000` (2592000 = 1 month in seconds)
 - You can remove cached packages by executing `dnf clean packages`
@@ -216,13 +238,21 @@ Filesystem               Size  Used Avail Use% Mounted on
 /dev/mapper/fedora-root   49G   37G   11G  79% /
 ```
 
-**Reducing journal size:**
+#### Prune Podman stuff
+
+Podman puts a lot of files in `$HOME/.local/share/containers`. You can delete it:
+
+```
+podman system prune
+```
+
+#### Reduce the system journal size
 
 - Journals are kept in `/var/log/journal`
 - Edit `/etc/systemd/journald.conf` and set `SystemMaxUse=1G`
 - `systemtl restart systemd-journald`
 
-**Other things to check/do to reduce disk space:**
+#### Other things to try to reduce disk space
 
 - `minishift delete` to delete the Minishift VM
 
