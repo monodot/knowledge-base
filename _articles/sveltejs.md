@@ -5,6 +5,12 @@ title: SvelteJS
 
 ## Cookbook
 
+### Write a log line when a variable changes
+
+```
+$: console.log(`the value of myvar is now: ${myvar}`);
+```
+
 ### Setting multiple CSS classes dynamically
 
 Use a ternary expression if you need to set multiple CSS classes dynamically n an element:

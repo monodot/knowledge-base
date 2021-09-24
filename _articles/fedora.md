@@ -188,9 +188,11 @@ $ dnf update gnome-software
 
 ### Disk housekeeping
 
+For when your hard disk is embarrassingly too small.
+
 #### Check free disk space
 
-Use _Disk Usage Analyzer_ app for a visual analysis of disk space in use. Or use `df`:
+Use `df`:
 
 ```
 $ df -h /
@@ -209,7 +211,9 @@ du -h -d 1 /
 
 #### View disk usage interactively
 
-Use package `ncdu` to view disk usage interactively**, using an _ncurses_ style app:
+Use the _Disk Usage Analyzer_ GUI app for a visual analysis of disk space in use.
+
+**OR** package `ncdu` to view disk usage interactively, using an [ncurses](https://en.wikipedia.org/wiki/Ncurses) style app:
 
 ```
 $ sudo dnf install ncdu
