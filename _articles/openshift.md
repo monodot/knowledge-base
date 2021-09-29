@@ -497,6 +497,21 @@ spec:
 API
 ```
 
+### External registry
+
+#### Pull an image from a private AWS ECR (Elastic Container Registry) repository
+
+```
+REGISTRY_HOST=123456789012.dkr.ecr.us-east-1.amazonaws.com
+
+# This will last for 12 hours only.
+ECR_PASSWORD=$(aws ecr get-login-password)
+
+oc create secret docker-registry ecr-secret --docker-username AWS --docker-password ${ECR_PASSWORD} --docker-server ${REGISTRY_HOST}
+
+oc secrets link default ecr-secret --for=pull
+```
+
 ### Working with Red Hat images
 
 #### Pulling images
