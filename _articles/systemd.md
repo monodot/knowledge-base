@@ -46,3 +46,11 @@ PIDFile=/%t/%n-pid
 [Install]
 WantedBy=multi-user.target
 ```
+
+## Troubleshooting
+
+Process terminates, with _"main process exited, code=killed, status=9/KILL"_:
+
+- Check why it was killed, with this command: `dmesg -T| grep -E -i -B100 'killed process'`
+- The result should be shown, e.g. _"Out of memory: Killed process 3994 (java) total-vm:2715460kB, anon-rss:162732kB, file-rss:0kB, shmem-rss:0kB, UID:1005 pgtables:644kB oom_score_adj:0"_
+

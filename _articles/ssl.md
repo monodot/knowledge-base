@@ -57,6 +57,16 @@ echo | openssl s_client -servername ${REMOTE_HOST} -connect ${REMOTE_HOST}:443 2
 keytool -import -alias server -file ${REMOTE_HOST}.pem -keystore trust.jks
 ```
 
+### Fetch all certificates in a chain and output as individual PEM files
+
+Courtesy of <https://unix.stackexchange.com/questions/368123/how-to-extract-the-root-ca-and-subordinate-ca-from-a-certificate-chain-in-linux>
+
+```
+REMOTE_HOST=myserver.example.com
+
+openssl s_client -showcerts -verify 5 -connect ${REMOTE_HOST}:443 < /dev/null | awk '/BEGIN/,/END/{ if(/BEGIN/){a++}; out="cert"a".pem"; print >out}'; for cert in *.pem; do newname=$(openssl x509 -noout -subject -in $cert | sed -nE 's/.*CN ?= ?(.*)/\1/; s/[ ,.*]/_/g; s/__/_/g; s/_-_/-/; s/^_//g;p' | tr '[:upper:]' '[:lower:]').pem; echo "${newname}"; mv "${cert}" "${newname}"; done
+```
+
 ### Get fingerprint for an AWS key pair
 
 Verify an AWS key pair against the fingerprint given in the EC2 Console (useful if you've got a `.pem` file lying around and you're not sure if it's the right Private Key for AWS):
@@ -148,6 +158,8 @@ To add a certificate in the simple PEM or DER file formats to the list of CAs tr
 ```
 update-ca-trust extract
 ```
+
+**NOTE** this will only work if the certificate has `CA:TRUE` set in its _X509v3 Basic Constraints_ field.
 
 ## SSL testing
 

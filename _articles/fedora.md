@@ -209,6 +209,12 @@ See the total sizes of files in directories, starting at the root (/):
 du -h -d 1 /
 ```
 
+An alternative method to show the total sizes of directories, sorted by size ascending:
+
+```
+du --max-depth=1 . | sort -r -k1,1n
+```
+
 #### View disk usage interactively
 
 Use the _Disk Usage Analyzer_ GUI app for a visual analysis of disk space in use.

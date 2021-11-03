@@ -20,6 +20,17 @@ Then you can install packages globally using:
 
     npm install --global smee-client
 
+## How to 'run' a package on its own (e.g. for debugging packages)
+
+If you want to run a binary/package then you can use the _npx_ command. This works whether you've already installed the package into your project (with _npm install mypackage_) or not.
+
+For example, install the _rollup_ package, then execute it:
+
+```
+npm install rollup --save-dev
+npx rollup --config
+```
+
 ## Typical package.json
 
 A typical `package.json` file might look like this:
