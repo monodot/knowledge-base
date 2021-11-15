@@ -22,13 +22,16 @@ Then you can install packages globally using:
 
 ## How to 'run' a package on its own (e.g. for debugging packages)
 
-If you want to run a binary/package then you can use the _npx_ command. This works whether you've already installed the package into your project (with _npm install mypackage_) or not.
+If you want to run a binary/package then you can use the symlink in `node_modules/.bin`, or the use the _npx_ command, which works whether you've already installed the package into your project (with _npm install mypackage_) or not.
 
-For example, install the _rollup_ package, then execute it:
+For example, to install the _rollup_ package, and then execute it:
 
 ```
 npm install rollup --save-dev
 npx rollup --config
+
+# or, use the symlink:
+./node_modules/.bin/rollup --config
 ```
 
 ## Typical package.json
