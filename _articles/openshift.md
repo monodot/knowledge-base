@@ -220,16 +220,50 @@ oc delete secret kubeadmin -n kube-system
 
 ### Security inside containers and SCCs
 
+#### UID inside a container
+
 OpenShift runs containers using an **arbitrarily assigned user ID**, by default:
 
-- This appears to be [a random user ID, overriding what user ID the image itself may specify that it should run as.](https://cookbook.openshift.org/users-and-role-based-access-control/why-do-my-applications-run-as-a-random-user-id.html)
+- This _appears_ to be [a random user ID, overriding what user ID the image itself may specify that it should run as.](https://cookbook.openshift.org/users-and-role-based-access-control/why-do-my-applications-run-as-a-random-user-id.html)
 - This is because Pods run under the default [Security Context Constraint](https://docs.openshift.com/container-platform/3.11/admin_guide/manage_scc.html#listing-security-context-constraints) called `restricted`, which has its _Run As User strategy_ set to `MustRunAsRange` (try: `oc describe scc restricted`)
-- `MustRunAsRange` means that the exact user ID is chosen from a range, which is set on the Project, using the annotation `openshift.io/sa.scc.uid-range`
-- A Pod definition **may** request the user ID which it should be run as, [using the field `spec.securityContext.runAsUser`][runasuser].
+- Although the UID appears to be random, the `MustRunAsRange` setting in the SCC means that the exact user ID is chosen from a range, which is set on the Project/Namespace, using the annotation `openshift.io/sa.scc.uid-range`
+- A Pod definition **may** request to run as a specific user ID, [using the field `spec.securityContext.runAsUser`][runasuser].
 
-The user inside the container is also **always a member of the `root` group**:
+#### UID ranges
 
-- "For an image to support running as an arbitrary user, **directories and files** that may be written to by processes in the image [should be owned by the root group and be read/writable by that group.][311imageguidelines]"
+To check the user ID range for a Pod, look at the automatically generated annotation on the namespace. Then, you can go inside a Pod and observe that the user will have an ID from the range. In this case, _1004580000_:
+
+```
+# Check the UID range for this Project
+$ oc get namespace $(oc project -q) -o yaml | grep sa.scc.uid-range
+    openshift.io/sa.scc.uid-range: 1004580000/10000
+
+# Get a terminal inside a Pod, and check what UID the container is running as
+$ oc rsh some-pod-in-the-namespace-0
+sh-4.2$ id
+uid=1004580000 gid=0(root) groups=0(root),1004580000
+```
+
+#### Can Pods within the same Project run as the same UID?
+
+Yes. Here's an example. 3 pods in the same Project, which all have the same UID:
+
+```
+$ oc exec myapp-6876b7c677-hc9mk -- id
+uid=1004580000(1004580000) gid=0(root) groups=0(root),1004580000
+$ oc exec amq-broker-5d899dc74c-966nm -- id
+uid=1004580000 gid=0(root) groups=0(root),1004580000
+$ oc exec eap-app-amq-1-vrk5m -- id
+uid=1004580000 gid=0(root) groups=0(root),1004580000
+```
+
+#### What group is the container user in?
+
+The user inside the container is also **always a member of the `root` group (0)**:
+
+> "For an image to support running as an arbitrary user, **directories and files** that may be written to by processes in the image [should be owned by the root group and be read/writable by that group.][311imageguidelines]"
+
+#### Running containers as root
 
 Pods can also run as `root` if required:
 
