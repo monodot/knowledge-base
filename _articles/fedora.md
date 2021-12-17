@@ -132,6 +132,13 @@ $ pactl list | grep head
 
 ### Fonts
 
+Fonts can be installed in these locations:
+
+- `$HOME/.local/share/fonts`
+- `$HOME/.fonts`
+- `/usr/share/fonts/`
+- `/usr/local/share/fonts`
+
 Search for fonts:
 
 ```

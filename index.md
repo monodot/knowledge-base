@@ -5,13 +5,11 @@
 layout: home
 ---
 
-{% include googlecse.html %}
-
 # Welcome
 
-This site is a repository of knowledge I've collected across lots of different tech topics, from programming to system administration. It's a collection of stuff I've learned, and want to share along the way.
+This site is a personal _wiki_ of knowledge that I've collected across lots of different tech topics, from programming to system administration. It's a collection of stuff I've learned, and want to share.
 
-I try to keep it updated whenever I'm working on something new, but you might find that info on some topics is a little out-of-date, especially if I've not worked with that topic for a while.
+I try to keep it updated whenever I'm working on something new, **but** you might find that info on some topics is a little out-of-date, especially if I've not worked with that technology for a while.
 
 For more info about this site, [check out the about page][about].
 

@@ -861,10 +861,10 @@ $ touch htpasswd
 $ htpasswd -Bb htpasswd tom letmein
 ```
 
-Now set up the identity provider:
+Now set up an identity provider of type _HTPasswd_. This also creates a new _Log in with_ option called "Local Password" when you log into the web console:
 
 ```
-oc --user=admin create secret generic htpasswd \
+oc [--user=admin] create secret generic htpasswd \
     --from-file=htpasswd -n openshift-config
 
 oc replace -f - <<API
@@ -890,6 +890,8 @@ oc get groups
 
 oc adm policy add-cluster-role-to-group cluster-admin mylocaladmins
 ```
+
+**NB:** This might take a few minutes to apply to the cluster. So if your new login doesn't work immediately, try again in a few minutes.
 
 #### Create a custom resource and grant permissions
 
