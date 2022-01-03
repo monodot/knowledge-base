@@ -936,5 +936,14 @@ Log categories to turn up:
 - `org.apache.activemq.artemis` - for messaging and ActiveMQ
 - ``
 
+## Cookbook
+
+### Increase DEBUG logs for EAP on OpenShift
+
+```
+oc exec $(oc get pods -o name | grep YOUREAPPOD) -- /opt/eap/bin/jboss-cli.sh --connect --command=/subsystem=logging/root-logger=ROOT:change-root-log-level\(level=DEBUG\)
+```
+
+
 [libaio]: https://activemq.apache.org/artemis/docs/1.0.0/libaio.html
 [maven]: maven.html

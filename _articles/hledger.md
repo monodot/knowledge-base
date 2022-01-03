@@ -3,18 +3,95 @@ layout: page
 title: hledger
 ---
 
-## hledger-web
+The plaintext accounting software.
 
-Install and run:
+{% include toc.html %}
+
+## Client applications
+
+### hledger-web
+
+This is a webby interface onto an hledger file. Install and run:
 
 ```
 dnf install -y hledger-web
 hledger-web
 ```
 
+### hledger-ui
+
+This is an _ncurses_ style terminal interface for managing an hledger file. To run the UI from the command line:
+
+```
+EDITOR=vim hledger-ui
+```
+
+Or, run the UI in a container with _podman_:
+
+```
+podman run --rm -e HLEDGER_JOURNAL_FILE=/data/ledger-2021.journal -v "$(pwd):/data:Z" -p 5000:5000 dastapov/hledger
+```
+
+## Examples
+
+How I do things.
+
+### Example header
+
+To set some common settings, at the top of the hledger file:
+
+```
+; set a default commodity display style
+D £ 1,000.00
+
+; Declare top level accounts, setting their types and display order;
+; Replace these account names with yours; it helps commands like bs and is detect them.
+account Assets       ; type:A, things I own
+account Liabilities  ; type:L, things I owe
+account Equity       ; type:E, net worth or "total investment"; equal to A - L
+account Revenues     ; type:R, inflow categories; part of E, separated for reporting
+account Expenses     ; type:X, outflow categories; part of E, separated for reporting
+
+alias amex = Liabilities:Credit Card:Amex
+alias tsb = Liabilities:Credit Card:TSB
+```
+
+### Salary and Tax
+
+Recorded as a positive amount into my "current account" asset, and a negative amount from _Income_:
+
+```
+2020-09-25 WILLY WONKA LTD  ;
+    Assets:Current Account               £ 1,200.00
+    Income:Willy Wonka:Salary           £ -2,000.00
+    Income:Willy Wonka:Bonus            £    -50.00
+    Expenses:Tax:PAYE                      £ 500.00
+    Expenses:Tax:National Insurance        £ 150.00
+    Expenses:Tax:PSE AE                    £ 200.00
+```
+
 ## Cookbook
 
 Some tips and tricks I've learned when working with _hledger_.
+
+### Set up an environment
+
+If you're going to be running lots of _hledger_ commands, set `LEDGER_FILE` to point to your current ledger file, so you don't need to specify it with every command:
+
+```
+export LEDGER_FILE=$(pwd)/my-ledger-2021.journal
+```
+
+### Closing a financial year and starting a new one
+
+Use the `hledger close` command (I usually go with the UK tax year, which runs from 6th April to 5th April the following year):
+
+```
+$ hledger close -e 2021-04-05
+
+$ hledger close -f 2021.journal --end 2021-04-06 assets liabilities --open  >> 2022.journal  # add 2022's first transaction
+$ hledger close -f 2021.journal --end 2021-04-06 assets liabilities --close >> 2021.journal  # add 2021's last transaction
+```
 
 ### Get most recent transaction dates
 
@@ -92,6 +169,14 @@ $ hledger reg MyBank
 hledger register current --historical date:2020/09/20-2020/10/19
 ```
 
+### Print all credit card transactions (except payments) in a statement period
+
+Useful to reconcile against the credit card statement and find out exactly how much you spent in a given month (statement period):
+
+```
+hledger register amex date:2021/11/16-2021/12/15
+```
+
 ## Reports
 
 Monthly report showing all categories under _"Expenses"_ by month:
@@ -104,14 +189,6 @@ Show **income and expense statement** for this year:
 
 ```
 hledger incomestatement -MA -b $YEAR
-```
-
-## hledger UI
-
-Run the UI:
-
-```
-podman run --rm -e HLEDGER_JOURNAL_FILE=/data/ledger-2021.journal -v "$(pwd):/data:Z" -p 5000:5000 dastapov/hledger
 ```
 
 ## Rules

@@ -193,7 +193,8 @@ CXF/JAXWS: _"java.io.IOException: Cannot find any registered HttpDestinationFact
 - Your endpoint's `address` is an absolute URL (has a hardcoded `http:` at the start of it). Change it to a relative URL, to allow CXF to use whatever web server is available (e.g. Tomcat, Undertow)
 - You're trying to create a service (e.g. `Endpoint.publish(...)`) but there is no HTTP transport for CXF on the classpath. Add `cxf-rt-transports-http-jetty` as a dependency. This will allow CXF to use Jetty to host your service.
 
-[maven]: {{ site.baseurl }}{% link _articles/maven.md %} [camel]: {{ site.baseurl }}{% link _articles/camel.md %}
+[maven]: {{ site.baseurl }}{% link _articles/maven.md %}
+[camel]: {{ site.baseurl }}{% link _articles/camel.md %}
 
 [camelcxfendpoint]: https://github.com/apache/camel/blob/master/components/camel-cxf/src/main/docs/cxf-component.adoc#configure-the-cxf-endpoints-with-spring
 [cxfjaxb]: https://cxf.apache.org/docs/jaxb.html
