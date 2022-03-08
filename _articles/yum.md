@@ -209,7 +209,7 @@ $ rpm -E %fedora
 yum info <package>
 ```
 
-#### What was installed recently? 
+#### What was installed recently?
 
 Check `history`:
 
@@ -331,3 +331,18 @@ tar -C /opt/java -xvf graalvm-ce-1.0.0-rc15-linux-amd64.tar.gz
 ln -r -s graalvm-ce-1.0.0-rc15 /opt/java/graalvm
 ```
 
+## Troubleshooting
+
+### 'rpmdb open failed' when trying to run 'yum update'
+
+```
+error: rpmdb: BDB0113 Thread/process 11763/140134931961664 failed: BDB1507 Thread died in Berkeley DB library
+error: db5 error(-30973) from dbenv->failchk: BDB0087 DB_RUNRECOVERY: Fatal error, run database recovery
+error: cannot open Packages index using db5 -  (-30973)
+error: cannot open Packages database in /var/lib/rpm
+Plugins failed to initialize with the following error message:
+Error: rpmdb open failed
+```
+
+- This error seems to happen randomly. The yum package database is corrupt?
+- Move the corrupt database and get the server to rebuild it: `mv /var/lib/rpm/__db* /tmp && rpm --rebuilddb && yum upgrade`
