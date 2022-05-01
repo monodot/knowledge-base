@@ -102,3 +102,51 @@ And the HTML:
     </div>
 </div>
 ```
+
+### Allow code blocks in `pre` tags to wrap correctly
+
+Use `min-width`:
+
+```
+section.post > article {
+    flex: 1 1 auto; // allow a flex item to grow and shrink, taking into account its initial size / ratio compared to other flex items
+    min-width: 0; // This allows code blocks (in <pre> tags) to wrap correctly - https://weblog.west-wind.com/posts/2016/feb/15/flexbox-containers-pre-tags-and-managing-overflow
+}
+```
+
+### Make an auto-hiding nav menu
+
+```
+body > header > div.silos > nav > ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    /* Clever stuff to make menu hide */
+    max-height: 0;
+    overflow: hidden;
+}
+body > header > div.silos > input[type=checkbox]:checked ~ nav {
+    padding: 1rem 0;
+}
+body > header > div.silos > input[type=checkbox]:checked ~ nav ul {
+    // Select the 'nav ul' element adjacent to the toggling checkbox
+    max-height: 350px;
+}
+body > header > div.silos > nav > ul > li > a {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0.5rem var(--gutter);
+    color: var(--body-text-colour);
+    font-size: 1.25rem;
+    text-decoration: none;
+}
+body > header > div.silos > nav > ul > li > a:hover {
+    background-color: var(--header-background-colour);
+}
+body > header > div.primary > div.actions,
+body > header > div.primary > div.strapline {
+    display: none; // Hide on smaller displays
+}
+```
