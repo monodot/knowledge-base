@@ -5,6 +5,43 @@ title: Kubernetes
 
 {% include toc.html %}
 
+## Quickstarts/demos
+
+### Deploy NodeJS app
+
+```
+kubectl create deployment hello-node --image=k8s.gcr.io/echoserver:1.4
+kubectl expose deployment hello-node --type=LoadBalancer --port=8080
+```
+
+### Deploy the Kylie Fan Club homepage
+
+```
+kubectl create deployment nodejs --image=quay.io/swinches/nodejs-mongo-persistent:2.0
+kubectl expose deployment nodejs --type=LoadBalancer --port=8080
+```
+
+### Deploy hello-java-spring-boot
+
+Deploy a simple Java Spring Boot app.
+
+On a cluster with an Ingress controller deployed:
+
+```
+kubectl create deploy cheese-app --image=monodot/hello-java-spring-boot:latest
+kubectl expose deployment cheese-app --port=8080
+kubectl create ingress cheese-app --rule="app.cheese.tld/*=cheese-app:8080"
+
+curl -v -H 'Host: app.cheese.tld' http://<IP OF PROXY, e.g. ENVOY>/cheese
+```
+
+Without an Ingress controller, just using a NodePort service:
+
+```
+kubectl create deploy cheese-app --image=monodot/hello-java-spring-boot:latest
+kubectl expose deployment cheese-app --type NodePort --port=8080
+```
+
 ## Terminology
 
 - **kubelet** - this is the "agent" that runs on each node in a Kubernetes cluster.
@@ -76,22 +113,6 @@ ports:
 - containerPort: 8080
   name: web
   protocol: TCP
-```
-
-## Quickstarts/demos
-
-### Deploy NodeJS app
-
-```
-kubectl create deployment hello-node --image=k8s.gcr.io/echoserver:1.4
-kubectl expose deployment hello-node --type=LoadBalancer --port=8080
-```
-
-Deploy the Kylie Fan Club homepage:
-
-```
-kubectl create deployment nodejs --image=quay.io/swinches/nodejs-mongo-persistent:2.0
-kubectl expose deployment nodejs --type=LoadBalancer --port=8080
 ```
 
 ## Kubernetes API
@@ -220,3 +241,16 @@ Minikube: apiserver goes down (`apiserver: Stopped` in status):
 - Check `minikube logs`
 - Get the logs of the apiserver: `minikube ssh` then `{% raw %}docker logs $(docker ps -a --filter name=k8s_kube-apiserver --format={{.ID}}){% endraw %}`
 - Check the status of the exited container: `minikube ssh` then `docker inspect <container-id>` - `ExitCode=137` could indicate an OOM condition
+
+NodePort service times out when you `curl` to it:
+
+- Check the configuration of kube-proxy: `kubectl describe ds/kube-proxy -n kube-system`
+- Look at the logs of each kube-proxy Pod to see which IP address it's listening on:
+  - See logs: `kubectl logs ds/kube-proxy -n kube-system`
+  - e.g. _"Successfully retrieved node IP: 172.31.31.198"_
+  - So try `curl 172.31.31.198:123456` (where 123456 is your NodePort service's port number)
+
+Is my container actually running? I can't find it:
+
+- If you're using CRI-O, then use `crictl ps` to see all the running containers on the node.
+
