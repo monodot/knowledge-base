@@ -86,6 +86,18 @@ To **install** a version of Ruby (if the desired version is missing from the lis
 - **jekyll** - CLI tool for building static websites
 - **bundler** - provides a consistent environment for Ruby projects by tracking and installing the exact gems and versions that are needed
 
+## Developing with Ruby
+
+### Debugging with a REPL
+
+You can start a REPL session while your program is running, to inspect/print variables, etc.
+
+Just add the following lines where you want the REPL session to start:
+
+```
+require 'irb'
+binding.irb
+```
 
 ## Package management with `gem`
 
