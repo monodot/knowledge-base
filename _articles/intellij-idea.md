@@ -98,6 +98,19 @@ For example:
 java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005 -jar target/spring-boot-camel-xa-1.0-SNAPSHOT.jar
 ```
 
+### Debugging a Maven execution
+
+1.  Create a Run Configuration type "Remove JVM Debug", setting the debugger's mode as "Attach to remote JVM", with listen port of 8000.
+
+2.  Click OK.
+
+3.  In a terminal, run Maven using `mvnDebug goal1 goal2`
+
+4.  Maven will wait on port 8000 for a debugger to be connected.
+
+5.  In IntelliJ, go to Run &rarr; Debug... and then select the debugger Run Configuration you just created.
+
+
 ### Debugging for specific tools/frameworks
 
 #### Spring Boot 2.x
