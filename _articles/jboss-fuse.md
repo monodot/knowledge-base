@@ -5,7 +5,9 @@ title: Red Hat Fuse (JBoss Fuse) and Fuse Fabric
 
 {% include toc.html %}
 
-## Super-quick quickstart
+## Quickstarts
+
+### Fuse 7.8 on OpenShift quick demo
 
 A super-quick, quickstart to create and deploy a Fuse application on OpenShift. This assumes you're a developer without cluster-admin access:
 
@@ -232,7 +234,13 @@ Then, you can start the build like the command below, which will upload your Kar
 
     oc start-build my-karaf-app --from-file=target/myapp-1.0.zip --follow
 
-## Fabric
+## Fuse 6 to 7 migration
+
+Things to be aware of when migrating Fuse 6 to 7:
+
+<img src="/assets/images/fuse6to7.excalidraw.svg"/>
+
+## Fuse 6.x Fabric
 
 Fabric is a Fuse feature that provides centralised configuration and bundle provisioning.
 
@@ -389,11 +397,13 @@ To install a hotfix patch, follow the instructions in the Fabric Guide on **appl
 
 For Fuse Patches, the container may need a restart. If it does, it will restart automatically. But you won't get a warning about this.
 
-## Developer Cookbook
+## Cookbook
 
-### Creating a new project
+### Developer cookbook
 
-#### JBoss Fuse
+#### Creating a new project
+
+##### JBoss Fuse
 
 Archetypes are labelled under `io.fabric8.archetypes`, version `1.2.0.redhat-xxxxxx`. To create a new JBoss Fuse "router" project:
 
@@ -411,7 +421,7 @@ Or substitute with one of the following archetypes depending on the use case:
 | `io.fabric8.archetypes` | `karaf-camel-log-archetype` | Creates a new Camel Log Example |
 | `io.fabric8.archetypes` | `karaf-soap-archetype` | Creates a new SOAP example using JAXWS |
 
-#### Fuse on OpenShift
+##### Fuse on OpenShift
 
 To create a Fuse 7.4 on OpenShift application using the Maven archetype:
 
@@ -423,15 +433,15 @@ To create a Fuse 7.4 on OpenShift application using the Maven archetype:
 
 See the _Component Versions_ section at the top of the page for a table showing mappings of build versions Fuse releases.
 
-### Good practice
+#### Good practice
 
 - Use the correct JBoss Fuse parent BOM for the version of Fuse that you are looking to target.
 
-### Persistence
+#### Persistence
 
 - The Apache OpenJPA implementation of the Java Persistence API (JPA) is deprecated since 6.2.1. It is recommended to use the Hibernate implementation instead.
 
-### Connecting to ActiveMQ
+#### Connecting to ActiveMQ
 
 A simple example (note the declaration of `init-method` and `destroy-method`):
 
@@ -447,9 +457,9 @@ A simple example (note the declaration of `init-method` and `destroy-method`):
 </bean>
 ```
 
-## Command line cookbook
+### Fuse 6.x Karaf command line
 
-### Working with bundles and features
+#### Working with bundles and features
 
 Install a bundle in Apache Karaf:
 
@@ -473,7 +483,7 @@ Show information about a feature:
     features:info jasypt-encryption
     features:info -t jasypt-encryption  # Shows feature tree
 
-### Debugging Karaf with IntelliJ
+#### Debugging Karaf with IntelliJ
 
 Find the specific JAR you want to debug and add it to the _External Libraries_ list in IntelliJ. Then add a Run Configuration for debugging (see the IntelliJ page). Then, run Fuse like this:
 
@@ -481,13 +491,13 @@ Find the specific JAR you want to debug and add it to the _External Libraries_ l
     export JAVA_DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
     ./bin/fuse
 
-### OSGi Config Admin
+#### OSGi Config Admin
 
 View details of a specific OSGi Config Admin PID:
 
     config:list "(service.pid=com.example.my.pid.name)"
 
-### Jolokia
+#### Jolokia
 
 Get the root info from Jolokia:
 
@@ -497,7 +507,7 @@ Get ActiveMQ broker info:
 
     curl http://quarkus:quarkus@localhost:8161/console/jolokia/read/org.apache.activemq.artemis:broker\=\*
 
-### User administration
+#### User administration
 
 Get the list of JAAS realms:
 
@@ -517,7 +527,7 @@ To update an existing user's password, use `useradd` against the realm:
 
 NB: If you update the password of the `admin` user, you will need to re-start your Fuse client session. (This is because it will still attempt to use the old password). Also, changing the admin password will not also update the Fabric Ensemble password. (You can verify this using `fabric:ensemble-password`) Details on how to update the Ensemble password are below.
 
-### Fabric
+#### Fabric
 
 Add a URL to a feature repository to a Fabric profile:
 
@@ -560,7 +570,7 @@ Update Zookeeper password:
     // wait a few moments while the new password is propagated
     fabric:ensemble-password --commit
 
-#### Zookeeper
+#### Zookeeper (for Fabric)
 
 Install Zookeeper commands and query Zookeeper (you will need to add the feature to an appropriate profile - e.g. `fabric-ensemble-0000-1` or `default`):
 
@@ -578,7 +588,7 @@ Some useful locations of things in Zookeeper:
 | `/fabric/registry/clusters/apis`                              | APIs              |
 | `/fabric/registry/ports/containers/ContainerName/PID/KeyID`   | Port Service      | ... |
 
-### Other commands and one-liners
+#### Other commands and one-liners
 
 Connect to a remote Fuse (Karaf) instance:
 
@@ -632,6 +642,13 @@ Felix Fileinstall doesn't seem to pick up Blueprint XMLs / Karaf just ignores XM
 
 - Check that the `deployer` feature is installed into Karaf. This provides the bundle `org.apache.karaf.deployer.blueprint`, amongst others.
 - If there is not a suitable deployer present which can handle a file (e.g. a Blueprint XML file), Felix Fileinstall will just skip over it.
+
+_karaf-maven-plugin_ fails to build a Karaf microcontainer; build fails with error "null":
+
+- Check that all KAR archives have been downloaded successfully from Maven Central (or another mirror).
+- The karaf-maven-plugin builds a Karaf microcontainer by downloading KAR archive(s) from a Maven repository.
+- If the KAR file is corrupted, or hasn't been downloaded properly, you might not see an error -- instead, the process might just fail silently at some later stage, without giving a clue that the KAR was invalid.
+
 
 [1]: https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/configuring_and_running_jboss_fuse/esbruntimepatching
 [fuse600gapom]: http://repo.fusesource.com/nexus/content/groups/public/org/jboss/fuse/jboss-fuse/6.0.0.redhat-024/jboss-fuse-6.0.0.redhat-024.pom
