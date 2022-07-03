@@ -75,10 +75,6 @@ Large messages are handled differently by the broker:
 - A core bridge isn't the same as a JMS bridge; and it doesn't use the JMS API.
 - Core bridges use duplicate detection to guarantee once and only once delivery of messages across the bridge.
 
-### Clustering
-
-- When a node forms a cluster connection to another node, internally it creates a **core bridge** to that node.
-
 ### High availability
 
 Failover:
@@ -89,6 +85,37 @@ Relevant settings:
 
 - `failover-on-shutdown=true` - in a shared-storage topology, this causes failover to be triggered when a server is gracefully shut down
 - `check-for-live-server=true` -
+
+## Scalability
+
+### Clustering (active-active brokers)
+
+- **Clustering** is where multiple brokers are combined together into a single, _logical_ broker
+- Clients can connect to any broker to produce or consume messages
+- The brokers perform load balancing (TODO) and message distribution across the cluster.
+- When a node forms a cluster connection to another node, internally it creates a **core bridge** to that node.
+- Due to messages moving between the brokers, **message ordering isn't preserved.**
+
+## High Availability & Disaster Recovery
+
+### Considerations for HA/DR
+
+For **message availability**:
+
+- Outside Kubernetes: Using a high-availability pair (Master/Slave) with shared store.
+  - When the Master goes down, the Slave will detect this event, load the journal and become the new broker.
+- On Kubernetes: Using a liveness probe and restarting the broker Pod
+  - There is no Master/Slave topology on Kubernetes, so no need for a shared file system (because only one Pod will access the Journal at once).
+  - High availability is achieved by starting a replacement Pod when a broker fails. Broker failure is detected by a liveness probe in Kubernetes.
+  - Downtime = time for liveness probe to detect failure + time to restart the Pod + time to load the journal
+
+For **disaster recovery** (e.g. complete failure of a data centre):
+
+- Mirroring.
+  - Mirroring copies messages **asynchronously** to the broker on the recovery site (e.g. in another data centre).
+  - **Async** mirroring means that some messages may be duplicated or lost entirely.
+  - Clients will not automatically fail over to the DR broker.
+  - Downtime = manual effort required to start new broker and re-point clients to the new broker (minutes/hours?) + time to read the journal files
 
 ## Configuration
 

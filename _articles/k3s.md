@@ -31,6 +31,11 @@ DNS:
 - CoreDNS gets settings from the configmap `coredns` in namespace `kube-system` - this is mounted as `/etc/coredns/Corefile` in the container
 - Each container uses CoreDNS for DNS resolution, due to  `nameserver <kube-dns Service IP>` in `/etc/resolv.conf`
 
+Networking/Ingress:
+
+- **ClusterIP service and Ingress:** To expose an app outside the cluster, you can just create a Service of type _ClusterIP_ and expose it with an _Ingress_.
+- **LoadBalancer service:** Alternatively, create a Service of type _LoadBalancer_. This will create a new **klipper** load balancer DaemonSet (`svclb-*`) in the namespace `kube-system`. However, your Service **must** expose a port which isn't already in use. For example, Traefik occupies ports 80 and 443, so pick a different port.
+
 ## Cookbook
 
 Kill, uninstall:
@@ -56,3 +61,11 @@ Some more info about k3s:
 - It is [configured to automatically restart after node reboots or if the process crashes or is killed](https://rancher.com/docs/k3s/latest/en/quick-start/)
 - There is a config file in `/etc/rancher/k3s/k3s.yaml`
 - You can use the scripts `/usr/local/bin/k3s-killall.sh` and `k3s-uninstall.sh` to stop and uninstall, etc.
+
+## Troubleshooting
+
+metrics-server fails, with error _"Failed to scrape node ... http://your_ip:10250 no route to host"_:
+
+- Likely firewall is preventing traffic from the pod network to your host.
+- Add a rule: `firewall-cmd --permanent --add-port=10250/tcp && firewall-cmd --reload`
+
