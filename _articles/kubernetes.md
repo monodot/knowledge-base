@@ -42,6 +42,14 @@ kubectl create deploy cheese-app --image=monodot/hello-java-spring-boot:latest
 kubectl expose deployment cheese-app --type NodePort --port=8080
 ```
 
+### Run whoami (useful tool for determining source IP)
+
+```
+kubectl create deployment whoami --image=containous/whoami:v1.5.0 --port=80
+kubectl expose deploy whoami --port=80 --target-port=80 --type=ClusterIP
+kubectl create ingress whoami --rule="whoami.apps.mndt.co.uk/*=whoami:80,tls=whoami-tls"
+```
+
 ## Terminology
 
 - **kubelet** - this is the "agent" that runs on each node in a Kubernetes cluster.
@@ -254,3 +262,11 @@ Is my container actually running? I can't find it:
 
 - If you're using CRI-O, then use `crictl ps` to see all the running containers on the node.
 
+Some pods can't reach the internet... "dial tcp: lookup xxx.example.com on 10.43.0.10:53: server misbehaving"
+
+- In k3s, you can `kubectl get ep -n kube-system` to see show the endpoints of _kube-dns_
+- **Find out how the Pod is resolving DNS names.** go inside the misbehaving pod and type `cat /etc/resolv.conf`. This will show which _nameserver_ the Pod is trying to use.
+- **Look at the IP of kube-dns.** `kubectl get svc kube-dns -n kube-system` should show the IP (e.g. 10.43.0.10).
+- **Look at the kube-dns logs.** Find the kube-dns pod and see whether it's struggling to look up DNS entries (e.g. "AAAA: read udp 10.42.0.3:54383->1.1.1.1:53: read: no route to host")
+- These should give you some clue where the problem is. Perhaps you need to add firewall rules?
+- 
