@@ -649,6 +649,11 @@ _karaf-maven-plugin_ fails to build a Karaf microcontainer; build fails with err
 - The karaf-maven-plugin builds a Karaf microcontainer by downloading KAR archive(s) from a Maven repository.
 - If the KAR file is corrupted, or hasn't been downloaded properly, you might not see an error -- instead, the process might just fail silently at some later stage, without giving a clue that the KAR was invalid.
 
+_karaf-maven-plugin_ builds a Karaf container without the commands/features that you want:
+
+- The logs from the assembly build should say something like: _"adding all non-blacklisted features from repository: mvn:org.jboss.fuse/fuse-karaf-framework/7.10.0.fuse-7_10_2.../xml/features"_
+- Open this Maven artifact (it's an XML file) to see the details of the features, and which bundles they contain. This Maven artifact also pulls in other XML feature files.
+- The feature called `bundle` is defined in org.apache.karaf.features/standard/4.2.12.../xml/features. It installs the bundle `org.apache.karaf.bundle.core`, which provides Karaf CLI commands like [list](https://github.com/apache/karaf/blob/main/bundle/core/src/main/java/org/apache/karaf/bundle/command/List.java)
 
 [1]: https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.3/html/configuring_and_running_jboss_fuse/esbruntimepatching
 [fuse600gapom]: http://repo.fusesource.com/nexus/content/groups/public/org/jboss/fuse/jboss-fuse/6.0.0.redhat-024/jboss-fuse-6.0.0.redhat-024.pom
