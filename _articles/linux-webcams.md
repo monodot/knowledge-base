@@ -47,6 +47,8 @@ Copying files
 Done
 ```
 
+Install dependencies for system tray: `sudo dnf install libappindicator-gtk3`. 
+
 Install dependencies, `sudo dnf install kernel-headers gcc make`.
 
 Run another installer :( - `sudo ./install-video`:
