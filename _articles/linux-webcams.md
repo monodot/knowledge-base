@@ -49,7 +49,7 @@ Done
 
 Install dependencies for system tray: `sudo dnf install libappindicator-gtk3`. 
 
-Install dependencies, `sudo dnf install kernel-headers gcc make`.
+Install dependencies, `sudo dnf install kernel-devel kernel-headers gcc make`.
 
 Run another installer :( - `sudo ./install-video`:
 
@@ -108,6 +108,14 @@ EOF
 ```
 
 Now you can start Droidcam from _Applications_, and you should be able to see the phone as another camera source (e.g. in an application like _Cheese_)
+
+### Troubleshooting
+
+_"make: *** /lib/modules/3.3.4-5.fc17.x86_64/build: No such file or directory.  Stop."_:
+
+- The video driver install script runs _make_ which requires access to the Linux source code.
+- The directory shown in the error message might exist, but it might be a symlink to a non-existent directory.
+- Make sure you've installed `kernel-devel`, which installs the Linux kernel source code.
 
 ## Using a DSLR as a camera in OBS Studio (and other apps) on Fedora
 
