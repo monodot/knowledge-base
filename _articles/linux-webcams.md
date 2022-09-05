@@ -27,7 +27,7 @@ Except, I just get a still image in Bluejeans, Cheese, etc.....
 
 ## Using an iPhone as a webcam on Fedora (with Droidcam for iOS and Linux)
 
-**⚠️ Incomplete instructions - the webcam video stream seems to freeze on my laptop (Fedora 33), after a few seconds**
+**✅ Tested with Fedora 36.**
 
 Install the Droidcam app for iPhone from the App Store.
 
