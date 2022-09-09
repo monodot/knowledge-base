@@ -69,6 +69,26 @@ $ sudo podman run --rm -it busybox ls -al / | grep sys
 dr-xr-xr-x   13 root     root             0 Jan 20 07:58 sys
 ```
 
+## Networking
+
+### Networking backends
+
+Podman can use different networking _stacks_ or backends:
+
+- New stack from 4.0 based on [**netavark**](https://github.com/containers/netavark) and [**aardvark-dns**](https://github.com/containers/aardvark-dns)
+- CNI (default stack for old/existing installations)
+
+To find out which networking stack your installation is using, type `podman info` and look for the entry named _networkBackend_.
+
+### Troubleshooting netavark and aardvark-dns
+
+Netavark and aardvark-dns might write some logs. So, you could look for them:
+
+```
+journalctl -b | grep -i netav
+journalctl -b | grep -i aardv
+```
+
 ## Images
 
 When pulling images rootless, they are saved to `.local/share/containers/storage`.
