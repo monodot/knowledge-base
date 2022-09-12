@@ -143,6 +143,12 @@ $ dnf config-manager --set-disabled my-repo-id
 yum provides "*bin/top"
 ```
 
+#### Which packages does package X depend on?
+
+```
+dnf repoquery rubygem-eventmachine --requires --resolve
+```
+
 #### Look inside an RPM file, if it's not installed
 
 ```
