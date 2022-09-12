@@ -975,9 +975,11 @@ You can get a shell onto an OpenShift node (e.g. a worker machine) using the `oc
 
 First find the node where a Pod is running (if you want to debug a specific container):
 
+{% raw %}
 ```
 oc get pod prometheus-k8s-0 --template="{{ .spec.nodeName }}"
 ```
+{% endraw %}
 
 Then _oc debug_ that Node:
 
