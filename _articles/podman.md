@@ -89,6 +89,17 @@ journalctl -b | grep -i netav
 journalctl -b | grep -i aardv
 ```
 
+### Changing network backend
+
+```
+cat >> ~/.config/containers/containers.conf << EOF
+[network]
+network_backend = "cni"
+EOF
+```
+
+
+
 ## Images
 
 When pulling images rootless, they are saved to `.local/share/containers/storage`.

@@ -13,6 +13,7 @@ Loki is a log aggregation system written in Go, inspired by Prometheus.
 - Loki exposes an HTTP API for pushing, querying and tailing log data.
 - Loki stores logs as strings exactly how they were created, and indexes them using _labels_.
 - Loki is usually combined with _agents_ such as Promtail, which are responsible for turning logs into streams and pushing them to the Loki HTTP API.
+- You can combine Loki with Prometheus _Alertmanager_ to notify when things happen.
 
 Things you might put into Loki:
 
@@ -23,9 +24,16 @@ Things you might put into Loki:
 - Kubernetes logs (via service discovery)
 - Docker container logs
 
+Ways to get data into Loki:
+
+- Promtail
+- Grafana Agent
+- Log4J
+- Logstash
+
 ## Getting started
 
-### Running Loki 2.6.1 with podman-compose on Fedora
+### Running Loki 2.6.1 and Promtail with podman-compose on Fedora
 
 ```
 git clone https://github.com/monodot/grafana-demos
@@ -37,7 +45,7 @@ podman-compose up -d
 
 ### Labels and indexing
 
-- Prefer labels that describe the **topology** of your app/setup, e.g. _region_, _host_, _pod_, _environment_, etc. [^1]
+- Prefer labels that describe the **topology/source** of your app/setup, e.g. _region_, _cluster_, _application_, _host_, _pod_, _environment_, etc. [^1]
 
 ### Scalability
 
@@ -47,12 +55,17 @@ podman-compose up -d
 
 ### LogQL language
 
-#### Fetch some logs
+#### Fetch some logs with certain labels that match a string
 
 ```
 {region="eu-west-1", job="loki-prod/querier"} |= "012345abcde"
 ```
 
+### Extract labels from log lines and use as a filter expression
+
+```
+{job="systemd-journal"} | logfmt | 
+```
 
 
 [^1]: <https://grafana.com/go/webinar/getting-started-with-logging-and-grafana-loki/>

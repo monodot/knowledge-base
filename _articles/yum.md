@@ -143,6 +143,16 @@ $ dnf config-manager --set-disabled my-repo-id
 yum provides "*bin/top"
 ```
 
+#### Which files are included in a package? 
+
+```
+$ dnf repoquery -l texlive-cancel
+/usr/share/licenses/texlive-cancel
+/usr/share/licenses/texlive-cancel/pd.txt
+/usr/share/texlive/texmf-dist/tex/latex/cancel
+/usr/share/texlive/texmf-dist/tex/latex/cancel/cancel.sty
+```
+
 #### Which packages does package X depend on?
 
 ```
@@ -166,12 +176,6 @@ yum groupinfo '*' | less +/sendmail-cf
 Which package created/installed a particular file?
 
 ```
-$ dnf repoquery -l texlive-cancel
-/usr/share/licenses/texlive-cancel
-/usr/share/licenses/texlive-cancel/pd.txt
-/usr/share/texlive/texmf-dist/tex/latex/cancel
-/usr/share/texlive/texmf-dist/tex/latex/cancel/cancel.sty
-
 $ rpm -qf /usr/bin/mvn
 maven-3.5.4-5.module_f28+3939+dc18cd75.noarch
 ```
