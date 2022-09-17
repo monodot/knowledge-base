@@ -3,7 +3,9 @@ layout: page
 title: Systemd
 ---
 
-## Cookbook
+## Paths and locations
+
+### System unit files
 
 To manually add a new unit file (i.e. a new service that you want systemd to manage), add it into `/etc/systemd/system`, e.g.:
 
@@ -11,22 +13,65 @@ To manually add a new unit file (i.e. a new service that you want systemd to man
 /etc/systemd/system/isso.service
 ```
 
-To create an override/drop-in file to customise variables for a service:
+## Cookbook
 
-```
-systemctl edit myservice.service
-# opens a Nano editor
-systemctl daemon-reload
-systemctl restart myservice.service
-```
+### View the content of a service unit
 
-To view the content of a service unit and all its override/drop-in files:
+To view the content of a service unit **and** all its override/drop-in files:
 
 ```
 systemctl cat myservice.service
 ```
 
+### Override service configuration (e.g. provide environment variables)
+
+You can override a unit's configuration without changing the original `.service` file. For example, you might want to add environment variables, or make some customisations to the service:
+
+```
+systemctl edit myservice.service
+# opens a Nano editor
+
+systemctl daemon-reload
+
+systemctl restart myservice.service
+```
+
+**Inside the override file:** For example, to set some environment variables for a service, just add the following to the override file:
+
+```
+[Service]
+Environment=MY_ENV_VAR=foo ANOTHER_ENV_VAR=barrrr
+```
+
 ## Examples
+
+### Run promtail as a service
+
+```
+cat << EOF | sudo tee -a /etc/systemd/system/promtail.service
+[Unit]
+Description=Promtail
+
+[Service]
+ExecStart=/usr/local/bin/promtail \\
+    -config.file=/etc/promtail-config-cloud.yaml \\
+    -config.expand-env=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+Then enable and start the service:
+
+```
+# Creates symlink from /etc/systemd/system/multi-user.target.wants/promtail.service to the actual unit
+sudo systemctl enable promtail
+
+sudo systemctl start promtail
+```
+
+### Run isso commenting engine as a service with Podman
 
 An example unit file which launches the _isso_ commenting engine from a container using _podman_:
 

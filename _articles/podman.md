@@ -82,6 +82,8 @@ To find out which networking stack your installation is using, type `podman info
 
 ### Troubleshooting netavark and aardvark-dns
 
+- If you can't resolve containers by their podman-compose service name, ensure you've upgraded _podman_ first. (Fedora Wasn't working in 4.0, seems to be working in 4.2).
+
 Netavark and aardvark-dns might write some logs. So, you could look for them:
 
 ```
@@ -97,8 +99,6 @@ cat >> ~/.config/containers/containers.conf << EOF
 network_backend = "cni"
 EOF
 ```
-
-
 
 ## Images
 
