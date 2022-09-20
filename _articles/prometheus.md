@@ -3,15 +3,17 @@ layout: page
 title: Prometheus
 ---
 
-## Getting started
+A time series database, for storing and serving metrics.
 
-### Concepts, ports
+### Basics
 
 - Prometheus runs on port 9090 by default.
 
+## Getting started
+
 ### Deploying on OpenShift 3.x
 
-Deploying a wee Prometheus on OpenShift:
+Deploying a wee Prometheus on OpenShift 3.11:
 
 ```
 oc process -f https://raw.githubusercontent.com/openshift/origin/release-3.11/examples/prometheus/prometheus-standalone.yaml
@@ -72,7 +74,23 @@ stringData:
 HELLO
 ```
 
-## Service discovery
+## Cookbook
+
+### Alert queries
+
+#### Predict a node's free disk space in X hours
+
+```
+predict_linear(node_filesystem_avail_bytes{job="node"}[1h], 8 * 3600) < 0
+```
+
+- Get 1 hour's worth of `node_filesystem_avail_bytes` history
+- Use `predict_linear` to predict 8 hours ahead (8 x 3600)
+- Test whether the value will be less than 0 - i.e. no free disk space
+
+[Source][1]
+
+## Targets
 
 ### Kubernetes
 
@@ -94,3 +112,5 @@ prometheus.io/scrape: "true"
 prometheus.io/path: "/metrics"
 prometheus.io/port: "8672"
 ```
+
+[1]: https://www.robustperception.io/reduce-noise-from-disk-space-alerts/
