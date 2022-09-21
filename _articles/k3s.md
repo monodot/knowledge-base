@@ -69,3 +69,12 @@ metrics-server fails, with error _"Failed to scrape node ... http://your_ip:1025
 - Likely firewall is preventing traffic from the pod network to your host.
 - Add a rule: `firewall-cmd --permanent --add-port=10250/tcp && firewall-cmd --reload`
 
+Can't seem to use _kubectl_ with any other Kubernetes clusters except k3s: _"error: error loading config file "/etc/rancher/k3s/k3s.yaml": open /etc/rancher/k3s/k3s.yaml: permission denied"_:
+
+- The kubectl that's distributed with k3s is modified to always load config from `/etc/rancher/k3s/k3s.yaml` [^1]
+- But the default behaviour for a regular kubectl binary is to read config from `~/.kube/config`.
+- To work with other clusters: install your own kubectl binary (e.g. from the Kubernetes website, or via a package) then symlink it, so that it overrides the k3s kubectl binary in your PATH:
+  - `sudo dnf install -y kubernetes-client --repo fedora`
+  - `ln -s /usr/bin/kubectl ~/.local/bin/kubectl`
+
+[^1]: https://github.com/k3s-io/k3s/issues/1541#issuecomment-672099924
