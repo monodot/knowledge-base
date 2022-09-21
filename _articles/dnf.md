@@ -1,6 +1,6 @@
 ---
 layout: page
-title: YUM/DNF
+title: dnf Package Manager (formerly yum)
 ---
 
 The package manager.
@@ -36,6 +36,19 @@ Search for a package:
 
 Add `-v` to enable verbose output, which will show the repository that provides each package.
 
+#### Show all available versions of a package
+
+Show all possible versions of a package (including duplicates):
+
+```
+$ dnf list --showduplicates google-cloud-cli-gke-gcloud-auth-plugin
+Last metadata expiration check: 0:20:54 ago on Wed 21 Sep 2022 10:55:57 BST.
+Available Packages
+google-cloud-cli-gke-gcloud-auth-plugin.x86_64                             371.0.0-1                              google-cloud-cli
+google-cloud-cli-gke-gcloud-auth-plugin.x86_64                             372.0.0-1                              google-cloud-cli
+google-cloud-cli-gke-gcloud-auth-plugin.x86_64                             373.0.0-1                              google-cloud-cli
+```
+
 #### Search but exclude a specific repository
 
     yum search <package> --disablerepo=ius
@@ -46,6 +59,14 @@ Add `-v` to enable verbose output, which will show the repository that provides 
 
 ```
 $ dnf install <spec> # Where spec can be a package-spec, @module-spec or @group-spec
+```
+
+#### Install a package only from one repository
+
+If a package exists in more than one repository, but you only want to install it from a specific repository. For example, you might want to install only from the "fedora" repository, and not from any others:
+
+```
+$ dnf install kubernetes-client --repo fedora
 ```
 
 #### Remove a package
@@ -137,10 +158,11 @@ $ dnf config-manager --set-disabled my-repo-id
 
 ### Finding and inspecting packages
 
-#### Which packages which provide a given file? with _yum_
+#### Which packages provide a given command?
 
 ```
-yum provides "*bin/top"
+$ dnf provides /usr/bin/kubectl
+$ yum provides "*bin/top"
 ```
 
 #### Which files are included in a package? 
