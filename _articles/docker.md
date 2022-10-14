@@ -5,22 +5,16 @@ title: Docker
 
 {% include toc.html %}
 
-## Installing Docker on Fedora
+## Getting started
+
+### Installing Docker and Docker Compose on Debian
+
+Install the docker and docker-compose packages and add yourself to the docker group (so you can control docker without _sudo_):
 
 ```
-$ sudo dnf install -y docker origin-clients
-
-# (Optional) Add yourself into the `docker` user group to avoid needing sudo
-$ sudo groupadd docker && sudo gpasswd -a ${USER} docker && sudo systemctl restart docker
-$ sudo systemctl start docker
-
-# Then in `/etc/containers/registries.conf`, add 172.30.0.0/16 to `registries.insecure`
-
-$ newgrp docker
-$ oc cluster up
+sudo apt install -y docker docker-compose
+sudo usermod -aG docker $USER
 ```
-
-Also see: <https://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-docker-in-centos-fedora-or-rhel/>
 
 ## Simple demos
 
@@ -54,6 +48,24 @@ ps -ef | grep mongo
 # But the container can only see itself
 docker exec $CONTAINER_ID ps -ef
 # should just show 1 x mongodb instance....
+```
+
+## Operations
+
+### Where does Docker store its logs?
+
+Find out your current Docker daemon's log configuration:
+
+```
+$ docker info --format '{{.LoggingDriver}}'
+json-file
+```
+
+Find the log file for a specific container:
+
+```
+$ docker inspect <container_name> | grep LogPath
+        "LogPath": "/var/lib/docker/containers/ddd968988...7643e96/ddd968988...7643e96-json.log",
 ```
 
 ## Cookbook
@@ -106,6 +118,14 @@ Filesystem               Size  Used Avail Use% Mounted on
 /dev/mapper/fedora-root   49G   37G   11G  79% /
 ```
 
+### Find all the JSON container log files
+
+Assuming a default install with the log file path in /var/lib/docker/containers, find all of the log files and their sizes with:
+
+```
+sudo find /var/lib/docker/containers -name '*.log' | xargs ls -al
+```
+
 ## Troubleshooting
 
 Why did a container exit unexpectedly?
@@ -118,3 +138,10 @@ Why did a container exit unexpectedly?
 _"docker: Error response from daemon: cgroups: cgroup mountpoint does not exist: unknown."_
 
 - Docker requires cgroups v1, but Fedora 31+ uses cgroups v2.
+
+Why is my disk filling up but my container appears small?
+
+- Your container log files might be enormous.
+- Check the size of your log files and `truncate` the ones you're not bothered about.
+- Also set up log file max sizes in your Docker Compose file.
+

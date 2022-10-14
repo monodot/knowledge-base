@@ -88,6 +88,39 @@ To **install** a version of Ruby (if the desired version is missing from the lis
 
 ## Developing with Ruby
 
+### Methods 
+
+#### Methods with named arguments
+
+Ruby 2.1 introduced _required keyword arguments_, which are defined with a trailing colon. [^3]
+
+This method `write` has 3 required keyword arguments, `file`, `data` and `mode`. [^2]
+
+```
+def write(file:, data:, mode: "ascii")
+end
+```
+
+It can be called like this:
+
+```
+write(data: 123, file: "test.txt")
+```
+
+### Cheatsheet
+
+- `:foo` - identifier with a colon in front of it. This references a _symbol_ named foo. Symbols are unlike strings, in that they are immutable. [^1]
+
+#### Logging
+
+```ruby
+require 'logger'
+
+STDOUT.sync = true  # optional
+LOGGER = Logger.new(STDOUT)
+LOGGER.info("HENLO HENLO")
+```
+
 ### Debugging with a REPL
 
 You can start a REPL session while your program is running, to inspect/print variables, etc.
@@ -97,6 +130,9 @@ Just add the following lines where you want the REPL session to start:
 ```
 require 'irb'
 binding.irb
+
+# Ctrl+D to exit the REPL, or do this to terminate the process completely:
+exec ("kill -9 #{$$}")
 ```
 
 ## Package management with `gem`
@@ -157,3 +193,7 @@ To update all dependencies to the latest version allowed:
 
 
 [rvm]: https://rvm.io/
+
+[^1]: https://stackoverflow.com/questions/6337897/what-is-the-colon-operator-in-ruby
+[^2]: https://www.rubyguides.com/2018/06/rubys-method-arguments/
+[^3]: https://thoughtbot.com/blog/ruby-2-keyword-arguments

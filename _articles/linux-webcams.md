@@ -115,7 +115,9 @@ _"make: *** /lib/modules/3.3.4-5.fc17.x86_64/build: No such file or directory.  
 
 - The video driver install script runs _make_ which requires access to the Linux source code.
 - The directory shown in the error message might exist, but it might be a symlink to a non-existent directory.
+- For example, the symlink might point to a version of the kernel which is not installed.
 - Make sure you've installed `kernel-devel`, which installs the Linux kernel source code.
+- Make sure you've updated `kernel` and `kernel-core` to the same version of `kernel-devel`.
 
 ## Using a DSLR as a camera in OBS Studio (and other apps) on Fedora
 

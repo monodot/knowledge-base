@@ -76,6 +76,17 @@ HELLO
 
 ## Cookbook
 
+### Rates
+
+- Use **irate** for volatile, fast-moving counters
+- Use **rate** for alerts and slow-moving counters
+
+From a counter of HTTP requests, get the per-second rate of HTTP requests, measured over the last 5 minutes:
+
+```
+rate(http_requests_total{job="api-server"}[5m])
+```
+
 ### Alert queries
 
 #### Predict a node's free disk space in X hours

@@ -5,6 +5,8 @@ title: Systemd
 
 ## Paths and locations
 
+For the full up-to-date list of paths searched by _systemd_, see `man 5 systemd.unit`, and see the list of System Unit Search Paths and User Unit Search Paths.
+
 ### System unit files
 
 To manually add a new unit file (i.e. a new service that you want systemd to manage), add it into `/etc/systemd/system`, e.g.:
@@ -12,6 +14,13 @@ To manually add a new unit file (i.e. a new service that you want systemd to man
 ```
 /etc/systemd/system/isso.service
 ```
+
+### User unit search paths
+
+Some places to put user-level units:
+
+- ~/.config/systemd/user.control/
+- ~/.config/systemd/user/
 
 ## Cookbook
 
