@@ -224,7 +224,13 @@ kubectl attach my-pod --container main-app -it
 ### Start a pod with curl installed
 
 ```
-kubectl run curl --image=radial/busyboxplus:curl -i --tty
+kubectl -n gel-helm run curl -it --image=curlimages/curl -- sh
+```
+
+Or using the Red Hat UBI image (containerised RHEL, basically):
+
+```
+kubectl run my-little-debug-pod -it --attach --image docker.io/redhat/ubi8 --command sh --restart=Never --rm
 ```
 
 ### Network tests (curl, ping, etc.)
@@ -269,4 +275,3 @@ Some pods can't reach the internet... "dial tcp: lookup xxx.example.com on 10.43
 - **Look at the IP of kube-dns.** `kubectl get svc kube-dns -n kube-system` should show the IP (e.g. 10.43.0.10).
 - **Look at the kube-dns logs.** Find the kube-dns pod and see whether it's struggling to look up DNS entries (e.g. "AAAA: read udp 10.42.0.3:54383->1.1.1.1:53: read: no route to host")
 - These should give you some clue where the problem is. Perhaps you need to add firewall rules?
-- 
