@@ -41,3 +41,12 @@ Log on to a cluster:
 gcloud container clusters get-credentials my-pet-cluster --zone us-central1-c --project my-corporate-department
 ```
 
+## Container registry
+
+Authenticate to the container registry with podman: [^1]
+
+```bash
+gcloud auth print-access-token | podman login -u oauth2accesstoken --password-stdin XX.gcr.io
+```
+
+[^1]: https://stackoverflow.com/questions/63790529/authenticate-to-google-container-registry-with-podman
