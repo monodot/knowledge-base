@@ -49,6 +49,91 @@ $ VBoxManage modifyvm CentOS-6.5-i386-minimal --natpf1 "http,tcp,,8080,,80"
 
 Then you can SSH from the Host to the Guest using `ssh -p 3022 root@127.0.0.1`
 
+## Using VirtualBox to create a Linux VM with a graphical desktop
+
+We'll install a desktop environment, use a VNC server to bootstrap the desktop environment, and then connect to it.
+
+1.  First initialise a **Debian** VM in VirtualBox:
+
+    ```shell
+    mkdir -p ~/vms/debian && cd ~/vms/debian
+
+    cat <<EOF > Vagrantfile
+    Vagrant.configure("2") do |config|
+    config.vm.box = "debian/bullseye64"
+    config.vm.network "private_network", type: "dhcp"
+    end
+    EOF
+
+    vagrant up
+
+    vagrant ssh
+    ```
+
+1.  Install a desktop environment:
+
+    1.  To use [Xfce][xfce]:
+
+        - Display manager: `lightdm`
+        - Desktop environment: `xfce4`
+        - Display server/protocol: `xorg`
+
+        ```shell
+        sudo apt-get update
+        sudo apt-get install -y xorg xfce4 xfce4-goodies
+        ```
+
+    2.  To use GNOME:
+
+        - Display manager: `gdm3`
+        - Desktop environment: `gnome`
+        - Display server/protocol: `xorg`
+
+        ```shell
+        sudo apt-get update
+        sudo apt-get install -y xorg gnome gnome-shell
+        ```
+
+1.  Install a VNC server and start it:
+
+    ```shell
+    sudo apt install -y tightvncserver
+
+    vncserver :1 -geometry 1024x768
+    ```
+
+    You'll be prompted for a password. Enter one, and then confirm it.
+
+1.  On the host workstation, connect to the desktop (here's an example using Fedora because that's my host OS):
+
+    ```shell
+    sudo dnf install tigervnc
+
+    # Show the IP address for eth0 (the host-only network)
+    vagrant ssh -c 'ip addr show eth1' | grep 'inet ' | awk '{print $2}' | cut -d/ -f1
+    # e.g. 192.168.56.3
+
+    vncviewer 192.168.56.3::5901
+    ```
+
+1.  When finished, terminate the VNC server in the guest VM:
+
+    ```shell
+    vncserver -kill :1
+    ```
+
+☃
+
+### Useful hints
+
+- At any time you can see the default display manager that will be used (e.g.`lightdm`):
+
+    ```
+    $ cat /etc/X11/default-display-manager
+    /usr/sbin/lightdm
+    ```
+
+
 ## Troubleshooting
 
 | Problem | Cause | Solution |
@@ -58,3 +143,4 @@ Then you can SSH from the Host to the Guest using `ssh -p 3022 root@127.0.0.1`
 Then, in VirtualBox network preferences, _"failed to open /dev/vboxnetctl: No such file or directory"_ | The system/kernel was recently updated which affected VirtualBox drivers. | On OSX, run: <code>sudo /Library/StartupItems/VirtualBox/VirtualBox restart</code> to restart VirtualBox services, then recreate the host-only network <code>vboxnet0</code> from within Preferences. |
 | Doesn't work in OS X High Sierra | | Follow the instructions at <https://developer.apple.com/library/archive/technotes/tn2459/_index.html> |
 
+[xfce]: https://www.xfce.org/
