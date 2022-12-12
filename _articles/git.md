@@ -147,9 +147,9 @@ Check out a tag:
 git checkout tags/<tag_name> -b <branch_name>
 ```
 
-## Merging
+## Merging and rebasing
 
-Merging changes from the development branch into master, and squashing the intermediate commits:
+**Merge** changes from the development branch into master, and squashing the intermediate commits:
 
 ```
 git checkout master
@@ -157,11 +157,22 @@ git merge --squash develop
 git commit
 ```
 
-Merging changes from origin's `master` branch into your local development branch:
+**Merge** changes from origin's `master` branch into a public or shared development branch:
 
 ```
 git checkout my-branch-name
 git fetch origin
+git merge origin/master
+```
+
+Or, use **rebase**, if:
+
+- Your branch is local only, and hasn't been pushed to `origin`.
+
+**Rebase:** 
+
+```
+git checkout my-feature-branch
 git merge origin/master
 ```
 

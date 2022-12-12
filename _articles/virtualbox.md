@@ -99,7 +99,7 @@ We'll install a desktop environment, use a VNC server to bootstrap the desktop e
     ```shell
     sudo apt install -y tightvncserver
 
-    vncserver :1 -geometry 1024x768
+    vncserver :1 -geometry 1920x1080
     ```
 
     You'll be prompted for a password. Enter one, and then confirm it.
@@ -109,7 +109,7 @@ We'll install a desktop environment, use a VNC server to bootstrap the desktop e
     ```shell
     sudo dnf install tigervnc
 
-    # Show the IP address for eth0 (the host-only network)
+    # Show the IP address for eth1
     vagrant ssh -c 'ip addr show eth1' | grep 'inet ' | awk '{print $2}' | cut -d/ -f1
     # e.g. 192.168.56.3
 
@@ -133,6 +133,12 @@ We'll install a desktop environment, use a VNC server to bootstrap the desktop e
     /usr/sbin/lightdm
     ```
 
+- In Debian: Create a new user account (for logging in to the box):
+
+    ```shell
+    sudo adduser --gecos "" tom
+    sudo usermod -aG sudo tom
+    ```
 
 ## Troubleshooting
 

@@ -74,6 +74,22 @@ stringData:
 HELLO
 ```
 
+## Scraping metrics
+
+### Listing metrics from an existing app
+
+If you're running an application which already exposes metrics for Prometheus, and you want to see which metrics are exposed.
+
+For example, for [Loki](loki.html) which runs on port 3100:
+
+```shell
+# 
+kubectl port-forward loki-pod-name 3101:3100
+
+# Then fetch the metrics endpoint - usually at /metrics
+curl localhost:3101/metrics
+```
+
 ## Cookbook
 
 ### Rates
