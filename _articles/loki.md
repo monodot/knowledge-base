@@ -3,7 +3,7 @@ layout: page
 title: Loki
 ---
 
-Loki is a time series database for strings; written in Go, and inspired by Prometheus. It's suited to aggregating and searching logs.
+Loki is a time series database for strings, written in Go, and inspired by [Prometheus][prometheus]. It is designed for aggregating and searching logs.
 
 {% include toc.html %}
 
@@ -13,17 +13,16 @@ Loki is a time series database for strings; written in Go, and inspired by Prome
 - Loki exposes an HTTP API for pushing, querying and tailing log data.
 - Loki stores logs as strings exactly how they were created, and indexes them using _labels_.
 - Loki is usually combined with _agents_ such as Promtail, which turn log lines into _streams_ and push them to the Loki HTTP API.
-- You can combine Loki with Prometheus _Alertmanager_ to send send notifications when things happen.
+- You can combine Loki with Prometheus _Alertmanager_ to send notifications when things happen.
 
 ### Terminology
 
 - Logs are grouped into **streams**, which are indexed with **labels**.
 - A **log stream** is a combination of a **log source + a unique set of labels**.
   - A set of log entries with the same labels applied, and grouped together.
-- **Tenant** is a user in Loki. 
+- A **tenant** is a user in Loki. 
   - Loki runs in multi-tenant mode by default. This means that requests and data from tenant A are isolated from tenant B. [^3]
   - To disable multi-tenancy, set `auth_enabled: false` in the config file.
-  - 
 
 ### Use cases
 
@@ -48,58 +47,9 @@ cd grafana-demos/loki-basic
 podman-compose up -d
 ```
 
-## Clients
-
-How to get data into Loki:
-
-- Promtail
-- Grafana Agent
-- Log4J
-- Logstash
-
 ## Configuration
 
-### Storage
 
-Loki has a few different storage options.
-
-- Object storage
-
-- File system storage
-
-| *Data type* | *Storage type* | *Info* |
-| ----------- | -------------- | ------ |
-| Chunk store | `filesystem` | ... |
-| Chunk | Bigtable | ... |
-
-
-### Retention
-
-- Retention in Loki is achieved through the Table Manager or the Compactor. [^2]
-  - For the Table Manager, you need to configure a TTL on your object store (e.g. Minio, AWS S3)
-  - For the Compactor, retention is only supported when using boltdb-shipper (a.k.a. single-store Loki)
-- Loki doesn't delete old chunk stores, unless you're using the `filesystem` chunk store type.
-- To enable Loki to auto-delete old data, you need to configure a **retention duration**.
-
-The BoltDB Shipper includes a component called the Compactor:
-
-- If you're using the **boltdb-shipper** store, you can configure the _Compactor_ to perform retention.
-- If you're using the _Compactor_, you don't need to also configure the _Table Manager_.
-
-Some sample log output from the compactor:
-
-```
-level=info ts=2022-10-26T10:53:33.938957622Z caller=table.go:297 table-name=index_19291 msg="starting compaction of dbs"
-level=info ts=2022-10-26T10:53:33.939192532Z caller=table.go:307 table-name=index_19291 msg="using compactor-1666779684.gz as seed file"
-level=info ts=2022-10-26T10:53:34.896614531Z caller=util.go:116 table-name=index_19291 file-name=compactor-1666779684.gz msg="downloaded file" total_time=957.203888ms
-level=info ts=2022-10-26T10:53:34.905190561Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666780200.gz msg="downloaded file" total_time=4.612842ms
-level=info ts=2022-10-26T10:53:34.910608485Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666779300.gz msg="downloaded file" total_time=12.883266ms
-level=info ts=2022-10-26T10:53:34.917018576Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666781006.gz msg="downloaded file" total_time=13.412156ms
-level=info ts=2022-10-26T10:53:34.919466949Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666780721.gz msg="downloaded file" total_time=18.015007ms
-level=info ts=2022-10-26T10:53:35.184416949Z caller=util.go:136 msg="compressing the file" src=/loki/compactor/index_19291/compactor-1666779684.gz dest=/loki/compactor/index_19291/compactor-1666779684.gz.gz
-level=info ts=2022-10-26T10:53:36.230758123Z caller=index_set.go:281 table-name=index_19291 msg="removing source db files from storage" count=5
-level=info ts=2022-10-26T10:53:36.239174627Z caller=compactor.go:557 msg="finished compacting table" table-name=index_19291
-```
 
 #### Using Google Cloud Storage as a backend
 
@@ -178,11 +128,11 @@ kubectl -n ${NAMESPACE} set sa sts/ge-logs ${KUBE_SA_NAME}
 
 ### Components
 
-For optional scalability, Loki components are grouped into **write** and **read** components and can be started using the `-target=write|read` CLI option:
+For maximum scalability, Loki components are grouped into **write** and **read** components and can be started using the `-target=write|read` CLI option:
 
 | *Component* | *Included in target* | *What it does* |
 | ----------- | ------ | -------------- |
-| compactor | read | |
+| compactor | TBC | |
 | distributor | write | |
 | ingester | write | Also includes the WAL (Write-Ahead Log). |
 | ingester-querier | read | |
@@ -191,20 +141,124 @@ For optional scalability, Loki components are grouped into **write** and **read*
 | query-scheduler | read | |
 | ruler | read | Continually evaluates a set of queries, and performs an action based on the result, i.e. alerting rules and recording rules. Useful for sending alerts, or precomputing expressions that are computationally expensive to run. |
 | usage-report | read | aka Table Manager |
-| gateway | TBC | ... |
-| memcached | TBC | Memcached, memcached-frontend, memcached-index-queries |
-| gel-admin-api | TBC | ... |
+| gateway |  N/A | ... |
+| memcached | N/A | Memcached, memcached-frontend, memcached-index-queries |
+| gel-admin-api | N/A | ... |
+| index-gateway | N/A | (Optional) Downloads and synchronizes the BoltDB index from the object store, to serve to queriers and rulers. |
 
-### Scalability
+### Clients
 
-<!-- - Prefer object stores (e.g. S3) as a backend. -->
+How to get data into Loki:
+
+- Promtail
+- Grafana Agent
+- Log4J
+- Logstash
+
+## Storage
+
+Loki needs to store the following data:
+
+- **Indexes** - The index stores each stream’s label set and links them to the individual chunks. [^4] Usually stored in a key/value store.
+- **Chunks** - The actual log data. Usually stored in an object store. 
+
+Available storage types:
+
+| *Data to be stored* | *Storage type* | *Info* | *Config* |
+| ----------- | -------------- | ------ | -------- |
+| Indexes | boltdb-shipper | Stores indexes as BoltDB files, and ships them to a shared object store (usually the same object store that stores chunks). | `store: boltdb-shipper` |
+| "" | Apache Cassandra | Open source NoSQL distributed database. | `store: cassandra` |
+| "" | AWS DynamoDB | Cloud NoSQL database from Amazon. | `store: aws-dynamo` |
+| "" | Google Bigtable | Cloud NoSQL database on GCP. | `store: bigtable` |
+| "" | BoltDB | (Legacy) BoltDB was a key/value store for Go. | `store: boltdb` |
+| Chunks | Bigtable | ... | `object_store: bigtable` |
+| "" | Cassandra | ... | `object_store: cassandra` |
+| "" | DynamoDB | ... | `object_store: aws-dynamo`?? |
+| "" | GCS | Google Cloud Storage. | `object_store: gcs` |
+| "" | S3 | Amazon S3. | `object_store: aws` |
+| "" | Swift | OpenStack Swift. | `object_store: swift` |
+| "" | Azure Blob Storage | ... | `object_store: azure` |
+| "" | Filesystem | ... | `object_store: filesystem` |
+
+### Storage configuration example
+
+Here's an example of configuring the storage for Loki using the `boltdb-shipper` storage type:
+
+```yaml
+schema_config:
+  configs:
+    - from: 2020-10-24
+      # Which store to use for the indexes. aws, aws-dynamo, gcp, bigtable, boltdb-shipper...
+      store: boltdb-shipper
+      # Which store to use for the chunks. aws, azure, gcp, bigtable, gcs, cassandra, swift or filesystem.
+      # Note that filesystem is not recommended for production.
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        # Retention feature is only available if the index period is 24h.
+        period: 24h
+```
+
+### BoltDB Shipper
+
+- "Single Store" Loki, also known as **boltdb-shipper**, uses one store for both chunks **and** indexes.
+- When you use this storage type, Loki stores the index in BoltDB files, and ships them to a shared object store (usually the same object store that stores chunks).
+- Loki will keep syncing the index files from the object store to the local disk. This allows Loki to fetch index entries created by other services in the cluster. [^5]
+
+### TSDB Shipper
+
+From Loki 2.7+.
+
+### Index Gateway (for BoltDB-Shipper or TSDB-Shipper)
+
+When using BoltDB-Shipper, if you want to avoid running Queriers and Rulers with a persistent disk, you can run an Index Gateway. This synchronises the indexes from the object store and serves them to the Queriers and Rulers over gRPC:
+
+<object type="image/svg+xml" data="/assets/diagrams/loki_boltdb_shipper.excalidraw.svg"></object>
 
 
-## Using Loki
+## Operations
+
+### Retention
+
+- Retention in Loki is achieved through the Table Manager or the Compactor. [^2]
+  - For the Table Manager, you need to configure a TTL on your object store (e.g. Minio, AWS S3)
+  - For the Compactor, retention is only supported when using boltdb-shipper (a.k.a. single-store Loki)
+- Loki doesn't delete old chunk stores, unless you're using the `filesystem` chunk store type.
+- To enable Loki to auto-delete old data, you need to configure a **retention duration**.
+
+The BoltDB Shipper includes a component called the Compactor:
+
+- If you're using the **boltdb-shipper** store, you can configure the _Compactor_ to perform retention.
+- If you're using the _Compactor_, you don't need to also configure the _Table Manager_.
+
+Some sample log output from the compactor:
+
+```
+level=info ts=2022-10-26T10:53:33.938957622Z caller=table.go:297 table-name=index_19291 msg="starting compaction of dbs"
+level=info ts=2022-10-26T10:53:33.939192532Z caller=table.go:307 table-name=index_19291 msg="using compactor-1666779684.gz as seed file"
+level=info ts=2022-10-26T10:53:34.896614531Z caller=util.go:116 table-name=index_19291 file-name=compactor-1666779684.gz msg="downloaded file" total_time=957.203888ms
+level=info ts=2022-10-26T10:53:34.905190561Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666780200.gz msg="downloaded file" total_time=4.612842ms
+level=info ts=2022-10-26T10:53:34.910608485Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666779300.gz msg="downloaded file" total_time=12.883266ms
+level=info ts=2022-10-26T10:53:34.917018576Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666781006.gz msg="downloaded file" total_time=13.412156ms
+level=info ts=2022-10-26T10:53:34.919466949Z caller=util.go:116 table-name=index_19291 file-name=loki-658f65f74-ktrb8-1666624278963029120-1666780721.gz msg="downloaded file" total_time=18.015007ms
+level=info ts=2022-10-26T10:53:35.184416949Z caller=util.go:136 msg="compressing the file" src=/loki/compactor/index_19291/compactor-1666779684.gz dest=/loki/compactor/index_19291/compactor-1666779684.gz.gz
+level=info ts=2022-10-26T10:53:36.230758123Z caller=index_set.go:281 table-name=index_19291 msg="removing source db files from storage" count=5
+level=info ts=2022-10-26T10:53:36.239174627Z caller=compactor.go:557 msg="finished compacting table" table-name=index_19291
+```
+
 
 ### Multitenancy
 
-- X-Scope-OrgID
+Loki supports multitenancy, which means that you can have multiple tenants (i.e. users) in the same Loki cluster. Each tenant has its own set of labels, and can only see logs that have been written by itself.
+
+The HTTP header is `X-Scope-OrgID` and the CLI flag is `--org-id`.
+
+Example logcli:
+
+```
+logcli query --org-id=1234 '{app="foo"}'
+```
 
 
 ### Labels and indexing
@@ -212,13 +266,6 @@ For optional scalability, Loki components are grouped into **write** and **read*
 - Don't add lots of labels unless you really need them.
 
 - Prefer labels that describe the **topology/source** of your app/setup, e.g. _region_, _cluster_, _application_, _host_, _pod_, _environment_, etc. [^1]
-
-### Storage and retention
-
-Loki needs a place to store **chunks** and **indexes**.
-
-- "Single Store" Loki, also known as _boltdb-shipper_, uses one store for both chunks **and** indexes.
-- You can configure separate stores for chunks and indexes if you prefer.
 
 ## Cookbook
 
@@ -308,4 +355,7 @@ curl -v http://loki:8100/loki/api/v1/push
 [^1]: <https://grafana.com/go/webinar/getting-started-with-logging-and-grafana-loki/>
 [^2]: <https://grafana.com/docs/loki/latest/operations/storage/retention/>
 [^3]: <https://grafana.com/docs/loki/latest/operations/multi-tenancy/>
+[^4]: <https://grafana.com/docs/loki/latest/operations/storage/>
+[^5]: <https://grafana.com/docs/loki/latest/operations/storage/boltdb-shipper/>
 
+[prometheus]: {% link _articles/prometheus.md %}
