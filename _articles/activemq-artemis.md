@@ -3,6 +3,8 @@ layout: page
 title: ActiveMQ Artemis
 ---
 
+Artemis is a JMS 2.0 compliant message broker, and the successor to [ActiveMQ][activemq] 5.x (sometimes called ActiveMQ Classic).
+
 {% include toc.html %}
 
 ## Documentation
@@ -75,17 +77,6 @@ Large messages are handled differently by the broker:
 - A core bridge isn't the same as a JMS bridge; and it doesn't use the JMS API.
 - Core bridges use duplicate detection to guarantee once and only once delivery of messages across the bridge.
 
-### High availability
-
-Failover:
-
-- To properly test failover, you should kill the server abruptly, not gracefully, e.g.: `kill -9 <JAVA_PID>`
-
-Relevant settings:
-
-- `failover-on-shutdown=true` - in a shared-storage topology, this causes failover to be triggered when a server is gracefully shut down
-- `check-for-live-server=true` -
-
 ## Scalability
 
 ### Clustering (active-active brokers)
@@ -98,7 +89,17 @@ Relevant settings:
 
 ## High Availability & Disaster Recovery
 
-### Considerations for HA/DR
+### Relevant settings
+
+- `failover-on-shutdown=true` - in a shared-storage topology, this causes failover to be triggered when a server is gracefully shut down
+- `check-for-live-server=true` -
+
+### Testing failover
+
+- To properly test failover, you should kill the server abruptly, not gracefully, e.g.: `kill -9 <JAVA_PID>`
+
+
+### General considerations for HA/DR
 
 For **message availability**:
 
@@ -107,15 +108,15 @@ For **message availability**:
 - On Kubernetes: Using a liveness probe and restarting the broker Pod
   - There is no Master/Slave topology on Kubernetes, so no need for a shared file system (because only one Pod will access the Journal at once).
   - High availability is achieved by starting a replacement Pod when a broker fails. Broker failure is detected by a liveness probe in Kubernetes.
-  - Downtime = time for liveness probe to detect failure + time to restart the Pod + time to load the journal
+  - Total downtime = time for liveness probe to detect failure + time to restart the Pod + time for the new Pod to load the journal
 
 For **disaster recovery** (e.g. complete failure of a data centre):
 
-- Mirroring.
+- [Mirroring][mirroring].
   - Mirroring copies messages **asynchronously** to the broker on the recovery site (e.g. in another data centre).
   - **Async** mirroring means that some messages may be duplicated or lost entirely.
-  - Clients will not automatically fail over to the DR broker.
-  - Downtime = manual effort required to start new broker and re-point clients to the new broker (minutes/hours?) + time to read the journal files
+  - Clients will not automatically fail over to the <abbr title="Disaster Recovery">DR</abbr> broker, so you will need to manually re-point them to the new broker.
+  - Total downtime = manual effort required to start the  broker and re-point clients to the new broker (minutes/hours?) + time to read the journal files
 
 ## Configuration
 
@@ -189,7 +190,7 @@ Messages being delivered to an address **exceed its configured size**:
 - Look at `max-size-bytes` to change the queue size in memory.
 - Alternatively, look at **blocking producer flow control**: set `address-full-policy=BLOCK` to block producers when `max-size-bytes` is reached.
 
-## Benchmarks
+### Benchmarks
 
 Here are the some sample benchmarks **for message sending** (Camel=>ActiveMQ Artemis), executed in Mar 2020.
 
@@ -325,3 +326,5 @@ _"constructor threw exception; nested exception is java.lang.NoClassDefFoundErro
 
 [ArtemisXAConnectionFactoryConfiguration]: https://github.com/spring-projects/spring-boot/blob/v1.5.19.RELEASE/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jms/artemis/ArtemisXAConnectionFactoryConfiguration.java
 [artemis260docs]: https://activemq.apache.org/components/artemis/documentation/2.6.0
+[activemq]: {% link _articles/activemq.md %}
+[mirroring]: https://activemq.apache.org/components/artemis/documentation/latest/amqp-broker-connections.html#mirroring

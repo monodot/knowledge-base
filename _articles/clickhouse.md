@@ -3,7 +3,44 @@ layout: page
 title: Clickhouse
 ---
 
-## Some examples
+Clickhouse is a columnar database used by [Plausible Analytics][plausible].
+
+## Administration
+
+### Run the Clickhouse CLI
+
+Jump inside your Clickhouse container:
+
+```shell
+# Podman....
+$ podman exec -it clickhouse sh
+# Kubernetes....
+$ kubectl exec -it clickhouse-0 -- sh
+```
+
+Once inside the container, run the Clickhouse cli:
+
+```shell
+clickhouse-client --user USER --password PASSWORD --database DATABASE
+```
+
+### Back up Clickhouse
+
+Back up Clickhouse data (TODO):
+
+```
+# BACKUP TABLE events TO S3('https://backups.s3.amazonaws.com/backup-S3/clickhouse_backup', 'xxxxxxxxx', 'xxxxxxx')
+
+# clickhouse-client --query="SELECT * FROM plausible_dev.events FORMAT TSVWithNames" > /var/lib/clickhouse/plausible_dev.events.tsv
+
+# clickhouse-client --query="SELECT * FROM plausible_dev.schema_migrations FORMAT TSVWithNames" > /var/lib/clickhouse/plausible_dev.schema_migrations.tsv
+
+# clickhouse-client --query="SELECT * FROM plausible_dev.sessions FORMAT TSVWithNames" > /var/lib/clickhouse/plausible_dev.sessions.tsv
+```
+
+## Examples
+
+### Run Clickhouse, view users
 
 Run Clickhouse in a container and find out which users are available:
 
@@ -66,3 +103,14 @@ Query id: b625acfc-d7fc-4534-8811-8227832ef12d
 1 rows in set. Elapsed: 0.004 sec.
 ```
 
+### Restore Clickhouse
+
+Restore Clickhouse data:
+
+```shell
+$ podman exec -it clickhouse sh
+
+# TODO
+```
+
+[plausible]: {% link _articles/plausible.md %}

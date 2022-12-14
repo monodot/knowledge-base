@@ -3,7 +3,7 @@ layout: page
 title: ActiveMQ
 ---
 
-This page is about the legacy ActiveMQ (ActiveMQ Classic / 5.x).
+This page is about the legacy ActiveMQ (ActiveMQ Classic / 5.x). For the new ActiveMQ Artemis, see [ActiveMQ Artemis][artemis].
 
 ## Developing
 
@@ -27,3 +27,5 @@ Spring Boot: _"Error creating bean with name 'cachingJmsConnectionFactory'"_ due
 
 - Spring Boot is trying to do something with the JMS 2.0 API (`JMSContext` is part of JMS 2)
 - Migrate to Artemis or override Spring Boot's autoconfiguration.
+
+[artemis]: {% link _articles/activemq-artemis.md %}
