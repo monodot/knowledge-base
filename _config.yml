@@ -16,7 +16,7 @@
 title: "Tom's Knowledge Base"
 description: Tom Donohue's place for tech summaries and code snippets.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://kb.monodot.co.uk" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://kb.tomd.xyz" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: monodot
 github_username:  monodot
 
