@@ -17,6 +17,9 @@ The package manager.
 
 - **Modules** in dnf are _package groups representing an application, language runtime or set of tools._ - e.g. `node`, `nginx`, `maven`, `mariadb`, `ruby`, `perl`.
 
+  - Each module can be released in a number of **streams**. A stream is a "virtual repository".
+  - Only one stream of a particular module can be _active_ at a given time. [^1]
+
 - **Groups** are virtual collections of packages, e.g.:
 
   - `@c-development` - group containing C Development stuff including `gcc-c++`.
@@ -264,7 +267,9 @@ unknown 2020-12-02 18:26 nano-default-editor-5.3-4.fc33.noarch
 $ dnf module list
 ```
 
-#### List the modules that are enabled (installed)
+#### List the modules that are enabled
+
+**NB: 'enabled' is not the same as 'installed'!** An enabled module is one that is available to be installed, but it may not be installed yet. Only one module stream can be enabled at a time.
 
 ```
 $ dnf module list --enabled
@@ -290,6 +295,16 @@ Disable the _gimp_ module:
 
 ```
 $ dnf module disable gimp
+```
+
+#### Switch a module to a different version
+
+For example, CentOS Stream enables the `nodejs:10` module by default. If you want to switch to `nodejs:18`, you can do so with:
+
+```
+dnf module reset nodejs
+
+dnf module install nodejs:18/common
 ```
 
 ### Groups
@@ -378,3 +393,5 @@ Error: rpmdb open failed
 
 - This error seems to happen randomly. The yum package database is corrupt?
 - Move the corrupt database and get the server to rebuild it: `mv /var/lib/rpm/__db* /tmp && rpm --rebuilddb && yum upgrade`
+
+[^1]: https://dnf.readthedocs.io/en/latest/modularity.html

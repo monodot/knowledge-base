@@ -233,6 +233,22 @@ Or using the Red Hat UBI image (containerised RHEL, basically):
 kubectl run my-little-debug-pod -it --attach --image docker.io/redhat/ubi8 --command sh --restart=Never --rm
 ```
 
+### Debug a Deployment with a PVC
+
+Pod not starting? Need to launch a container and step through commands?
+
+```shell
+kubectl scale deploy/mydeploy --replicas=0
+
+# command: [ "/bin/bash", "-c", "--" ]
+# args: [ "while true; do sleep 30; done;" ]
+
+# Get the actual command for the container
+podman inspect --format "entrypoint: {{.Config.Entrypoint}}, cmd: {{.Config.Cmd}}" docker.io/bitnami/ghost:5.26.1
+
+
+```
+
 ### Network tests (curl, ping, etc.)
 
 DNS lookup on internal/external hosts:

@@ -5,7 +5,21 @@ title: Node.js
 
 The Javascripts.
 
-## Installation on Fedora
+## Installation
+
+### Installation on CentOS
+
+```
+dnf module install nodejs:18/common
+```
+
+Troubleshooting: _"The operation would result in switching of module 'nodejs' stream '10' to stream '18'"_
+
+- This might happen because your CentOS enables the nodejs `10` module by default, even if you've not already installed it.
+- `dnf module list --enabled` should confirm this.
+- 
+
+### Installation on Fedora
 
 To install both npm and Node.js, run:
 

@@ -24,18 +24,43 @@ Once inside the container, run the Clickhouse cli:
 clickhouse-client --user USER --password PASSWORD --database DATABASE
 ```
 
+### Dump a table to a TSV file
+
+```shell
+clickhouse-client --user USER --password PASSWORD --database DATABASE --query="SELECT * FROM TABLE FORMAT TSVWithNames" > TABLE.tsv
+```
+
+### Import a TSV file into a table
+
+```shell
+clickhouse-client --user USER --password PASSWORD --database DATABASE --query="INSERT INTO TABLE FORMAT TSVWithNames" < TABLE.tsv
+```
+
 ### Back up Clickhouse
 
-Back up Clickhouse data (TODO):
+First create a user and bucket in AWS:
 
+```shell
+aws iam create-user --user-name clickhouse-backup
+
+# Attach full access for now, we'll tighten this up later
+aws iam attach-user-policy --user-name clickhouse-backup --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+# Create an access key for the user
+aws iam create-access-key --user-name clickhouse-backup
+
+# Create a bucket for backups
+aws s3 mb s3://backups.xxx
 ```
-# BACKUP TABLE events TO S3('https://backups.s3.amazonaws.com/backup-S3/clickhouse_backup', 'xxxxxxxxx', 'xxxxxxx')
 
-# clickhouse-client --query="SELECT * FROM plausible_dev.events FORMAT TSVWithNames" > /var/lib/clickhouse/plausible_dev.events.tsv
+Now drop to a shell on the node (or Pod) where Clickhouse is running:
 
-# clickhouse-client --query="SELECT * FROM plausible_dev.schema_migrations FORMAT TSVWithNames" > /var/lib/clickhouse/plausible_dev.schema_migrations.tsv
+```shell
+clickhouse-client --user $CLICKHOUSE_USER --password $CLICKHOUSE_PASSWORD --database $CLICKHOUSE_DB
 
-# clickhouse-client --query="SELECT * FROM plausible_dev.sessions FORMAT TSVWithNames" > /var/lib/clickhouse/plausible_dev.sessions.tsv
+BACKUP TABLE test.table TO Disk('backups', '1.zip')
+
+BACKUP TABLE events TO S3('https://backups.s3.amazonaws.com/backup-S3/clickhouse_backup', 'xxxxxxxxx', 'xxxxxxx')
 ```
 
 ## Examples

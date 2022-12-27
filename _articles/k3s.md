@@ -3,7 +3,7 @@ layout: page
 title: k3s
 ---
 
-[k3s](https://k3s.io/) is a lightweight Kubernetes distribution "for IoT and Edge Computing":
+[k3s](https://k3s.io/) is a lightweight Kubernetes distribution "for IoT and Edge Computing".
 
 ## Installation
 
@@ -22,7 +22,16 @@ You'll need to be root to interact with the cluster:
 sudo k3s kubectl get node
 ```
 
-## Concepts
+### Uninstalling
+
+Kill, uninstall:
+
+```
+/usr/local/bin/k3s-killall.sh
+/usr/local/bin/k3s-uninstall.sh
+```
+
+## Architecture
 
 DNS:
 
@@ -33,25 +42,34 @@ DNS:
 
 Networking/Ingress:
 
+- **IP addresses:**
+  - Pod IP addresses are allocated from a default CIDR of `10.42.0.0/16` (this can be configured on startup with the `--cluster-cidr` option) [^2]
+  - Service IP addresses are allocated from a default CIDR of `10.43.0.0/16`
+- ServiceLB (formerly known as Klipper) is used for load balancing. It watches Kubernetes Services with the spec.type field set to LoadBalancer. [^3]
 - **ClusterIP service and Ingress:** To expose an app outside the cluster, you can just create a Service of type _ClusterIP_ and expose it with an _Ingress_.
 - **LoadBalancer service:** Alternatively, create a Service of type _LoadBalancer_. This will create a new **klipper** load balancer DaemonSet (`svclb-*`) in the namespace `kube-system`. However, your Service **must** expose a port which isn't already in use. For example, Traefik occupies ports 80 and 443, so pick a different port.
 
 ## Cookbook
 
-Kill, uninstall:
+### Monitoring with Kubernetes Dashboard
 
-```
-/usr/local/bin/k3s-killall.sh
-/usr/local/bin/k3s-uninstall.sh
-```
-
-Adding the Kubernetes Dashboard:
+Add the Kubernetes Dashboard:
 
 ```
 GITHUB_URL=https://github.com/kubernetes/dashboard/releases
 VERSION_KUBE_DASHBOARD=$(curl -w '%{url_effective}' -I -L -s -S ${GITHUB_URL}/latest -o /dev/null | sed -e 's|.*/||')
 sudo k3s kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/${VERSION_KUBE_DASHBOARD}/aio/deploy/recommended.yaml
 ```
+
+### Monitoring with k9s
+
+To run k9s you will need to pass the location of the rancher config file:
+
+```
+k9s --kubeconfig /etc/rancher/k3s/k3s.yaml
+```
+
+## Misc
 
 Some more info about k3s:
 
@@ -78,3 +96,5 @@ Can't seem to use _kubectl_ with any other Kubernetes clusters except k3s: _"err
   - `ln -s /usr/bin/kubectl ~/.local/bin/kubectl`
 
 [^1]: https://github.com/k3s-io/k3s/issues/1541#issuecomment-672099924
+[^2]: https://docs.k3s.io/reference/server-config
+[^3]: https://docs.k3s.io/networking#service-load-balancer
