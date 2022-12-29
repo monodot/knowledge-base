@@ -203,6 +203,8 @@ ARTEMIS_POD=$(kubectl get pod -n keda-demo -l run=artemis --template '{{range .i
 ```
 {% endraw %}
 
+## Troubleshooter's toolkit
+
 ### Create a pod and run a command
 
 ```
@@ -245,11 +247,9 @@ kubectl scale deploy/mydeploy --replicas=0
 
 # Get the actual command for the container
 podman inspect --format "entrypoint: {{.Config.Entrypoint}}, cmd: {{.Config.Cmd}}" docker.io/bitnami/ghost:5.26.1
-
-
 ```
 
-### Network tests (curl, ping, etc.)
+### Run a network test (curl, ping, etc.)
 
 DNS lookup on internal/external hosts:
 
@@ -263,6 +263,32 @@ Ping a server:
 ```
 kubectl run -it --rm --restart=Never busybox --image=busybox:1.28 -- server.example.com
 ```
+
+### View HTTP headers being received by a pod
+
+```
+kubectl -n tmp create deploy echo --image=mendhak/http-https-echo:28
+
+kubectl -n tmp expose deploy echo --port=8080 --target-port=8080
+```
+
+Now create an Ingress to the Service.
+
+### Network packet sniffing with Kubeshark
+
+Kubeshark is a pretty good tool for observing traffic. First install Kubeshark. Then:
+
+```
+kubeshark tap -n <namespace> <pod-name>
+```
+
+If this is a remote cluster, you can create a tunnel to access the Kubeshark console:
+
+```
+ssh -R 80:localhost:8899 nokey@localhost.run
+```
+
+Then visit the web address shown in the output.
 
 ## Troubleshooting
 
