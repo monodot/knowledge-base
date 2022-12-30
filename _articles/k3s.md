@@ -5,6 +5,9 @@ title: k3s
 
 [k3s](https://k3s.io/) is a lightweight Kubernetes distribution "for IoT and Edge Computing".
 
+{% include toc.html %}
+
+
 ## Installation
 
 ```
@@ -31,7 +34,7 @@ Kill, uninstall:
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-## Architecture
+## Networking
 
 DNS:
 
@@ -41,6 +44,8 @@ DNS:
 - Each container uses CoreDNS for DNS resolution, due to  `nameserver <kube-dns Service IP>` in `/etc/resolv.conf`
 
 Networking/Ingress:
+
+<object type="image/svg+xml" data="/assets/diagrams/k3s-networking.excalidraw.svg"></object>
 
 - **IP addresses:**
   - Pod IP addresses are allocated from a default CIDR of `10.42.0.0/16` (this can be configured on startup with the `--cluster-cidr` option) [^2]
