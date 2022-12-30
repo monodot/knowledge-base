@@ -17,7 +17,7 @@ For more info about this site, and why you should start a blog of your own, [che
 
 <ul>
 
-    {% assign pages_list = site.articles | sort:"title" %}
+    {% assign pages_list = site.articles | sort_natural:"title" %}
     {% for page in pages_list %}
     {% unless page.url contains "private/" %}
       {% if page.title %}
