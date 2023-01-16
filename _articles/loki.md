@@ -53,7 +53,7 @@ podman-compose up -d
 
 #### Using Google Cloud Storage as a backend
 
-To use a Google Cloud Storage Bucket to store chunks, you need to provide authentication, which is usually either one of these:
+To use a Google Cloud Storage Bucket to store chunks, you need to provide authentication, which is usually via one of these two methods:
 
 - Application Default Credentials (ADC)
 

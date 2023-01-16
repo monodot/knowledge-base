@@ -3,6 +3,10 @@ layout: page
 title: Apache Camel
 ---
 
+Apache Camel is an integration framework for Java. It allows you to exchange data with applications, in tons of different formats and protocols.
+
+As well as being a rather spiffing framework, it's also a wonderful way to honour the humble camel. Here's a camel for you to say thanks for reading this: 🐪
+
 {% include toc.html %}
 
 ## Component versions

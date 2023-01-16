@@ -5,7 +5,9 @@ title: Tmux - terminal multiplexer
 
 _tmux_ is a terminal multiplexer - it lets you work in multiple terminal (pseudo-)windows, inside the same terminal session.
 
-Terminology:
+It also lets you run a process in the background, and then reattach to it later.
+
+## Basic terminology and setup
 
 - The **prefix key** is the key combination that is always given before issuing a **command** in _tmux_. **Usually the prefix key is Ctrl+b**
 - **Session** is a single collection of terminals under the management of _tmux_.
@@ -22,7 +24,32 @@ Quit a terminal session within Tmux:
 
     <Ctrl+D>
 
-## Tmux basics
+## Run a process and keep it running once logged off
+
+If you want to run a long-running program, and keep it running after you log off, you can use _tmux_ to do this.
+
+```shell
+tmux new -s my-long-process
+```
+
+This will create a new session called `my-long-process`, and you can then run your long-running process within that session.
+
+To detach from the session, and leave it running in the background:
+
+```shell
+Ctrl+b, d
+```
+
+To reattach to the session:
+
+```shell
+tmux list-sessions
+
+tmux attach -t my-long-process
+```
+
+
+## Cookbook
 
 Launch _tmux_:
 

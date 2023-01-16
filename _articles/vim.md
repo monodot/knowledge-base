@@ -5,6 +5,25 @@ title: Vim
 
 My all-time favourite commands for _vim_. Check out these classic hits.
 
+## Installing
+
+### Installing the full version of Vim
+
+**Some Linux distros don't include the full version of VIM by default (the fools!!).**
+
+For example, Fedora only includes `vim-minimal`. You can see this by running:
+
+```shell
+$ rpm -qf /usr/bin/vi
+vim-minimal-9.0.1006-1.fc36.x86_64
+```
+
+This means you don't get additional features like syntax highlighting. To install the full version of Vim on Fedora:
+
+```shell
+sudo dnf install vim-enhanced
+```
+
 ## Formatting
 
 Format/indent/pretty-print an XML document:
