@@ -3,6 +3,8 @@ layout: page
 title: Google Cloud
 ---
 
+{% include toc.html %}
+
 ## Authenticating
 
 ### Application Default Credentials (ADC)
@@ -116,7 +118,12 @@ gcloud projects list
 Because sometimes you might have Network Endpoint Groups hanging around after you've deleted a Kubernetes cluster:
 
 ```shell
-gcloud compute network-endpoint-groups list --filter="network:($VPC_NAME)" --format="csv[no-heading](name,zone)" | while IFS=, read -r name zone ; do gcloud compute network-endpoint-groups delete $name --zone $zone --quiet; done
+gcloud compute network-endpoint-groups list \
+  --filter="network:($VPC_NAME)" \
+  --format="csv[no-heading](name,zone)" \
+  | while IFS=, read -r name zone ; do 
+  echo gcloud compute network-endpoint-groups delete $name --zone $zone --quiet; 
+  done
 ```
 
 ### IAM 

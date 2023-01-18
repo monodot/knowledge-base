@@ -33,5 +33,7 @@ EOF
 cat users.csv | while IFS=, read -r username password ; do echo $username has a password of $password; done
 ```
 
-[ifs]: https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html
+There's an example of this in the [Google Cloud][google-cloud] page.
 
+[ifs]: https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html
+[google-cloud]: {% link _articles/google-cloud.md %}
