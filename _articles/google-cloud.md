@@ -109,6 +109,16 @@ List all Projects:
 gcloud projects list
 ```
 
+### Networking
+
+#### Delete all Network Endpoint Groups in a VPC
+
+Because sometimes you might have Network Endpoint Groups hanging around after you've deleted a Kubernetes cluster:
+
+```shell
+gcloud compute network-endpoint-groups list --filter="network:($VPC_NAME)" --format="csv[no-heading](name,zone)" | while IFS=, read -r name zone ; do gcloud compute network-endpoint-groups delete $name --zone $zone --quiet; done
+```
+
 ### IAM 
 
 - A **principal** is a user (e.g. a Google Account) (`user:`), a service account (`serviceAccount:`), a group (`group:`), Workspace account or domain (`domain:`). Each principal has a unique identifier, which is typically an email address.
@@ -127,7 +137,7 @@ This lists all of the roles that you can assign to a user or service account:
 gcloud iam roles list
 ```
 
-### List the roles held by a principal/service account (at a Project level)
+#### List the roles held by a principal/service account (at a Project level)
 
 This _needlessly-complex_ command lists all of the roles that a user has at a project level. This allows us to see what roles a user has in a Google Cloud Project.
 
@@ -146,7 +156,7 @@ roles/artifactregistry.reader
 roles/artifactregistry.writer
 ```
 
-### Add a role to a principal/service account (at a Project level)
+#### Add a role to a principal/service account (at a Project level)
 
 If you want to give a role in a project to a service account, you can do this:
 

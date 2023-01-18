@@ -19,3 +19,19 @@ Remove duplicate lines in a file, where **values in one column are the same**, w
 ...or keep the **last occurrence** of the duplicate column line:
 
     tac foo.properties | awk -F'=' '!seen[$1]++' | tac
+
+### Looping over a CSV and extracting some values
+
+If you have a CSV and you want to use the fields in each line as arguments for a command, you can use the [IFS (internal field separator) variable][ifs] to split the line into fields:
+
+```shell
+cat > users.csv <<EOF
+tom,henlo
+david,cheese
+EOF
+
+cat users.csv | while IFS=, read -r username password ; do echo $username has a password of $password; done
+```
+
+[ifs]: https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html
+
