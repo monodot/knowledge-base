@@ -3,6 +3,19 @@ layout: page
 title: Terraform
 ---
 
+## Development tricks
+
+### Deploying only parts of a configuration
+
+To deploy only certain parts of a Terraform configuration, use the `-target` flag, e.g.:
+
+```bash
+terraform apply -target module.my_module
+
+# With a resource defined as: `resource "local_file" "foo" { }`
+terraform apply -target=local_file.foo
+```
+
 ## Cookbook
 
 ### Collections
