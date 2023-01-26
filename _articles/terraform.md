@@ -44,6 +44,58 @@ join(" ", [for user in var.terminal_users : user.username])
 {for user in var.terminal_users : user.username => user}
 ```
 
+### Looping 
+
+#### A poor round-robin
+
+- Use the `element` function to get the element at a given index in a list
+- Use the `index` function to get the index of a given key in a map
+- Use the `values` function to get a list of values from a map
+
+This allows us to loop around input structures and do a "round-robin" of the values. For example:
+
+- assign each server to a network, from a known list of networks
+- assign each user to a different server, from a known list of servers
+
+```hcl
+module "some_module" {
+  for_each = { for idx, user in keys(var.servers) : server => var.servers[server] }
+
+  # Now let's pick a network for this server by doing a round-robin of the networks,
+  # using the index of the server in the map (0, 1, 2, 3, 4, 5, etc...)
+  # Assuming that module.vpc.networks returns something like:
+  # [
+  #   {
+  #     name = "network-01"
+  #   },
+  #   {
+  #     name = "network-02"
+  #   },
+  # ]
+  # And the var.servers map looks like:
+  # {
+  #   "server-01" = {
+  #     ...
+  #   },
+  #   "server-02" = {
+  #     ...
+  #   },
+  # }
+
+  # We use 'each.key' to get the current key in the map
+  # We then use this to get the index of the current key in the map
+  # And then use that index to get the element at that index, in another list
+  # The 'element' function returns the element at the given index in a list
+  # (and wraps around to the beginning of the list if the index is greater than
+  # the length of the list) - e.g. 0, 1, 2, 3, 0, 1, 2, 3...
+  # e.g. "network-01", "network-02", etc.
+  server_network_name = element(
+    values(module.vpc.networks),
+    index(keys(var.servers), each.key) 
+  ).name
+}
+```
+
 ### Outputs
 
 #### Output a map of maps
