@@ -7,6 +7,17 @@ title: Google Cloud
 
 ## Authenticating
 
+### Create a new ED25519 key and add it to your GCP account
+
+```
+ssh-keygen -t ed25519
+
+gcloud compute project-info add-metadata --metadata-from-file ssh-keys=~/.ssh/id_ed25519.pub
+
+# Add the key to a Compute Instance
+gcloud compute instances add-metadata my-instance --metadata-from-file ssh-keys=~/.ssh/id_ed25519.pub
+```
+
 ### Application Default Credentials (ADC)
 
 ADC is a mechanism for applications to automatically obtain credentials to call Google APIs.
@@ -94,6 +105,42 @@ metadata:
     iam.gke.io/gcp-service-account: my-service-account-h5cp@my-google-project.iam.gserviceaccount.com
 ```
 
+#### Troubleshoot Workload Identity
+
+You can deploy the Google Cloud CLI in the same namespace as your application, and with the same service account, which should allow you to test the Google Cloud APIs "as if you were the same user":
+
+```shell
+kubectl -n default apply -f - <<API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workload-identity-test
+spec:
+  selector:
+    matchLabels:
+      app: workload-identity-test
+  template:
+    metadata:
+      labels:
+        app: workload-identity-test
+    spec:
+      serviceAccountName: webterminal
+      containers:
+      - name: workload-identity-test
+        image: gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
+        command: ["sleep","infinity"]
+API
+
+kubectl exec -it workload-identity-test-pod-xsjjqskqk -- sh
+```
+
+Now have a play around with `gcloud` and see if you can access the resources you're expecting, e.g.:
+
+```
+gcloud artifacts repositories list
+
+
+```
 
 ## Cookbook
 

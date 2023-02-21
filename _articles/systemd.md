@@ -3,6 +3,11 @@ layout: page
 title: Systemd
 ---
 
+## Terminology
+
+- A systemd **user instance** runs services for a user. You can interact with it using `systemctl --user ...` 
+- **Log metadata fields** are extra fields which can be associated with a log entry in the journal using `LogExtraFields` option, and then visible in the journal using: `journalctl ... -o verbose`
+
 ## Paths and locations
 
 For the full up-to-date list of paths searched by _systemd_, see `man 5 systemd.unit`, and see the list of System Unit Search Paths and User Unit Search Paths.
@@ -24,9 +29,9 @@ Some places to put user-level units:
 
 ## Cookbook
 
-### View the content of a service unit
+### View the contents of a service unit
 
-To view the content of a service unit **and** all its override/drop-in files:
+To view the contents of a service unit **and** all of its override/drop-in files:
 
 ```
 systemctl cat myservice.service
@@ -51,6 +56,40 @@ systemctl restart myservice.service
 [Service]
 Environment=MY_ENV_VAR=foo ANOTHER_ENV_VAR=barrrr
 ```
+
+### Create a user service for a user without logging in first
+
+To run `systemd --user` jobs you usually need a user service running. According to the docs, pam_systemd will set up a systemd user instance for the user when they `ssh` into the server.
+
+If you don't do this, when you try to run `systemd --user` you might get an error like: _"Failed to connect to bus: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined"_
+
+But what if your user isn't a real person (with an SSH login), but you want to allow them to create `systemd --user` jobs? This should do the trick:
+
+```
+export UID=$(id -u johnsmith)
+mkdir -p /run/user/$UID
+chown johnsmith /run/user/$UID
+systemctl start user@$UID
+systemctl status user@$UID
+```
+
+H/T: https://unix.stackexchange.com/a/641190
+
+
+### Run an ad-hoc process with systemd
+
+You can start a temporary or "transient" job using `systemd-run`, which means it will run in the background and have its logs sent to the journal. 
+
+This example sets a custom identifier for the job, and uses `--user`, which invokes the **user-level service manager** (so it needs the user service to be available - see above):
+
+```
+systemd-run \
+    --user \
+    --property SyslogIdentifier=my-custom-identifier \
+    sh -c "sleep 1 && ./my-script.sh"
+```
+
+**NB:** If you want to capture logs from your process, with all the correct metadata attached (like process ID, user, etc.), make sure your process is sufficiently long-lived so that _journald_ can attach itself to your program and capture its metadata. This can be as simple as adding a `sleep` to the start of your job. Without this, log files will appear in the journal, but may not be correctly associated with your job.
 
 ## Examples
 
