@@ -5,6 +5,21 @@ title: Terraform
 
 ## Development tricks
 
+### Set up mitmproxy to debug requests
+
+If you're working with a provider that doesn't provide an easy way to see the requests it's making, then install a proxy (like **mitmproxy**) and route all your requests through it:
+
+```
+mitmproxy
+
+sudo cp ~/.mitmproxy/mitmproxy-ca-cert.cer /etc/pki/ca-trust/source/anchors/
+sudo update-ca-trust
+
+export HTTP_PROXY=localhost:8080 && export HTTPS_PROXY=localhost:8080
+
+terraform apply ...
+```
+
 ### Deploying only parts of a configuration
 
 To deploy only certain parts of a Terraform configuration, use the `-target` flag, e.g.:

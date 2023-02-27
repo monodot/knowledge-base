@@ -336,5 +336,17 @@ Some websites aren't loading, and resolve to IP address 0.0.0.0:
 - There is a command `resolvectl flush-caches`, but this didn't seem to do anything for me. Instead, you might clear the cache by just restarting _resolved_.
 - **To reset the _resolved_ DNS cache, just restart _resolved_: `sudo systemctl restart systemd-resolved`**
 
+Some applications terminate without any warning (OOM / Out of Memory errors):
+
+- The apps are perhaps being killed by `systemd-oomd`, a system service which kills processes before an out-of-memory error occurs in kernel space.
+- You can observe `systemd-oomd`'s recent killing sprees with: `journalctl -u systemd-oomd -g Killed`, e.g.:
+
+> Feb 27 21:01:59 dougal systemd-oomd[1258]: Killed /user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome-firefox-5692.scope/5692 due to memory pressure for /user.slice/user-1000.slice/user@1000.service being 60.82% > 50.00% for > 20s with reclaim activity
+
+- `oomctl` lets you observe the current state of `systemd-oomd`.
+- `systemctl mask systemd-oomd` will disable this service altogether.
+
+
+
 [searchprovider]: https://developer.gnome.org/SearchProvider/
 [nano]: https://fedoraproject.org/wiki/Changes/UseNanoByDefault
