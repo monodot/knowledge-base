@@ -3,6 +3,40 @@ layout: page
 title: Shell scripting
 ---
 
+## Templates
+
+### Simple bash script with positional arguments
+
+```bash
+#!/bin/env bash
+
+# This script does something
+# Usage: ./myscript.sh arg1 arg2
+
+# Exit on error
+set -e
+
+# Exit on unset variable
+set -u
+
+# Print commands as they are executed
+set -x
+
+# Set variables
+myArg1=$1
+mySecondArg=$2
+
+# Do stuff
+echo "Hello world, $myArg1, $mySecondArg"
+```
+
+### Variables with values from positional arguments
+
+```bash
+local my_first_arg=${1:-default_value}
+local my_second_arg=${2:-default_value}
+```
+
 ## Cookbook
 
 ### Working with variables

@@ -31,6 +31,52 @@ terraform apply -target module.my_module
 terraform apply -target=local_file.foo
 ```
 
+### Debugging a provider with CLI overrides
+
+If you want to debug a provider, you can download its source code and then tell Terraform to use your local copy by creating an overrides file:
+
+For example:
+
+```shell
+git clone https://github.com/grafana/terraform-provider-grafana
+cd terraform-provider-grafana
+git checkout v1.35.0
+go build
+
+cat > ~/.terraformrc <<EOF
+provider_installation {
+  dev_overrides {
+    "grafana/grafana" = "/home/tdonohue/repos/terraform-provider-grafana"
+  }
+}
+EOF
+
+cd path/to/your/terraform/config
+terraform apply
+```
+
+### Debugging a provider with Delve
+
+Activate the provider's debug mode (check the provider's source code for the correct environment variable to set) and start a debugging session:
+
+```shell
+cd ~/repos/terraform-provider-grafana
+$HOME/go/bin/dlv debug . -- --debug
+
+(dlv) break theMethodYouWantToBreakOn
+(dlv) continue
+
+# This will print a line like TF_REATTACH_PROVIDERS...
+```
+
+And then, in another window, paste the env var declaration and run Terraform as normal:
+
+```
+TF_REATTACH_PROVIDERS=...
+terraform apply
+```
+
+
 ## Cookbook
 
 ### Collections

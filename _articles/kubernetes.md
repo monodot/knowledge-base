@@ -232,7 +232,7 @@ kubectl -n gel-helm run curl -it --image=curlimages/curl -- sh
 Or using the Red Hat UBI image (containerised RHEL, basically):
 
 ```
-kubectl run my-little-debug-pod -it --attach --image docker.io/redhat/ubi8 --command sh --restart=Never --rm
+kubectl -n myspace run my-little-debug-pod -it --attach --image docker.io/redhat/ubi8 --command --restart=Never --rm -- sh
 ```
 
 ### Debug a Deployment with a PVC

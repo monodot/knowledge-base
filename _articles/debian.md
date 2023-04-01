@@ -16,3 +16,9 @@ apt list --installed
 ```
 dpkg -L $packagename
 ```
+
+### List which packages provide a command/file
+
+```
+dpkg -S update-ca-certificates
+```
