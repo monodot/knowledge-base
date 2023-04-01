@@ -146,6 +146,69 @@ For maximum scalability, Loki components are grouped into **write** and **read**
 | gel-admin-api | N/A | ... |
 | index-gateway | N/A | (Optional) Downloads and synchronizes the BoltDB index from the object store, to serve to queriers and rulers. |
 
+#### Targets (from Loki 2.7.4)
+
+To see the components included in each start-up _target_ (a target is kind of like a profile for running Loki), use `loki -list-targets`.
+
+This is the output for Loki 2.7.4:
+
+```
+/ $ loki -config.file=/etc/loki/local-config.yaml -list-targets
+all
+  cache-generation-loader
+  compactor
+  distributor
+  ingester
+  ingester-querier
+  querier
+  query-frontend
+  query-scheduler
+  ruler
+  usage-report
+cache-generation-loader
+compactor
+  usage-report
+distributor
+  usage-report
+index-gateway
+  usage-report
+ingester
+  usage-report
+ingester-querier
+overrides-exporter
+querier
+  cache-generation-loader
+  ingester-querier
+  query-scheduler
+  usage-report
+query-frontend
+  cache-generation-loader
+  query-scheduler
+  usage-report
+query-scheduler
+  usage-report
+read
+  cache-generation-loader
+  compactor
+  index-gateway
+  ingester-querier
+  querier
+  query-frontend
+  query-scheduler
+  ruler
+  usage-report
+ruler
+  ingester-querier
+  usage-report
+table-manager
+  usage-report
+usage-report
+write
+  distributor
+  ingester
+  usage-report
+```
+
 ### Clients
 
 How to get data into Loki:
