@@ -107,6 +107,83 @@ gel {
 
 ## Cookbook
 
+### Access policies and tokens
+
+#### Update an access policy (v3 API)
+
+This will create an access policy that allows reading and writing of logs in the cluster named `myclustername`, across all tenants.
+
+```shell
+curl -u ":${GEL_ADMIN_TOKEN}" "http://${GEL_IP}:8100/admin/api/v3/accesspolicies/test1" -XPUT \
+    -H 'If-Match: "1"' \
+    --data @- <<'EOF'
+{
+    "name": "test1",
+    "status": "active",
+    "display_name": "Test access policy",
+    "realms": [{"tenant": "*", "cluster": "myclustername"}],
+    "scopes": ["logs:read", "logs:write"]
+}
+EOF
+```
+
+#### Create an access policy scoped to a label selector
+
+This will allow users with a token based on this access policy, to only view logs labelled with `{environment="dev"}`
+
+```shell
+curl -u ":${GEL_ADMIN_TOKEN}" "http://${gel_public_ip}:8100/admin/api/v3/accesspolicies" --data @- <<EOF
+{
+    "name": "${access_policy_name}",
+    "display_name": "My LBAC based access policy",
+    "created_at": "2021-02-01T17:37:59.341728283Z",
+    "realms": [
+        {
+            "tenant": "${tenant_name}",
+            "cluster": "${cluster_name}",
+            "label_policies": [ 
+                { 
+                    "selector": "{environment=\"dev\"}"
+                }
+            ]
+        }
+    ],
+    "scopes": ["logs:read"]
+}
+EOF
+```
+
+
+#### Create a token
+
+This will create a token `token-12345` using the access policy `test1` which was created above:
+
+```shell
+(
+  curl -u ":${GEL_ADMIN_TOKEN}" "http://${GEL_IP}:8100/admin/api/v3/tokens" \
+    --data @- <<EOF
+{
+    "name": "test-$RANDOM",
+    "display_name": "Tom's token",
+    "access_policy": "test1",
+    "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "expiration": "2028-01-01T00:00:00.341728283Z"
+}
+EOF
+) | jq -r '.token'
+
+curl -u ":${GEL_ADMIN_TOKEN}" "http://${GEL_IP}:8100/admin/api/v3/tokens" \
+    --data @- <<EOF | jq -r '.token'
+{
+    "name": "test-$RANDOM",
+    "display_name": "Tom's token",
+    "access_policy": "test1",
+    "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "expiration": "2028-01-01T00:00:00.341728283Z"
+}
+EOF
+```
+
 ### Tenant management
 
 #### Get tenants

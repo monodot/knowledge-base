@@ -35,5 +35,16 @@ cat users.csv | while IFS=, read -r username password ; do echo $username has a 
 
 There's an example of this in the [Google Cloud][google-cloud] page.
 
+### Checking if the first part of an email address is longer than N
+
+```shell
+cat > emails.txt <<EOF
+blah@example.com
+EOF
+
+awk -F'@' '{ if (length($1) > 10) { print $1 } }' emails.txt
+awk -F'@' '(length($1) > 10)' emails.txt
+```
+
 [ifs]: https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html
 [google-cloud]: {% link _articles/google-cloud.md %}

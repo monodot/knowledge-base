@@ -105,6 +105,12 @@ rate(http_requests_total{job="api-server"}[5m])
 
 ### Alert queries
 
+#### Get the error rate
+
+```
+100 * sum by(job) (rate(http_server_duration_count{http_status_code=~"5.."}[$__rate_interval])) / sum by(job) (rate(http_server_duration_count[$__rate_interval]))
+```
+
 #### Predict a node's free disk space in X hours
 
 ```

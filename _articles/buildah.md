@@ -10,6 +10,9 @@ A container image building tool.
 ## Build image for multiple architectures and then push to Google Artifact Registry
 
 ```shell
+# buildah manifest rm myapp-manifest
+buildah manifest create myapp-manifest
+
 buildah build --jobs=2 \
     --platform=linux/arm64,linux/amd64,linux/arm/v7 \
     --manifest myapp-manifest .
