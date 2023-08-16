@@ -46,5 +46,26 @@ awk -F'@' '{ if (length($1) > 10) { print $1 } }' emails.txt
 awk -F'@' '(length($1) > 10)' emails.txt
 ```
 
+### Looping over a username:password list and creating a command for each
+
+Useful for performing the same action repeatedly, e.g. perform an HTTP request, test an app, etc.
+
+If you have a list of usernames/passwords like this:
+
+```
+john:mypass
+jane:password123
+jacob:thankyougoodnight
+```
+
+You can use `read` and a `while` loop to generate some commands like this - this example runs a _Playwright_ test for each user:
+
+```shell
+while IFS=":" read -r username password
+do
+    APPLICATION_URL="https://$username.grafana.net" USERNAME="$username" PASSWORD="$password" npx playwright test my-app-test.spec.js
+done <<< "$LOGINS"
+```
+
 [ifs]: https://www.gnu.org/software/bash/manual/html_node/Word-Splitting.html
 [google-cloud]: {% link _articles/google-cloud.md %}

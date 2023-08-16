@@ -346,6 +346,15 @@ curl http://localhost:3100/ready
 
 ### Using logcli
 
+#### Format a LogQL query (pretty-print)
+
+Using a build of _logcli_ from `main` until this feature makes it into an official release:
+
+```shell
+$ echo '{key="value"} | json' | podman run -i docker.io/grafana/logcli:main-a8a3496-amd64 fmt
+{key="value"} | json
+```
+
 #### Find all labels
 
 ```
@@ -401,17 +410,40 @@ curl -v http://loki:8100/loki/api/v1/push
 
 ### LogQL language
 
-#### Fetch some logs with certain labels that match a string
+#### Fetch some logs with certain labels that contain a string
 
 ```
 {region="eu-west-1", job="loki-prod/querier"} |= "012345abcde"
 ```
 
-### Extract labels from log lines and use as a filter expression
+#### Calculate the 95th percentile of a metric
+
+The **95th percentile** calculates the value that is greater than 95% of the values in a given set. It is a way to calculate that "most of the time, the value is less than this" - e.g. "95% of users receive a response in <0.2sec". It is calculated by discarding the top 5% of values and then taking the highest value from the remaining 95%.
+
+Assuming you have a log stream like `{region="eu-west-1", namespace="myapp", container="web-server"}` and you want to calculate the **95th percentile** of a `response_time` value which is embedded in each log line as a JSON field, for each `cluster`, you can do this:
+
+```
+quantile_over_time(0.95, {namespace="myapp", container="web-server"} | json | unwrap response_time [$__interval]) by (region)
+
+quantile_over_time(0.95, {cluster="my-demo-cluster", namespace="development", prometheus_io_label_app="sockshop", container="user"} | logfmt | unwrap took | __error__="" [$__interval]) by (method)
+```
+
+#### Extract labels from log lines and use as a filter expression
 
 ```
 {job="systemd-journal"} | logfmt | 
 ```
+
+### Recording rules
+
+#### Count occurrences of a particular HTTP request
+
+Find all the logs from `sandwich-app`, then extract the `request_line` field from each log line, then count the number of times the request is for `/api/sandwiches?type=eggs`:
+
+```
+{namespace="production", container="sandwich-app"} | json request_line="src.first_request_line" | line_format `{{.request_line}}` | pattern `<method> <uri> <protocol>` | uri =~ `^\/api\/sandwiches\?type=eggs$`
+```
+
 
 ## Troubleshooting
 
