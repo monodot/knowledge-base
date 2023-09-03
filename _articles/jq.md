@@ -49,3 +49,22 @@ $ aws kinesis describe-stream --stream-name CillasTrades | jq -r '.StreamDescrip
 arn:aws:kinesis:eu-west-1:XXXXXXXXXXXX:stream/CillasTrades
 ```
 
+### Using jq in a while loop
+
+```shell
+while read -r email slug; do
+    # do stuff
+
+done < <(jq --raw-output '.workshop_users | to_entries[] | "\(.key) \(.value | .stack_slug)"' myfile.json)
+```
+
+
+### Iterate over multiple JSON files and execute jq on each of them
+
+Example:
+
+```shell
+for d in /workshops/provisioned-workshops/${WORKSHOP_NAME}/${WORKSHOP_NAME:0:3}*/; do
+    jq -r '(.username + ":" + .password)' "$d/complete-config.json"
+done
+```

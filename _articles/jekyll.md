@@ -18,12 +18,39 @@ Then, to build a site:
 
 ## Cookbook
 
+### Check if production build
+
 Check whether the site is production (useful for rendering certain content only on the live site, e.g. Disqus comments, Google Analytics, etc.):
 
     # assuming that JEKYLL_ENV=production is set when publishing
     {% if jekyll.environment == "production" %}
     ...
     {% endif %}
+
+### Fetch data from a Google Sheet
+
+To make it easier to create slightly more _dynamic_ sites, you can store site data in a Google Sheet. Then, use Jekyll's plugin APIs to download the sheet as CSV into the `_data` directory, before the site initialisation takes place. e.g.:
+
+```ruby
+# _plugins/jekyll-download-csv.rb
+
+require 'open-uri'
+
+# Downloads the CSV file that contains the product catalogue
+Jekyll::Hooks.register :site, :after_init do |_site|
+  url = 'https://docs.google.com/spreadsheets/d/<your-spreadsheet-identifier>/export?exportFormat=csv'
+  filename = '_data/products.csv' # Specify the desired name for the downloaded file
+
+  URI.open(url) do |remote_file|
+    File.open(filename, 'wb') do |local_file|
+      local_file.write(remote_file.read)
+    end
+  end
+end
+```
+
+Then the data in the CSV will be available as `site.data.products`.
+
 
 ### Upgrading
 

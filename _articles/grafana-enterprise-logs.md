@@ -58,10 +58,106 @@ podman run -it -p 3100:3100 -v $(pwd)/config.yaml:/etc/loki/config.yaml grafana/
 Here are the targets available in the enterprise-logs image:
 
 ```bash
-$ podman run -it --entrypoint sh docker.io/grafana/enterprise-logs:v1.5.2
+$ podman run docker.io/grafana/enterprise-logs:v1.7.3 -config.file=/etc/enterprise-logs/local-config.yaml -list-targets
+admin-api
+  usage
+all
+  admin-api
+  cache-generation-loader
+  compactor
+  distributor
+  ingester
+  ingester-querier
+  label-access
+  label-access-ingester-wrapper
+  querier
+  query-frontend
+  query-scheduler
+  ruler
+  usage
+  usage-report
+backend
+  compactor
+  index-gateway
+  ingester-querier
+  query-scheduler
+  ruler
+  usage
+  usage-report
+cache-generation-loader
+compactor
+  usage
+  usage-report
+distributor
+  usage
+  usage-report
+gateway
+  usage
+index-gateway
+  usage-report
+ingester
+  label-access-ingester-wrapper
+  usage-report
+ingester-querier
+label-access
+label-access-ingester-wrapper
+overrides-exporter
+querier
+  cache-generation-loader
+  ingester-querier
+  label-access
+  query-scheduler
+  usage
+  usage-report
+query-frontend
+  cache-generation-loader
+  query-scheduler
+  usage
+  usage-report
+query-scheduler
+  usage-report
+read
+  admin-api
+  cache-generation-loader
+  compactor
+  index-gateway
+  ingester-querier
+  label-access
+  querier
+  query-frontend
+  query-scheduler
+  ruler
+  usage
+  usage-report
+ruler
+  ingester-querier
+  usage-report
+table-manager
+  usage-report
+tokengen
+usage
+usage-report
+write
+  admin-api
+  distributor
+  ingester
+  label-access-ingester-wrapper
+  usage
+  usage-report
 ```
 
 ## Deployment
+
+
+### Inspect the Helm chart
+
+Inspect the Kubernetes resources that would be deployed using the Helm chart:
+
+```shell
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm template myloki grafana/loki --set enterprise.enabled=true > output.yaml
+```
 
 
 ### Deploy GEL 1.5.2 with Tanka

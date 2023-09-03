@@ -3,13 +3,17 @@ layout: page
 title: PostgreSQL
 ---
 
-## Running
+## Deployment
 
-### Running with Homebrew
+### Installing PostgreSQL on Fedora
+
+    sudo dnf install postgresql
+
+### Running on MacOS with Homebrew
 
 Homebrew creates data directories in `/usr/local/var/postgres`.
 
-To have launchd start postgresql now and restart at login:
+To get _launchd_ to start postgresql now and restart it at login:
 
     brew services start postgresql
 
@@ -21,7 +25,27 @@ Then to connect:
 
     psql -d postgres
 
-## Users and permissions
+## Using the `psql` command line tool
+
+### Connecting to an instance with `psql`
+
+To connect to a PostgreSQL instance, first install the `psql` command line tool for your operating system. Then:
+
+    psql --password --host dbhost1 --port 5432 --username scott megacorp
+
+    psql -W -h dbhost1 -p 5432 -U scott megacorp
+
+### Special commands you need to know
+
+Once you're connected to the database, execute SQL or use the following commands:
+
+- `\dt` - list tables
+- `\d table_name` - describe table
+- `\l` - list databases
+- `\c database_name` - connect to database
+- `\q` - quit
+
+### Users and permissions
 
 List all roles:
 

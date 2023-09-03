@@ -3,6 +3,14 @@ layout: page
 title: Terraform
 ---
 
+## Learnings
+
+### Providers and shared modules
+
+- **A module intended to be called by one or more other modules must not contain any _provider_ blocks.**
+- **Provider configurations can be defined only in a root Terraform module.**
+- If a module contains its own _provider_ configurations, it is considered "legacy", and is prevented from being used with the _count_, _for_each_ and _depends_on_ arguments.
+
 ## Development tricks
 
 ### Set up mitmproxy to debug requests
@@ -19,6 +27,13 @@ export HTTP_PROXY=localhost:8080 && export HTTPS_PROXY=localhost:8080
 
 terraform apply ...
 ```
+
+#### A note about error timings
+
+- If some errors happen in a Terraform job, they will be logged **at the end** of the process.
+- But the actual time of the error **can be much earlier** than the time that the error is logged.
+- This can be confusing if you're troubleshooting a problem, and you need to check some corresponding system logs (e.g. the proxy logs, as configured above) for the specific time/date of the error.
+- Solution: enable debug logging `TF_LOG=DEBUG`, which should show the **original** timestamp of the error, so you can correlate this with whatever other system logs you're using to investigate.
 
 ### Deploying only parts of a configuration
 

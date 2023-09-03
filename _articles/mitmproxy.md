@@ -33,6 +33,23 @@ Start mitmproxy to read/browser a previously-created dump file, without starting
 mitmproxy --rfile <dumpfile> --no-server
 ```
 
+## Filter expressions
+
+Press `f` to enter a Filter expression. Some common ones:
+
+-   `~d example.com` - filter by domain
+-   `~u /api` - filter by URL
+-   `~q` - filter by query string
+-   `~m POST` - filter by HTTP method
+-   `~b "foo"` - filter by body content
+-   `~c 409` - find all 409 responses
+-   `~bq cows` - find request bodies containing "cows"
+-   `~bs regex` - find response bodies containing the regex
+
+For example:
+
+-   `~m POST ~u /api/instances` - filter by POST requests to `/api/instances`
+
 ## Spying on traffic from a Kubernetes app
 
 One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is quite useful when black-box troubleshooting a third-party component or app!

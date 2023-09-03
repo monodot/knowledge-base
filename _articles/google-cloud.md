@@ -252,6 +252,45 @@ From [^1]
 gcloud auth print-access-token | podman login -u oauth2accesstoken --password-stdin XX.gcr.io
 ```
 
+### Google Cloud SQL
+
+#### Connect ad-hoc to Google Cloud SQL instance with a private IP address
+
+Google Cloud SQL is a PITA to connect to, if you've chosen to put your database on a private IP address.
+
+Here's one way to do it - assuming you've already got a GKE Kubernetes cluster running in GCP:
+
+```shell
+export DATABASE_USER=myapp
+export DATABASE_IP=$(gcloud sql instances describe YOURDBINSTANCENAME --format 'value(ipAddresses.ipAddress)')
+
+kubectl -n default apply -f - <<API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-util
+spec:
+  selector:
+    matchLabels:
+      app: pg-util
+  template:
+    metadata:
+      labels:
+        app: pg-util
+    spec:
+      containers:
+      - name: pg
+        image: docker.io/library/postgres:14-alpine
+        command: ["sleep","infinity"]
+API
+
+kubectl -n default exec -it $(kubectl -n default get pod -l app=pg-util -o name | cut --delimiter="/" --fields=2) -- psql --host ${DATABASE_IP} --user ${DATABASE_USER}
+
+# Run your SQL here
+
+kubectl -n default delete deploy/pg-util
+```
+
 ## Troubleshooting
 
 This error is seen in `kubectl get events`: _"Failed to Attach 1 network endpoint(s) (NEG "k8s1-4362fb64-default-myapp-4000-7414754d" in zone "us-central1-c"): googleapi: Error 400: Invalid value for field 'resource.ipAddress': '10.32.1.5'. Specified IP address 10.32.1.5 doesn't belong to the (sub)network default or to the instance gke-mycluster-w-default-pool-fff0000-zzzz., invalid"_

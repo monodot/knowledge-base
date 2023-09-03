@@ -5,6 +5,16 @@ title: Ruby
 
 {% include toc.html %}
 
+## Concepts and ecosystem
+
+### Rubygems
+
+Rubygems is a package manager for Ruby. It provides a standard format for distributing Ruby programs and libraries (in a self-contained format called a "gem"), a tool designed to easily manage the installation of gems, and a server for distributing them.
+
+### Bundler
+
+Bundler is a tool that manages gem dependencies for Ruby projects. It can manage any gem available in RubyGems format, including Rails and plugins. It can manage local gems, git repositories with subdirectories containing gems, and gems on remote gem servers.
+
 ## Installation and configuration
 
 ### Managing versions with `rvm`
@@ -79,7 +89,7 @@ To **install** a version of Ruby (if the desired version is missing from the lis
 
 - Note that changing versions means that any _gems_ installed -- such as `jekyll` or `bundle` -- will also need to be installed in the new version.
 
-## Concepts and tools
+# Concepts and tools
 
 **gems** are packages for Ruby. Some of the common ones:
 
@@ -190,6 +200,15 @@ To update all dependencies to the latest version allowed:
 
     $ bundle update
     $ bundle update <gem-name>
+
+
+## Troubleshooting
+
+_"sass-embedded-1.63.6-x86_64-linux-musl requires rubygems version >= 3.3.22, which is incompatible with the current version, 3.1.2"_:
+
+- Make sure you're using _rbenv_'s bundler, and not your system bundler.
+- `gem install bundler`
+- `eval "$(rbenv init -)"`
 
 
 [rvm]: https://rvm.io/
