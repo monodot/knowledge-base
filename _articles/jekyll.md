@@ -16,6 +16,42 @@ Then, to build a site:
     $ bundle install --path vendor/bundle
     $ bundle exec jekyll serve
 
+## Build and deployment
+
+### Example Dockerfile 
+
+An example Dockerfile that builds a Jekyll website and serves it using nginx:
+
+```dockerfile
+FROM docker.io/jekyll/jekyll:4.2.2 AS jekyll
+
+WORKDIR /app
+
+# You can comment these out if the source site doesn't use any npm modules
+COPY package.json package-lock.json .
+RUN npm install
+
+# Copy the Gemfile and install dependencies separately, so we can cache them
+COPY Gemfile Gemfile.lock .
+RUN bundle install
+
+# Copy all of the source files. We run the jekyll command directly, rather than
+# to avoid a conflict with the bundler-installed jekyll.
+COPY . .
+ENV JEKYLL_ENV=production
+RUN jekyll build
+
+# ---
+
+FROM docker.io/library/nginx:1.23-alpine
+
+COPY --from=jekyll /app/_site /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
+# CMD ["nginx", "-g", "daemon off;"]
+``````
+
 ## Cookbook
 
 ### Check if production build
