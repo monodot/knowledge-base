@@ -1,13 +1,10 @@
 ---
 layout: page
 title: Apache Camel
+lede: "Apache Camel is an integration framework for Java. It allows you to exchange data with applications, in tons of different formats and protocols."
 ---
 
-Apache Camel is an integration framework for Java. It allows you to exchange data with applications, in tons of different formats and protocols.
-
-As well as being a rather spiffing framework, it's also a wonderful way to honour the humble camel. Here's a camel for you to say thanks for reading this: 🐪
-
-{% include toc.html %}
+As well as being a rather spiffing framework, using Apache Camel is also a wonderful way to honour the humble and ancient camel. Here's a camel for you to say thanks for reading this: 🐪
 
 ## Component versions
 
@@ -146,8 +143,6 @@ XML DSL: Use `transform` and `method` with the `ObjectFactory` created by JAXB t
             beanType="com.example.myservice.ObjectFactory"/>
 </transform>
 ```
-
-### Keeping Camel 3.x running
 
 ## Testing
 

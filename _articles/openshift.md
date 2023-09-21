@@ -11,8 +11,6 @@ OpenShift is an awesome platform for developing and deploying apps in containers
 - get the [Red Hat Container Development Kit][cdk], or
 - on a machine with Docker and the [`oc` client tools][occlient] installed, just type `oc cluster up`
 
-{% include toc.html %}
-
 ## Info
 
 Releases:

@@ -5,8 +5,6 @@ title: Red Hat AMQ Interconnect
 
 Message router based on [Apache Qpid][qpid].
 
-{% include toc.html %}
-
 ## Quickstarts
 
 ### Simple 2-node AMQ Interconnect 1.7 router network on OpenShift 3.11 (with inter-router SSL, no Operators)

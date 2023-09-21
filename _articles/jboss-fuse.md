@@ -3,8 +3,6 @@ layout: page
 title: Red Hat Fuse (JBoss Fuse) and Fuse Fabric
 ---
 
-{% include toc.html %}
-
 ## Quickstarts
 
 ### Fuse 7.8 on OpenShift quick demo

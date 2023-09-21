@@ -1,7 +1,18 @@
 ---
 layout: page
-title: Python
+title: Python development and package management
+lede: Python has a few different tools for managing packages and virtual environments.
 ---
+
+## Tools
+
+Python is often used in conjunction with a few different tools:
+
+*   [pyenv](https://github.com/pyenv/pyenv) -- Python version manager.\
+    <i>pyenv</i> can install and manage multiple versions of Python itself on your computer. Useful if a program needs a different version of Python than the one that comes with your OS.
+
+*   [pipenv](https://pipenv.pypa.io/en/latest/) -- Python virtualenv management tool.\
+    Pipenv automatically creates and manages a <i>virtualenv</i> for your projects, adding and removing packages from your `Pipfile` as you install/uninstall packages.
 
 ## Using PyPI
 

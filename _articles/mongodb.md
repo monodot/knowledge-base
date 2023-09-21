@@ -5,8 +5,6 @@ title: MongoDB
 
 MongoDB is a document store.
 
-{% include toc.html %}
-
 ## Cookbook
 
 ### Run in a container

@@ -5,8 +5,6 @@ title: Codeready Workspaces
 
 Web-based development environments, based on Eclipse Che.
 
-{% include toc.html %}
-
 ## Concepts
 
 Components included in Codeready Workspaces:

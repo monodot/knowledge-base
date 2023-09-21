@@ -1,11 +1,9 @@
 ---
 layout: page
 title: Loki
+lede: "Loki is a time series database for strings, written in Go, and inspired by Prometheus. It is designed for aggregating and searching logs."
 ---
 
-Loki is a time series database for strings, written in Go, and inspired by [Prometheus][prometheus]. It is designed for aggregating and searching logs.
-
-{% include toc.html %}
 
 ## Fundamentals
 
@@ -145,6 +143,14 @@ For maximum scalability, Loki components are grouped into **write** and **read**
 | memcached | N/A | Memcached, memcached-frontend, memcached-index-queries |
 | gel-admin-api | N/A | ... |
 | index-gateway | N/A | (Optional) Downloads and synchronizes the BoltDB index from the object store, to serve to queriers and rulers. |
+
+#### Targets (from Loki 2.9)
+
+```
+podman run docker.io/grafana/loki:2.9.0 -config.file=/etc/loki/local-config.yaml -list-targets
+
+
+```
 
 #### Targets (from Loki 2.7.4)
 
@@ -440,9 +446,11 @@ quantile_over_time(0.95, {cluster="my-demo-cluster", namespace="development", pr
 
 Find all the logs from `sandwich-app`, then extract the `request_line` field from each log line, then count the number of times the request is for `/api/sandwiches?type=eggs`:
 
+{% raw %}
 ```
 {namespace="production", container="sandwich-app"} | json request_line="src.first_request_line" | line_format `{{.request_line}}` | pattern `<method> <uri> <protocol>` | uri =~ `^\/api\/sandwiches\?type=eggs$`
 ```
+{% endraw %}
 
 
 ## Troubleshooting

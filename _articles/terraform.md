@@ -233,3 +233,4 @@ output "stacks" {
   value     = module.my_custom_module
   sensitive = true
 }
+```

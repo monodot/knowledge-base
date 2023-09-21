@@ -5,8 +5,6 @@ title: Maven
 
 Maven is the wonderful, confusing build tool for Java.
 
-{% include toc.html %}
-
 ## Installation
 
 Installing Maven through Software Collections on CentOS:

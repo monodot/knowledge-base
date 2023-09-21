@@ -121,6 +121,6 @@ Then the test can be run using:
 
 [pactjvmprovider]: https://github.com/DiUS/pact-jvm
 [maven]: {{ site.baseurl }}{% link _articles/maven.md %}
-[camel]: {{ site.baseurl }}{% link _articles/camel.md %}
+[camel]: {{ site.baseurl }}{% link _articles/apache-camel.md %}
 [fuse]: {{ site.baseurl }}{% link _articles/jboss-fuse.md %}
 [springboot]: {{ site.baseurl }}{% link _articles/spring-boot.md %}

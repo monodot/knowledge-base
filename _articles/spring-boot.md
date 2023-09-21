@@ -3,8 +3,6 @@ layout: page
 title: Spring Boot
 ---
 
-{% include toc.html %}
-
 ## Basic bootstrap class
 
 ```java

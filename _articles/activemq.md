@@ -1,6 +1,7 @@
 ---
 layout: page
 title: ActiveMQ
+lede: ActiveMQ is an open source message broker written in Java.
 ---
 
 This page is about the legacy ActiveMQ (ActiveMQ Classic / 5.x). For the new ActiveMQ Artemis, see [ActiveMQ Artemis][artemis].

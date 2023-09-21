@@ -68,6 +68,55 @@ Installing Playwright in a container seems to be a whole level of faff, because 
 npx playwright codegen https://mywebsite.example.com
 ```
 
+## Fixtures
+
+Fixtures are a way of defining reusable code that can be run before or after Playwright tests. They can be used to set up a test environment, or to clean up after a test.
+
+### Example: defining two fixtures to use in tests
+
+Here we define a fixture, `wettySession`, which will log in to a web terminal, run the tests, and then log out. 
+
+```js
+// fixtures.js
+import { test, expect } from '@playwright/test';
+
+const wettytest = test.extend({
+    // Define a fixture. Whenever this is referenced in a test,
+    // it will basically wrap the test with a login and a logout.
+    wettySession: async ({ page }, use ) => {
+        console.log(`Logging in to ${process.env.WETTY_URL} as ${process.env.USERNAME}`);
+        await page.goto(process.env.WETTY_URL);
+    
+        await page.keyboard.type(process.env.USERNAME, {delay: 100});
+        await page.keyboard.press("Enter");
+        await page.keyboard.type(process.env.PASSWORD, {delay: 100});
+        await page.keyboard.press("Enter");
+    
+        await use(page); // Now run the tests we've been told to do
+
+        // Log out of the web terminal
+        await page.keyboard.press("Control+D");
+        await page.close();
+    }
+
+});
+
+const _wettytest = wettytest;
+export { _wettytest as wettytest };
+```
+
+Then in your test, use the `wettySession` fixture, instead of the usual `page` one:
+
+```js
+// myapp.spec.js
+const { wettytest } = require('./fixtures');
+
+wettytest('can get list of nodes in the user\'s k8s cluster', async ({ wettySession }) => {
+    await wettySession.keyboard.type("echo henlo", {delay: 100});
+    await wettySession.keyboard.press("Enter");
+});
+```
+
 ## Cookbook
 
 ### Testing xterm

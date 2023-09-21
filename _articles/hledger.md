@@ -5,8 +5,6 @@ title: hledger
 
 The plaintext accounting software.
 
-{% include toc.html %}
-
 ## Client applications
 
 ### hledger-web

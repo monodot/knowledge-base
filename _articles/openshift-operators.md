@@ -5,8 +5,6 @@ title: OpenShift - Operators
 
 Running Operators on OpenShift. A sufficiently complex-enough topic for it to warrant its own dedicated page. :-)
 
-{% include toc.html %}
-
 ## Concepts
 
 ### OperatorSource (opsrc)

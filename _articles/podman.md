@@ -5,8 +5,6 @@ title: Podman
 
 An alternative to Docker, which is definitely way beyond my understanding :D
 
-{% include toc.html %}
-
 ## Installation on CentOS
 
 ```

@@ -3,8 +3,6 @@ layout: page
 title: Git
 ---
 
-{% include toc.html %}
-
 ## Getting started
 
 Cloning a repo and setting a custom email address for commit logs:

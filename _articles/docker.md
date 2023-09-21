@@ -3,8 +3,6 @@ layout: page
 title: Docker
 ---
 
-{% include toc.html %}
-
 ## Getting started
 
 ### Installing Docker and Docker Compose on Debian
@@ -56,10 +54,12 @@ docker exec $CONTAINER_ID ps -ef
 
 Find out your current Docker daemon's log configuration:
 
+{% raw %}
 ```
 $ docker info --format '{{.LoggingDriver}}'
 json-file
 ```
+{% endraw %}
 
 Find the log file for a specific container:
 

@@ -3,8 +3,6 @@ layout: page
 title: Google Cloud
 ---
 
-{% include toc.html %}
-
 ## Authenticating
 
 ### Create a new ED25519 key and add it to your GCP account

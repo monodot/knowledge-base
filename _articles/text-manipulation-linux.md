@@ -5,12 +5,24 @@ title: Text manipulation in Linux
 
 ## Common commands
 
-- `awk`
+- `awk` - pattern scanning and processing language
+- `sed` - stream editor
 - `tac` - concatenate and print files in reverse
+
+## sed
+
+_sed_ is a stream editor. It's useful for manipulating text in files, or as part of a pipeline.
+
+### Replace a string in a file
+
+```shell
+sed -i 's/old/new/g' file.txt
+```
+
 
 ## Cookbook
 
-### Deduplicating a file
+### Deduplicating lines in a file which have the same column value
 
 Remove duplicate lines in a file, where **values in one column are the same**, whilst preserving order. For example, removing duplicate properties in a key/value property file (e.g. a Java `.properties` file). Either keep the **first** occurrence of the duplicate column line:
 

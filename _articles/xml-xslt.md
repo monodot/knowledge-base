@@ -3,8 +3,6 @@ layout: page
 title: XML and XSLT
 ---
 
-{% include toc.html %}
-
 ## Tools
 
 ### CLI

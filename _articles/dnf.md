@@ -7,8 +7,6 @@ The package manager.
 
 > DNF is the next upcoming major version of YUM, a package manager for RPM-based Linux distributions. It roughly maintains CLI compatibility with YUM and defines a strict API for extensions and plugins.
 
-{% include toc.html %}
-
 ## Terminology
 
 - Use `dnf` to install **packages** from official and non-official **repositories**.

@@ -3,8 +3,6 @@ layout: page
 title: Jenkins
 ---
 
-{% include toc.html %}
-
 ## Installation
 
 Installation on Fedora:

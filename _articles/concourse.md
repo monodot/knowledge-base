@@ -5,8 +5,6 @@ title: Concourse CI
 
 A CICD tool.
 
-{% include toc.html %}
-
 ## Terminology
 
 - **Pipelines**

@@ -3,8 +3,6 @@ layout: page
 title: Ruby
 ---
 
-{% include toc.html %}
-
 ## Concepts and ecosystem
 
 ### Rubygems

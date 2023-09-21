@@ -5,8 +5,6 @@ title: OSGi
 
 OSGi is a framework for building **modular applications** in the JVM.
 
-{% include toc.html %}
-
 ## OSGi concepts
 
 ### Bundles

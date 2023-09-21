@@ -1,13 +1,14 @@
 ---
 layout: page
 title: mitmproxy
+lede: "_mitmproxy_ is an awesome way to debug, trace, alter and monitor HTTP connections from any application, including over HTTPS/SSL."
 ---
 
-An awesome way to debug HTTP connections in any application, including HTTPS/SSL.
+mitmproxy basically captures all traffic between your application and the outside world, so that you can inspect it, modify it, and replay it. Especially good for blackbox testing.
 
 ## Basics
 
-### Setup on Fedora with SSL
+### Set up mitmproxy on Fedora with SSL
 
 1.  Install mitmproxy
 1.  Run `mitmproxy`
@@ -16,7 +17,7 @@ An awesome way to debug HTTP connections in any application, including HTTPS/SSL
 1.  `export HTTP_PROXY=localhost:8080 && export HTTPS_PROXY=localhost:8080`
 1.  Start your program and profit.
 
-### Set up on Debian with SSL certificate
+### Set up mitmproxy on Debian with SSL
 
 1.  `apt install mitmproxy`
 2.  Run `mitmproxy` (preferably as root)
@@ -27,7 +28,7 @@ An awesome way to debug HTTP connections in any application, including HTTPS/SSL
 
 ### Browse/read a mitmproxy dump file
 
-Start mitmproxy to read/browser a previously-created dump file, without starting a proxy server:
+Start mitmproxy to browse through a previously-created dump file, without starting a proxy server:
 
 ```
 mitmproxy --rfile <dumpfile> --no-server
@@ -54,9 +55,9 @@ For example:
 
 One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is quite useful when black-box troubleshooting a third-party component or app!
 
-1.  Install and run mitmproxy locally, and let it generate its SSL certificates.
+1.  Install and run mitmproxy locally first, and let it generate some new SSL certificates.
 
-2.  Add the certificates it generates into a Secret:
+2.  Add the locally-generated certificates into a Secret:
 
     ```yaml
     apiVersion: v1
@@ -75,7 +76,7 @@ One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is 
         -----END DH PARAMETERS-----
     ```
 
-3.  Deploy mitmproxy in dump mode (`mitmdump`), ensuring it saves requests into a dump file:
+3.  Deploy mitmproxy on Kubernetes in dump mode (`mitmdump`), ensuring it saves requests into a dump file:
 
     ```yaml
     apiVersion: apps/v1
@@ -138,7 +139,7 @@ One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is 
         targetPort: 8080
     ```
 
-4.  Mount or bake mitmproxy's certificate into your application's container image, e.g.:
+4.  Mount or mitmproxy's certificate into your application's container image, e.g.:
 
     ```Dockerfile
     COPY certs/mitmproxy.crt /usr/local/share/ca-certificates/mitmproxy.crt
@@ -147,7 +148,7 @@ One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is 
     RUN update-ca-certificates
     ```
 
-5.  Deploy your application and configure it to use mitmproxy as a proxy, e.g. set these env vars on your application's Deployment:
+5.  Deploy your application and configure it to use mitmproxy as a proxy, by setting these env vars on your application's Deployment:
 
     ```yaml
     env:
@@ -157,7 +158,9 @@ One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is 
       value: "http://mitmproxy:8080"
     ```
 
-6.  Perform some actions in your application. Once you've captured enough traffic and you're ready to inspect the dump file, take a local copy of the dump file from the Pod, and open it locally with _mitmproxy_:
+6.  Perform some actions in your application, enough to capture the traffic you need to inspect.
+
+7.  Once you've captured enough traffic and you're ready to inspect the dump file, make a local copy of the dump file from the Pod, and open it locally with _mitmproxy_:
 
     ```shell
     kubectl -n qadwa-jobs cp $(kubectl -n NAMESPACE get pod --selector app.kubernetes.io/instance=mitmproxy -oname | cut --delimiter="/" --fields=2):/home/mitmproxy/mitmproxy.dumpfile mitmproxy.dumpfile
@@ -165,7 +168,7 @@ One use case for mitmproxy is to inspect traffic from a Kubernetes app. This is 
     mitmproxy --rfile mitmproxy.dumpfile --no-server
     ```
 
-## Scripting mitmproxy
+## Scripts and add-ons
 
 ### Adding a delay to all requests
 
@@ -232,4 +235,54 @@ class RateLimiter:
             return
 
 addons = [RateLimiter()]
+```
+
+### Writing a log for all requests
+
+Create a new file `tracer.py` and then run _mitmproxy_ with `mitmproxy -s tracer.py`:
+
+```python
+import os
+from mitmproxy import http
+from datetime import datetime
+import logging
+import time
+import re
+import json
+
+class Tracer:
+    def __init__(self):
+        pass
+
+    def request(self, flow: http.HTTPFlow) -> None:
+        request_timestamp_start = datetime.utcfromtimestamp(flow.request.timestamp_start)
+        logging.info(f"component=tracer"
+                    f" event=mitmproxy_request"
+                    f" request_url={json.dumps(flow.request.url)}"
+                    f" request_method={flow.request.method}"
+                    f" request_body={json.dumps(flow.request.text)}"
+                    f" request_timestamp_start={request_timestamp_start.strftime('%Y-%m-%dT%H:%M:%S.%fZ')}"
+                    f" flow_id={flow.id}")
+          flow.metadata["you_can_add_extra_metadata_here"] = 1
+
+    def response(self, flow):
+        request_timestamp_start = datetime.utcfromtimestamp(flow.request.timestamp_start)
+        response_timestamp_end = datetime.utcfromtimestamp(flow.response.timestamp_end)
+        duration = (response_timestamp_end - request_timestamp_start).microseconds / 1000
+        logging.info(f"component=tracer"
+                    f" event=mitmproxy_response"
+                    f" request_url={json.dumps(flow.request.url)}"
+                    f" request_method={flow.request.method}"
+                    f" request_body={json.dumps(flow.request.text)}"
+                    f" response_status={flow.response.status_code}"
+                    f" response_reason={json.dumps(flow.response.reason)}"
+                    f" response_body={json.dumps(flow.response.text)}"
+                    f" request_timestamp_start={request_timestamp_start.strftime('%Y-%m-%dT%H:%M:%S.%fZ')}"
+                    f" response_timestamp_end={response_timestamp_end.strftime('%Y-%m-%dT%H:%M:%S.%fZ')}"
+                    f" duration={duration}ms"
+                    f" your_metadata_field={flow.metadata.get('you_can_add_extra_metadata_here', 'defaultvalue')}"
+                    f" flow_id={flow.id}")
+
+
+addons = [Tracer()]
 ```

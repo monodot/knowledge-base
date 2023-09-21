@@ -1,11 +1,8 @@
 ---
 layout: page
 title: ActiveMQ Artemis
+lede: "Artemis is a JMS 2.0 compliant message broker, and the successor to ActiveMQ 5.x (sometimes called ActiveMQ Classic)."
 ---
-
-Artemis is a JMS 2.0 compliant message broker, and the successor to [ActiveMQ][activemq] 5.x (sometimes called ActiveMQ Classic).
-
-{% include toc.html %}
 
 ## Documentation
 

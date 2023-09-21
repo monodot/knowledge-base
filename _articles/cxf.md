@@ -3,8 +3,6 @@ layout: page
 title: Apache CXF
 ---
 
-{% include toc.html %}
-
 ## Concepts
 
 Here are some of the key concepts in CXF:
@@ -194,7 +192,7 @@ CXF/JAXWS: _"java.io.IOException: Cannot find any registered HttpDestinationFact
 - You're trying to create a service (e.g. `Endpoint.publish(...)`) but there is no HTTP transport for CXF on the classpath. Add `cxf-rt-transports-http-jetty` as a dependency. This will allow CXF to use Jetty to host your service.
 
 [maven]: {{ site.baseurl }}{% link _articles/maven.md %}
-[camel]: {{ site.baseurl }}{% link _articles/camel.md %}
+[camel]: {{ site.baseurl }}{% link _articles/apache-camel.md %}
 
 [camelcxfendpoint]: https://github.com/apache/camel/blob/master/components/camel-cxf/src/main/docs/cxf-component.adoc#configure-the-cxf-endpoints-with-spring
 [cxfjaxb]: https://cxf.apache.org/docs/jaxb.html

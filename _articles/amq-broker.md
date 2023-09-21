@@ -3,8 +3,6 @@ layout: page
 title: Red Hat AMQ Broker
 ---
 
-{% include toc.html %}
-
 ## Quickstarts
 
 ### Running a local standalone broker

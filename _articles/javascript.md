@@ -5,8 +5,6 @@ title: JavaScript
 
 Mi JavaScripts.
 
-{% include toc.html %}
-
 ## Variables
 
 ### Declaring variables

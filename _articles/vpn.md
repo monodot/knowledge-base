@@ -3,9 +3,7 @@ layout: page
 title: VPN (and VPN hacks)
 ---
 
-## Concepts
-
-## Split tunnelling with `vpn-slice` and `openconnect`
+## How to split-tunnel with `vpn-slice` and `openconnect`
 
 **tun0** is a VPN interface.
 

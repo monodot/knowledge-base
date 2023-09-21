@@ -1,11 +1,8 @@
 ---
 layout: page
 title: JBoss EAP
+lede: "The Java application server, based on Wildfly."
 ---
-
-The Java application server, based on Wildfly.
-
-{% include toc.html %}
 
 ## Concepts
 
@@ -927,14 +924,12 @@ Change the default (`mdb-strict-max-pool`) pool size, by first undefining the de
 ## Config properties
 
 - `jboss.domain.config.dir`
--
 
 ## General troubleshooting
 
 Log categories to turn up:
 
 - `org.apache.activemq.artemis` - for messaging and ActiveMQ
-- ``
 
 ## Cookbook
 

@@ -3,8 +3,6 @@ layout: page
 title: Kubernetes
 ---
 
-{% include toc.html %}
-
 ## Quickstarts/demos
 
 ### Deploy NodeJS app
@@ -203,6 +201,16 @@ ARTEMIS_POD=$(kubectl get pod -n keda-demo -l run=artemis --template '{{range .i
 ```
 {% endraw %}
 
+### Jsonpath
+
+Jsonpath is a way of extracting data from JSON. It's built in to the `kubectl` command.
+
+#### Get a secret value
+
+```
+kubectl get secret mysecret -o jsonpath='{.data.password}' | base64 -d
+```
+
 ## Troubleshooter's toolkit
 
 ### Create a pod and run a command
@@ -239,6 +247,7 @@ kubectl -n myspace run my-little-debug-pod -it --attach --image docker.io/redhat
 
 Pod not starting? Need to launch a container and step through commands?
 
+{% raw %}
 ```shell
 kubectl scale deploy/mydeploy --replicas=0
 
@@ -248,6 +257,7 @@ kubectl scale deploy/mydeploy --replicas=0
 # Get the actual command for the container
 podman inspect --format "entrypoint: {{.Config.Entrypoint}}, cmd: {{.Config.Cmd}}" docker.io/bitnami/ghost:5.26.1
 ```
+{% endraw %}
 
 ### Run a network test (curl, ping, etc.)
 

@@ -3,8 +3,6 @@ layout: page
 title: Apache Qpid
 ---
 
-{% include toc.html %}
-
 ## Qpid JMS Client
 
 [Qpid JMS Client][qpidjms] is a JMS 2.0 client built using Qpid Proton (a messaging library).

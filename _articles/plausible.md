@@ -20,11 +20,13 @@ How to do a quick and dirty back up of the Clickhouse database by backing up the
 
 This assumes that your Persistent Volume is actually somewhere on the host:
 
+{% raw %}
 ```shell
 LOCAL_PV_PATH=$(kubectl get pvc -n plausible data-plausible-events-db-0 -o template='{{.spec.volumeName}}' | xargs kubectl get pv -o template='{{.spec.hostPath.path}}')
 
 tar -cf clickhouse-pv-$(date +%F).tar -C $LOCAL_PV_PATH .
 ```
+{% endraw %}
 
 (How much use would this be in a real DR situation? Anyone's guess...)
 
@@ -148,11 +150,11 @@ kubectl exec -i plausible-db-0 -n plausible -- psql -d plausible -U postgres < p
 
 ## Troubleshooting
 
-Empty analytics data:
+### Empty analytics data
 
 - Check that there is data in Clickhouse - go to http://clickhouse:8123/play (or expose it somehow). Use the top-right boxes to provide the username and password for Clickhouse. Then try a query like `SHOW DATABASES` or `select count(*) from SCHEMA_NAME.events`
 
-Visitor numbers are tiny compared to page visits:
+### Visitor numbers are tiny compared to page visits
 
 - Plausible calculates visitors by hashing IP addresses. If it can't determine the visitor's IP address correctly, or if it's obfuscated by another network component (e.g. a load balancer), then it will be unable to correctly identify the visitor.
 - I run Plausible on k3s which includes a load balancer, Traefik. In normal configuration it obfuscates the IP address of the client. To change this, set `hostNetwork: true` in the spec for the `traefik` deployment. This will expose the client's IP address to Plausible. (This is a bit of a hack, but it works.)

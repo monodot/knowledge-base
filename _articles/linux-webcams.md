@@ -5,8 +5,6 @@ title: Webcams on Linux
 
 Some trial-and-error notes of trying to use various devices as a webcam on Linux, specifically Fedora.
 
-{% include toc.html %}
-
 ## Using an iPhone as a webcam on Fedora (with IPCamera for iOS)
 
 **⚠️ Incomplete instructions - webcam just produces a still image**

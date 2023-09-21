@@ -5,8 +5,6 @@ title: Fedora
 
 For more desktop-y stuff. See RHEL/CentOS page for server-y stuff.
 
-{% include toc.html %}
-
 ## Desktop
 
 ### GNOME Desktop concepts
