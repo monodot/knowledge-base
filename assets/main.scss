@@ -3,6 +3,22 @@
 ---
 
 @import "minima";
+@import "assets/prose.scss";
+
+/* CSS */
+:root, body { font-family: 'Inter', sans-serif; }
+@supports (font-variation-settings: normal) {
+  :root, body { font-family: 'Inter var', sans-serif; }
+}
+
+body {
+    background-color: #F5F5F4;//#FAFAF9;
+    color: #292524;
+}
+
+.site-title {
+    font-family:'Courier New', Courier, monospace;
+}
 
 
 .wrapper {
@@ -42,22 +58,50 @@ article pre {
     min-width: 0;
 }
 
+div.toc ul {
+    margin-left: 0;
+    li {
+        list-style-type: none;
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+
+        &::before {
+            content: "–";
+            position: absolute;
+            left: 0;
+        }
+    }
+}
+
+#post-toc-sidebar {
+    display: none;
+}
+
+main {
+    background: #ffffff;
+}
+
 @media screen and (min-width: 1000px) {
+    main {
+        background: none;
+    }
     div.page-with-toc {
         display: flex;
         flex-direction: row-reverse;
 
         nav {
             flex: none;
-            width: 300px;
+            width: 350px;
             div.toc {
-                padding: 2rem 2rem 2rem 0;
+                padding: 2rem 3rem 2rem 0;
                 position: sticky;
                 top: 0;
             }
         }
         article { 
-            padding: 1rem 0;
+            background: #ffffff;
+            padding: 2rem 1.5rem;
             min-width: 0;
             flex: 1 1 auto;
         }
@@ -66,5 +110,7 @@ article pre {
     #post-toc-inline {
         display: none;
     }
+    #post-toc-sidebar {
+        display: block;
+    }
 }
-    
