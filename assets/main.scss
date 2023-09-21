@@ -6,7 +6,11 @@
 
 
 .wrapper {
-  max-width: inherit;
+    max-width: 1200px;
+}
+
+.prose {
+    max-width: inherit;
 }
 
 table {
@@ -31,3 +35,36 @@ table td {
 dt {
     font-weight: bold;
 }
+
+article pre {
+    overflow-x: auto;
+    max-width: 100%;
+    min-width: 0;
+}
+
+@media screen and (min-width: 1000px) {
+    div.page-with-toc {
+        display: flex;
+        flex-direction: row-reverse;
+
+        nav {
+            flex: none;
+            width: 300px;
+            div.toc {
+                padding: 2rem 2rem 2rem 0;
+                position: sticky;
+                top: 0;
+            }
+        }
+        article { 
+            padding: 1rem 0;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+    }
+    
+    #post-toc-inline {
+        display: none;
+    }
+}
+    

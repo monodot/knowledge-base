@@ -3,26 +3,48 @@ layout: default
 ---
 {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
 
-<article class="post">
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
-    {% if page.path %}
-      <p><a href="https://github.com/monodot/knowledge-base/edit/main/{{ page.path }}">Edit this page on GitHub</a></p>
-    {% endif %}
-    {% comment %}
-    {% if page.last_modified_at %}
-      <p class="post-meta">
-        {{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}
-        <time datetime="{{ page.last_modified_at | date: "%Y-%m-%d" }}">
-          {{ page.last_modified_at | date: date_format }}
-        </time>
-      </p>
-    {% endif %}
-    {% endcomment %}
-  </header>
+<div class="page-with-toc">
 
-  <div class="post-content">
-    {{ content }}
-  </div>
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+      {% if page.path %}
+        <p><a href="https://github.com/monodot/knowledge-base/edit/main/{{ page.path }}">Edit this page on GitHub</a></p>
+      {% endif %}
+      {% comment %}
+      {% if page.last_modified_at %}
+        <p class="post-meta">
+          {{ site.data.ui-text[site.locale].date_label | default: "Updated:" }}
+          <time datetime="{{ page.last_modified_at | date: "%Y-%m-%d" }}">
+            {{ page.last_modified_at | date: date_format }}
+          </time>
+        </p>
+      {% endif %}
+      {% endcomment %}
+    </header>
 
-</article>
+    {% if page.lede %}
+      {{ page.lede | markdownify }}
+    {% endif %}
+
+    <nav class="post-toc" aria-label="Table of contents" id="post-toc-inline">
+      <div class="toc">
+        <h2>Table of contents</h2>
+        {% toc %}
+      </div>
+    </nav>
+
+    <div class="post-content prose">
+      {{ content }}
+    </div>
+
+  </article>
+
+  <nav class="post-toc" aria-label="Table of contents">
+    <div class="toc">
+      <h2>Table of contents</h2>
+      {% toc %}
+    </div>
+  </nav>
+
+</div>

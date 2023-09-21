@@ -26,6 +26,7 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-last-modified-at
+  - jekyll-toc
 exclude:
   - vendor
   - Gemfile
@@ -44,3 +45,15 @@ collections:
    articles:
      output: true
      permalink: /:title:output_ext
+
+defaults:
+  - scope:
+      path: ""
+      type: articles
+    values:
+      layout: page
+      toc: true
+
+toc:
+  min_level: 2
+  max_level: 3

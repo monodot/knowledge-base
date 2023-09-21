@@ -22,6 +22,8 @@ gem "minima", "~> 2.5.0"
 group :jekyll_plugins do
    gem "jekyll-feed", "~> 0.6"
    gem "jekyll-last-modified-at"
+   gem "jekyll-toc", "~> 0.18.0"
+   gem 'jekyll-tidy'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
