@@ -29,5 +29,22 @@ For more info about this site, and why you should start a blog of your own, [che
   {% endfor %}
 </ul>
 
+# Examples
+Full examples, web demos, and code snippets.
+
+{% for category in site.data.examples %}
+  <h3>{{ category.title }}</h3>
+
+  <ul>
+    {% for example in category.examples %}
+      <li>
+        <a href="{{ example.url }}">{{ example.title | escape }}</a> &#8212;
+        {{ example.description }}
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endfor %}
+
 
 [about]: {{ site.baseurl }}{% link about.md %}

@@ -1,0 +1,6 @@
+- title: Tailwind CSS
+  examples:
+  - title: Fullscreen app (flexbox) + sidebar + sticky header/footer
+    description: A template for a web app which uses flexbox to create a full-screen app, with a sticky header and footer, a fixed-width sidebar, and two main panels with equal width. Suitable for a code editing app or similar.
+    url: /examples/tailwindcss/fullscreen-flex-sticky
+

@@ -42,9 +42,9 @@ header_pages:
 permalink: /:title:output_ext
 
 collections:
-   articles:
-     output: true
-     permalink: /:title:output_ext
+  articles:
+    output: true
+    permalink: /:title:output_ext
 
 defaults:
   - scope:
