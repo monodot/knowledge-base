@@ -7,11 +7,13 @@ lede: "Loki is a time series database for strings, written in Go, and inspired b
 
 ## Fundamentals
 
-- Loki is a time-series database for strings. [^1]
+Loki is a time-series database for strings. [^1] Loki stores logs as strings exactly as they were created, and indexes them using _labels_.
+
+Sending data to Loki:
+
 - Loki exposes an HTTP API for pushing, querying and tailing log data.
-- Loki stores logs as strings exactly how they were created, and indexes them using _labels_.
-- Loki is usually combined with _agents_ such as Promtail, which turn log lines into _streams_ and push them to the Loki HTTP API.
-- You can combine Loki with Prometheus _Alertmanager_ to send notifications when things happen.
+- Loki is usually combined with _agents_ such as Promtail, which combine log lines into _streams_, assign labels, and push them to the Loki HTTP API.
+- Loki can be combined with Prometheus _Alertmanager_ to send notifications when events happen.
 
 ### Terminology
 
@@ -45,82 +47,6 @@ cd grafana-demos/loki-basic
 podman-compose up -d
 ```
 
-## Configuration
-
-
-
-#### Using Google Cloud Storage as a backend
-
-To use a Google Cloud Storage Bucket to store chunks, you need to provide authentication, which is usually via one of these two methods:
-
-- Application Default Credentials (ADC)
-
-- Workload Identity
-
-#### Using Google Application Default Credentials (ADC)
-
-Create an IAM Service Account and grant it object admin (basically read+write) on the bucket(s) you're using. This example for Grafana Enterprise Logs (which uses 2 buckets):
-
-```
-export SA_NAME=my-pet-cluster-gel-admin
-
-gcloud iam service-accounts create ${SA_NAME} \
-            --display-name="My GEL Cluster Storage service account"
-
-gsutil iam ch serviceAccount:${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com:objectAdmin gs://${GCP_BUCKET_NAME_DATA}
-
-gsutil iam ch serviceAccount:${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com:objectAdmin gs://${GCP_BUCKET_NAME_ADMIN}
-```
-
-Generate a private key which GEL can use to authenticate as the service account, and use the sGoogle Cloud Storage API:
-
-```
-gcloud iam service-accounts keys create ./sa-private-key.json \
-  --iam-account=${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com
-
-export GCLOUD_SERVICE_ACCOUNT_JSON=$(cat sa-private-key.json | tr -d '\n')
-```
-
-Finally, make the JSON available to Loki:
-
-- Create a secret which contains the JSON representation of the Service Account key generated above
-
-- Mount the secret inside the Loki pod
-
-- Set an environment variable `GOOGLE_APPLICATION_CREDENTIALS=/path/to/mounted/key.json`
-
-Extra step: Additionally, if deploying Grafana Enterprise Logs, add the GCLOUD_SERVICE_ACCOUNT_JSON value to the key `admin_client.storage.gcs.service_account` in your Loki config YAML.
-
-#### Using GKE Workload Identity
-
-If you don't want to create a key for your IAM Service Account and mount it as a secret, use GKE's Workload Identity feature instead. The Google Cloud SDK inside Loki will then implicitly authenticate to Google Cloud Storage, using credentials granted by the Kubernetes Service Account assigned to the Loki Pod.
-
-Instructions derived from <https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity>:
-
-```
-export KUBE_SA_NAME=loki-sa
-export NAMESPACE=yourkkubenamespace
-export GCP_SA_NAME=loki-workload-identity
-export GCP_PROJECT=your-google-cloud-projecte
-export GCP_BUCKET_NAME_DATA=your-loki-data-bucket
-
-kubectl create serviceaccount ${KUBE_SA_NAME} --namespace ${NAMESPACE}
-
-gcloud iam service-accounts create ${GCP_SA_NAME} \
-    --project=${GCP_PROJECT}
-
-gsutil iam ch serviceAccount:${GCP_SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com:objectAdmin gs://${GCP_BUCKET_NAME_DATA}
-
-gcloud iam service-accounts add-iam-policy-binding ${GCP_SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com \
-    --role roles/iam.workloadIdentityUser \
-    --member "serviceAccount:${GCP_PROJECT}.svc.id.goog[${NAMESPACE}/${KUBE_SA_NAME}]"
-
-kubectl annotate serviceaccount ${KUBE_SA_NAME} \
-    --namespace ${NAMESPACE} \
-    iam.gke.io/gcp-service-account=${GCP_SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com
-
-kubectl -n ${NAMESPACE} set sa sts/ge-logs ${KUBE_SA_NAME}
-```
 
 ## Architecture
 
@@ -147,9 +73,67 @@ For maximum scalability, Loki components are grouped into **write** and **read**
 #### Targets (from Loki 2.9)
 
 ```
-podman run docker.io/grafana/loki:2.9.0 -config.file=/etc/loki/local-config.yaml -list-targets
-
-
+$ podman run docker.io/grafana/loki:2.9.0 -config.file=/etc/loki/local-config.yaml -list-targets
+all
+  analytics
+  cache-generation-loader
+  compactor
+  distributor
+  ingester
+  ingester-querier
+  querier
+  query-frontend
+  query-scheduler
+  ruler
+analytics
+backend
+  analytics
+  compactor
+  index-gateway
+  ingester-querier
+  query-scheduler
+  ruler
+cache-generation-loader
+compactor
+  analytics
+distributor
+  analytics
+index-gateway
+  analytics
+ingester
+  analytics
+ingester-querier
+overrides-exporter
+querier
+  analytics
+  cache-generation-loader
+  ingester-querier
+  query-scheduler
+query-frontend
+  analytics
+  cache-generation-loader
+  query-scheduler
+query-scheduler
+  analytics
+read
+  analytics
+  cache-generation-loader
+  compactor
+  index-gateway
+  ingester-querier
+  querier
+  query-frontend
+  query-scheduler
+  ruler
+ruler
+  analytics
+  ingester-querier
+table-manager
+  analytics
+write
+  analytics
+  distributor
+  ingester
 ```
 
 #### Targets (from Loki 2.7.4)
@@ -286,22 +270,92 @@ When using BoltDB-Shipper, if you want to avoid running Queriers and Rulers with
 <object type="image/svg+xml" data="/assets/diagrams/loki_boltdb_shipper.excalidraw.svg"></object>
 
 
+## Deploying on public clouds
+
+### Google Cloud Platform (GCP)
+
+#### How to use Google Cloud Storage as a backend
+
+To use a Google Cloud Storage Bucket to store chunks, you need to provide authentication, which is usually via one of these two methods:
+
+- Application Default Credentials (ADC)
+
+- Workload Identity
+
+#### How to use Google Application Default Credentials (ADC)
+
+Create an IAM Service Account and grant it object admin (basically read+write) on the bucket(s) you're using. This example for Grafana Enterprise Logs (which uses 2 buckets):
+
+```
+export SA_NAME=my-pet-cluster-gel-admin
+
+gcloud iam service-accounts create ${SA_NAME} \
+            --display-name="My GEL Cluster Storage service account"
+
+gsutil iam ch serviceAccount:${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com:objectAdmin gs://${GCP_BUCKET_NAME_DATA}
+
+gsutil iam ch serviceAccount:${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com:objectAdmin gs://${GCP_BUCKET_NAME_ADMIN}
+```
+
+Generate a private key which GEL can use to authenticate as the service account, and use the sGoogle Cloud Storage API:
+
+```
+gcloud iam service-accounts keys create ./sa-private-key.json \
+  --iam-account=${SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com
+
+export GCLOUD_SERVICE_ACCOUNT_JSON=$(cat sa-private-key.json | tr -d '\n')
+```
+
+Finally, make the JSON available to Loki:
+
+- Create a secret which contains the JSON representation of the Service Account key generated above
+
+- Mount the secret inside the Loki pod
+
+- Set an environment variable `GOOGLE_APPLICATION_CREDENTIALS=/path/to/mounted/key.json`
+
+Extra step: Additionally, if deploying Grafana Enterprise Logs, add the GCLOUD_SERVICE_ACCOUNT_JSON value to the key `admin_client.storage.gcs.service_account` in your Loki config YAML.
+
+#### How to use GKE Workload Identity
+
+If you don't want to create a key for your IAM Service Account and mount it as a secret, use GKE's Workload Identity feature instead. The Google Cloud SDK inside Loki will then implicitly authenticate to Google Cloud Storage, using credentials granted by the Kubernetes Service Account assigned to the Loki Pod.
+
+Instructions derived from <https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity>:
+
+```
+export KUBE_SA_NAME=loki-sa
+export NAMESPACE=yourkkubenamespace
+export GCP_SA_NAME=loki-workload-identity
+export GCP_PROJECT=your-google-cloud-projecte
+export GCP_BUCKET_NAME_DATA=your-loki-data-bucket
+
+kubectl create serviceaccount ${KUBE_SA_NAME} --namespace ${NAMESPACE}
+
+gcloud iam service-accounts create ${GCP_SA_NAME} \
+    --project=${GCP_PROJECT}
+
+gsutil iam ch serviceAccount:${GCP_SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com:objectAdmin gs://${GCP_BUCKET_NAME_DATA}
+
+gcloud iam service-accounts add-iam-policy-binding ${GCP_SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com \
+    --role roles/iam.workloadIdentityUser \
+    --member "serviceAccount:${GCP_PROJECT}.svc.id.goog[${NAMESPACE}/${KUBE_SA_NAME}]"
+
+kubectl annotate serviceaccount ${KUBE_SA_NAME} \
+    --namespace ${NAMESPACE} \
+    iam.gke.io/gcp-service-account=${GCP_SA_NAME}@${GCP_PROJECT}.iam.gserviceaccount.com
+
+kubectl -n ${NAMESPACE} set sa sts/ge-logs ${KUBE_SA_NAME}
+```
+
 ## Operations
 
 ### Retention
 
-- Retention in Loki is achieved through the Table Manager or the Compactor. [^2]
-  - For the Table Manager, you need to configure a TTL on your object store (e.g. Minio, AWS S3)
-  - For the Compactor, retention is only supported when using boltdb-shipper (a.k.a. single-store Loki)
-- Loki doesn't delete old chunk stores, unless you're using the `filesystem` chunk store type.
-- To enable Loki to auto-delete old data, you need to configure a **retention duration**.
+- Retention in Loki is achieved through the Compactor (for boltdb & tsdb store types), or the Table Manager (for boltdb & chunk/index store types). [^2]
+- If you're using the _Compactor_, you **don't** also need to also configure the _Table Manager_.
+- You can also optionally set a TTL for your object store in your cloud provider's settings. Make sure that this TTL is **greater than** the configured retention period in Loki.
 
-The BoltDB Shipper includes a component called the Compactor:
-
-- If you're using the **boltdb-shipper** store, you can configure the _Compactor_ to perform retention.
-- If you're using the _Compactor_, you don't need to also configure the _Table Manager_.
-
-Some sample log output from the compactor:
+Some sample log output from the _Compactor_:
 
 ```
 level=info ts=2022-10-26T10:53:33.938957622Z caller=table.go:297 table-name=index_19291 msg="starting compaction of dbs"
@@ -321,9 +375,9 @@ level=info ts=2022-10-26T10:53:36.239174627Z caller=compactor.go:557 msg="finish
 
 Loki supports multitenancy, which means that you can have multiple tenants (i.e. users) in the same Loki cluster. Each tenant has its own set of labels, and can only see logs that have been written by itself.
 
-The HTTP header is `X-Scope-OrgID` and the CLI flag is `--org-id`.
+The HTTP header is `X-Scope-OrgID` and in `logcli` the CLI flag is `--org-id`.
 
-Example logcli:
+Example logcli command:
 
 ```
 logcli query --org-id=1234 '{app="foo"}'
