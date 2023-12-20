@@ -304,20 +304,20 @@ Error: Transaction test error:
 
 ## Troubleshooting
 
-**tracker-miner-fs** seems to consume 100% CPU:
+### **tracker-miner-fs** seems to consume 100% CPU
 
 - Seems to be a process which indexes files and puts the results in `~/.local/share/tracker`
 - Check overall status of the tracker using `tracker status`
 - See what each individual daemon is doing by using `tracker daemon`
 - If necessary, delete the files/folders which are causing the daemon to go out of control
 
-Fedora no longer boots into a graphical desktop:
+### Fedora no longer boots into a graphical desktop
 
 - `systemctl set-default graphical.target` seems to have no effect.
 - See `systemctl list-units --type target` to see all "targets", or `systemctl list-unit-files --type target`.
 - GDM appears to be dead - `systemctl status gdm` reports _inactive_
 
-Why the hell is my default editor now nano? Why are Git commit prompts opening Nano instead of vi?
+### Why the hell is my default editor now nano? Why are Git commit prompts opening Nano instead of vi?
 
 - Check your environment variables: `env | grep EDITOR`, you'll see that this environment variable points to nano as your default editor.
 - To see how it was set, you can run `zsh -xl` which will list all of the commands that are run when you open a new shell. Within this output is a line somewhere that runs a script: `/etc/profile.d/nano-default-editor.sh`
@@ -325,7 +325,7 @@ Why the hell is my default editor now nano? Why are Git commit prompts opening N
 - To find out when this package was installed: `dnf repoquery --installed --qf '%{installtime}' nano-default-editor`
 - Cross-referencing that with the output from `dnf history` shows that it was installed **when I upgraded to Fedora 33**. [CONTROVERSIAL.][nano]
 
-Some websites aren't loading, and resolve to IP address 0.0.0.0:
+### Some websites aren't loading, and resolve to IP address 0.0.0.0
 
 - Some websites/scripts don't load in the browser.
 - Trying to look up these domains, e.g. `nslookup pagead2.googlesyndication.com`, gives a result of 0.0.0.0
@@ -334,7 +334,7 @@ Some websites aren't loading, and resolve to IP address 0.0.0.0:
 - There is a command `resolvectl flush-caches`, but this didn't seem to do anything for me. Instead, you might clear the cache by just restarting _resolved_.
 - **To reset the _resolved_ DNS cache, just restart _resolved_: `sudo systemctl restart systemd-resolved`**
 
-Some applications terminate without any warning (OOM / Out of Memory errors):
+### Some applications terminate without any warning (OOM / Out of Memory errors)
 
 - The apps are perhaps being killed by `systemd-oomd`, a system service which kills processes before an out-of-memory error occurs in kernel space.
 - You can observe `systemd-oomd`'s recent killing sprees with: `journalctl -u systemd-oomd -g Killed`, e.g.:
@@ -344,7 +344,17 @@ Some applications terminate without any warning (OOM / Out of Memory errors):
 - `oomctl` lets you observe the current state of `systemd-oomd`.
 - `systemctl mask systemd-oomd` will disable this service altogether.
 
+### Screen recordings and screen shares are too dark.
 
+- Recording a video capture of your entire screen, or sharing a screen using the native GNOME screen sharing feature, results in a very dark video.
+- I haven't figured out how to fix this yet.
+- But if you're recording a screen capture, use `ffmpeg` to apply post-processing to the video to make it more legible. e.g.:
+  - `ffplay -vf "curves=all='0/0 0.7/1 1/1'" video.mp4` - make things that were 70% bright -> 100% bright.
+  - `ffplay -vf eq=gamma=1.8:saturation=1 video.mp4` - adjust gamma and saturation
+- Then to render:
+  - `ffmpeg -i video.mp4 -vf "curves=all='0/0 0.7/1 1/1'" -c:a copy output.mp4`
+
+  
 
 [searchprovider]: https://developer.gnome.org/SearchProvider/
 [nano]: https://fedoraproject.org/wiki/Changes/UseNanoByDefault
