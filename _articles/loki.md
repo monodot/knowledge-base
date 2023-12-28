@@ -47,6 +47,16 @@ cd grafana-demos/loki-basic
 podman-compose up -d
 ```
 
+### Deploy Loki on Kubernetes and run a smoke test
+
+1.  Follow the instructions in the Loki docs to deploy Loki from the Helm chart.
+2.  Port-forward to the Gateway (NGINX): `kubectl port-forward svc/loki-gateway 8001:80`
+3.  Use _logcli_ to run a couple of example queries in the self-monitoring tenant:
+    - `logcli labels --addr="http://localhost:8001" --org-id="self-monitoring"`
+    - `logcli query --since=1h '{container="loki"}' --addr http://localhost:8001 --org-id self-monitoring`
+4.  Optionally launch a local instance of Grafana and use the Loki data source to query your Loki cluster:
+    - `podman run --net=host -p 3000:3000 docker.io/grafana/grafana:latest`
+    - Create a new Loki data source &rarr; add an HTTP Header: `X-Scope-OrgID` = `self-monitoring`
 
 ## Architecture
 

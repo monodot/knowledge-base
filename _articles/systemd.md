@@ -5,8 +5,10 @@ title: Systemd
 
 ## Terminology
 
-- A systemd **user instance** runs services for a user. You can interact with it using `systemctl --user ...` 
+- The **@ symbol** is for special services, sockets, and other units where multiple instances can be run. [^1]
 - **Log metadata fields** are extra fields which can be associated with a log entry in the journal using `LogExtraFields` option, and then visible in the journal using: `journalctl ... -o verbose`
+- **Slice** is a group of processes that are managed together.
+- A systemd **user instance** runs services for a user. You can interact with it using `systemctl --user ...` 
 
 ## Paths and locations
 
@@ -35,6 +37,23 @@ To view the contents of a service unit **and** all of its override/drop-in files
 
 ```
 systemctl cat myservice.service
+```
+
+### Enable a service
+
+```
+systemctl enable myservice.service
+Created symlink /etc/systemd/system/multi-user.target.wants/clamd@scan2.service → /usr/lib/systemd/system/clamd@.service.
+```
+
+### Remove a service from the `list-units` list
+
+When you run `systemctl list-units`, you'll see a list of services with "LOAD", "ACTIVE" and "SUB" headings. To remove a service from this list, disable it:
+
+```shell
+systemctl disable myservice.service   # Prevent it from running on boot
+rm /etc/systemd/system/*myservice
+systemctl daemon-reload               
 ```
 
 ### Override service configuration (e.g. provide environment variables)
@@ -147,3 +166,4 @@ Process terminates, with _"main process exited, code=killed, status=9/KILL"_:
 - Check why it was killed, with this command: `dmesg -T| grep -E -i -B100 'killed process'`
 - The result should be shown, e.g. _"Out of memory: Killed process 3994 (java) total-vm:2715460kB, anon-rss:162732kB, file-rss:0kB, shmem-rss:0kB, UID:1005 pgtables:644kB oom_score_adj:0"_
 
+[^1]: https://superuser.com/questions/393423/the-symbol-and-systemctl-and-vsftpd

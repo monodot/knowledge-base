@@ -5,8 +5,6 @@ title: k3s
 
 [k3s](https://k3s.io/) is a lightweight Kubernetes distribution "for IoT and Edge Computing".
 
-{% include toc.html %}
-
 
 ## Installation
 
@@ -36,14 +34,14 @@ Kill, uninstall:
 
 ## Networking
 
-DNS:
+### How DNS works
 
 - Uses **coredns** using image `docker.io/rancher/coredns-coredns`
 - This runs as a _ReplicaSet_ in namespace `kube-system`
 - CoreDNS gets settings from the configmap `coredns` in namespace `kube-system` - this is mounted as `/etc/coredns/Corefile` in the container
 - Each container uses CoreDNS for DNS resolution, due to  `nameserver <kube-dns Service IP>` in `/etc/resolv.conf`
 
-Networking/Ingress:
+### How Networking/Ingress works
 
 <object type="image/svg+xml" data="/assets/diagrams/k3s-networking.excalidraw.svg"></object>
 
@@ -53,6 +51,55 @@ Networking/Ingress:
 - ServiceLB (formerly known as Klipper) is used for load balancing. It watches Kubernetes Services with the spec.type field set to LoadBalancer. [^3]
 - **ClusterIP service and Ingress:** To expose an app outside the cluster, you can just create a Service of type _ClusterIP_ and expose it with an _Ingress_.
 - **LoadBalancer service:** Alternatively, create a Service of type _LoadBalancer_. This will create a new **klipper** load balancer DaemonSet (`svclb-*`) in the namespace `kube-system`. However, your Service **must** expose a port which isn't already in use. For example, Traefik occupies ports 80 and 443, so pick a different port.
+
+### Middlewares with Traefik
+
+
+
+#### Example Ingress and Middleware for an HTTPS service
+
+You can also tell Traefik to redirect clients to HTTPS by creating a `Middleware` resource:
+
+```yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+```
+
+Then create the Ingress, with the appropriate annotations so that Traefik will use it. This assumes you're using cert-manager in the cluster to issue Let's Encrypt TLS certificates:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+  name: myapp
+  namespace: plausible
+spec:
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: myapp
+            port:
+              number: 8000
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - myapp.example.com
+    secretName: myapp-tls
+```
 
 ## Cookbook
 
@@ -66,9 +113,9 @@ VERSION_KUBE_DASHBOARD=$(curl -w '%{url_effective}' -I -L -s -S ${GITHUB_URL}/la
 sudo k3s kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/${VERSION_KUBE_DASHBOARD}/aio/deploy/recommended.yaml
 ```
 
-### Monitoring with k9s
+### Using k9s with k3s
 
-To run k9s you will need to pass the location of the rancher config file:
+If you want to view the cluster using the excellent `k9s`, you will need to pass the location of the rancher _kubeconfig_ file:
 
 ```
 k9s --kubeconfig /etc/rancher/k3s/k3s.yaml

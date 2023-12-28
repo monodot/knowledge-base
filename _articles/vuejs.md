@@ -3,6 +3,10 @@ layout: page
 title: Vue.js
 ---
 
+## Related projects
+
+- **Vite** is a build tool for Vue.js. It's a replacement for Webpack.
+
 ## Examples
 
 ### Using `json-editor` with Vue.js and Tailwind

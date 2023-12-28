@@ -22,6 +22,17 @@ Tracking the state of releases in the cluster:
 - Each release version secret describes one version of the release.
 - Upgrades create a new release version secret.
 
+## Cookbook
+
+### Get the values.yaml for any Helm chart
+
+To dump the values.yaml for any Helm chart:
+
+```
+helm show values stable/wordpress > values.yaml
+```
+
+
 ## Troubleshooting
 
 403 Forbidden error when trying to access the "stable" repo (kubernetes-charts.storage.googleapis.com):

@@ -136,11 +136,43 @@ Now have a play around with `gcloud` and see if you can access the resources you
 
 ```
 gcloud artifacts repositories list
+```
 
+### Using OAuth/JWT and Grafana Infinity plugin
+
+If you want to access Google Cloud APIs from the Infinity plugin in Grafana, you can use the following details:
+
+- Authentication type = OAuth2
+- Grant Type = JWT
+- Email = your-username@your-project.iam.gserviceaccount.com
+- Private key = (JWT)
+- Token URL = https://oauth2.googleapis.com/token
+- Scopes = https://www.googleapis.com/auth/cloud-platform
+
+## Cookbook
+
+### Create a simple utility VM
+
+To create a simple utility VM (e.g. for testing out an installation, or doing some research):
+
+```shell
+export VM_NAME=myvm123
+
+gcloud config get-value project  # check which Project we're using
+
+gcloud compute instances create $VM_NAME \
+  --machine-type "e2-standard-2" \
+  --image-project "debian-cloud" \
+  --image-family "debian-11" \
+  --subnet "default" \
+  --zone europe-west1-b
+
+gcloud compute ssh $VM_NAME --zone europe-west1-b
+
+gcloud compute ssh $VM_NAME --zone $(gcloud compute instances list --filter="name=$VM_NAME" --format "get(zone)" | awk -F/ '{print $NF}')
 
 ```
 
-## Cookbook
 
 ### Projects and zones
 

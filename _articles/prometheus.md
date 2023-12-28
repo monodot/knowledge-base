@@ -123,6 +123,12 @@ predict_linear(node_filesystem_avail_bytes{job="node"}[1h], 8 * 3600) < 0
 
 [Source][1]
 
+### Joins
+
+```
+myapp_instance_request_count{region="eu"} by (cluster, id) * on (cluster, id) group_left(app_version, url) myapp_instance_info{}**
+```
+
 ## Targets
 
 ### Kubernetes
