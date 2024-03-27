@@ -5,11 +5,11 @@ title: Prometheus
 
 A time series database, for storing and serving metrics.
 
+## Getting started
+
 ### Basics
 
 - Prometheus runs on port 9090 by default.
-
-## Getting started
 
 ### Deploying on OpenShift 3.x
 
@@ -76,7 +76,7 @@ HELLO
 
 ## Scraping metrics
 
-### Listing metrics from an existing app
+### Viewing an app's metrics endpoint
 
 If you're running an application which already exposes metrics for Prometheus, and you want to see which metrics are exposed.
 
@@ -89,6 +89,10 @@ kubectl port-forward loki-pod-name 3101:3100
 # Then fetch the metrics endpoint - usually at /metrics
 curl localhost:3101/metrics
 ```
+
+## PromQL cheat sheet
+
+- `topk` - 
 
 ## Cookbook
 
@@ -126,7 +130,13 @@ predict_linear(node_filesystem_avail_bytes{job="node"}[1h], 8 * 3600) < 0
 ### Joins
 
 ```
-myapp_instance_request_count{region="eu"} by (cluster, id) * on (cluster, id) group_left(app_version, url) myapp_instance_info{}**
+myapp_instance_request_count{region="eu"} by (cluster, id) * on (cluster, id) group_left(app_version, url) myapp_instance_info{}
+```
+
+Another join, this time we're fetching the `slug` label from the right-hand metric, and using `topk` to reduce the number of results on the right-hand side to 1:
+
+```
+myapp_instance_request_count{region="eu"} * on(cluster, id) group_left(slug) topk by(cluster, id) (1, myapp_instance_info)
 ```
 
 ## Targets

@@ -65,6 +65,13 @@ Switch to a different version using `nvm`:
     $ nvm use 8.1
     Now using node v8.1.2 (npm v5.0.3)
 
+## Fundamentals
+
+### Using modules
+
+- Node.js uses _CommonJS_ syntax by default.
+- This means it uses the `require`/`module.exports` syntax, and doesn't support `export` (ES6 syntax).
+
 ## Troubleshooting
 
 | Problem | Cause | Solution |

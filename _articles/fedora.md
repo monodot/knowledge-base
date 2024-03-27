@@ -7,6 +7,26 @@ For more desktop-y stuff. See RHEL/CentOS page for server-y stuff.
 
 ## Desktop
 
+### Switching desktop environment
+
+GNOME is the default in Fedora. But you could also choose:
+
+- XFCE
+- LXQT
+
+To [list available desktop environments](https://docs.fedoraproject.org/en-US/quick-docs/switching-desktop-environments/):
+
+```
+dnf group list -v --available | grep desktop
+```
+
+Then pick one to install:
+
+```
+sudo dnf install @xfce-desktop-environment
+```
+
+
 ### GNOME Desktop concepts
 
 Here is a list of things in Fedora/GNOME which it took me a while to figure out **the name of**:
@@ -354,7 +374,13 @@ Error: Transaction test error:
 - Then to render:
   - `ffmpeg -i video.mp4 -vf "curves=all='0/0 0.7/1 1/1'" -c:a copy output.mp4`
 
-  
+To solve this for good: I just switched to Xfce desktop environment. _BIG SHRUG_
+
+### Zoom screen sharing causes high CPU and system freeze
+
+- System environment: Wayland / GNOME.
+- When sharing the desktop during a Zoom call, the system freezes, or it's fine during the sharing session, but it freezes once you *stop* sharing.
+- I never found the root cause of this. Perhaps it was Wayland? Anyway, to anyone who's reading this: to try to resolve this, and the other reason above, I switched my desktop environment to Xfce, and now the problem doesn't seem to happen anymore. _BIG SHRUG_
 
 [searchprovider]: https://developer.gnome.org/SearchProvider/
 [nano]: https://fedoraproject.org/wiki/Changes/UseNanoByDefault

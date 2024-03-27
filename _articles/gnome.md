@@ -47,3 +47,16 @@ Version=1.0
 ```
 
 [desktopfiles]: https://developer.gnome.org/integration-guide/stable/desktop-files.html.en
+
+## Troubleshooting
+
+### Screencast recordings are dark
+
+- Cause: unknown. Possibly caused by the screen-recorder's window/canvas casting a shadow over the content that it's trying to record.
+- Possibly caused by "server-side window shadows"? 
+- Possibly related: https://gitlab.gnome.org/GNOME/mutter/-/issues/468
+- I have tried these (all didn't work):
+  - adding `.window-frame { box-shadow: none; }` to `~/.config/gtk-4.0/gtk.css` and `~/.config/gtk-3.0/gtk.css` => didn't work
+- I ended up migrating to XFCE to fix this problem (really)
+
+

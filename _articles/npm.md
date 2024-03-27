@@ -20,7 +20,16 @@ Then you can install packages globally using:
 
     npm install --global smee-client
 
-## Updating packages
+## Updating packages with `ncu`
+
+```shell
+# Pre-requisite
+npm install -g npm-check-updates
+
+ncu -u '/@grafana/'                  # Update all '@grafana/*' packages
+```
+
+## Updating packages with `outdated`
 
 First check to see what's "outdated":
 
@@ -97,3 +106,14 @@ A typical `package.json` file might look like this:
 }
 ```
 
+## Troubleshooting
+
+### ERR_INVALID_ARG_TYPE with Webpack
+
+> [webpack-cli] Failed to load '/home/tdonohue/blah/plugin/.config/webpack/webpack.config.ts' config 
+> [webpack-cli] TypeError [ERR_INVALID_ARG_TYPE]: The "original" argument must be of type function. Received undefined
+
+- Have you been playing around with your package.json and trying to upgrade versions of libraries?
+- Revert your code to a known good state.
+- Then clean your node_modules cache - `rm -rf node_modules/`
+- Then re-run your build script.

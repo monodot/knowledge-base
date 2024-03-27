@@ -4,7 +4,7 @@ title: Apache Camel
 lede: "Apache Camel is an integration framework for Java. It allows you to exchange data with applications, in tons of different formats and protocols."
 ---
 
-As well as being a rather spiffing framework, using Apache Camel is also a wonderful way to honour the humble and ancient camel. Here's a camel for you to say thanks for reading this: 🐪
+As well as being a rather spiffing framework, using Apache Camel is also a wonderful way to honour the humble and ancient camel. Here's a camel for you to say thanks for visiting this page: 🐪
 
 ## Component versions
 
@@ -80,7 +80,17 @@ The Camel components that are supported on Quarkus are the ones which have a Qua
 
 Camel Quarkus components respect the `camel.component.*` properties for autoconfiguration, e.g. setting `camel.component.activemq.broker-url` when the ActiveMQ component is used, will create a connection to the given broker URL.
 
-## Code snippets
+## Cookbook
+
+### Basics 
+
+#### Logging the message body and headers
+
+Add a log step, which will log the current message body and all headers:
+
+```
+.to("log:com.example.mylogger?level=INFO&showAll=true")
+```
 
 ### Servlet: Configure the Servlet component with a mapping URI
 

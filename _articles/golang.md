@@ -58,6 +58,11 @@ func (c *Client) NewStack(stack *CreateStackInput) (int64, error) {
 - `stack *CreateStackInput` is the argument.
 - `(int64, error)` is the return type.
 
+In Go, methods can be defined on either values or pointers:
+
+- If a method is defined on a pointer (i.e. with `*`), it can modify the value that it points to.
+- If a method is defined on a value, it receives a copy of the value, so it cannot modify the original value.
+
 #### Receivers
 
 Here is a complete piece of code that shows how a receiver is used in a method:
@@ -108,7 +113,8 @@ _"Cannot find package github.com/.../... in any of ...."_ when running `go get`:
 
 ### VS Code: "Could not import..." and red underlines
 
-- You've opened a Git repo in VS Code and are trying to open one of many child Go projects in that repo. VS Code is getting confused.
+- You've opened a Git repo in VS Code and are trying to open one of many child Go projects in that repo. VS Code / `gopls` is getting confused.
 - In VS Code, just open the child project in its own workspace.
+- Or, open your Git repo as usual, and then choose File &rarr; Add Folder to Workspace, select your module's folder, and all will magically work!
 
 [^1]: https://go.dev/doc/tutorial/add-a-test

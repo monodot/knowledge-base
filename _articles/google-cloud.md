@@ -138,6 +138,13 @@ Now have a play around with `gcloud` and see if you can access the resources you
 gcloud artifacts repositories list
 ```
 
+You can also see your current user identity:
+
+```shell
+$ gcloud info | grep 'Account:'
+Account: [myapp-runner@mycompany-project.iam.gserviceaccount.com]
+```
+
 ### Using OAuth/JWT and Grafana Infinity plugin
 
 If you want to access Google Cloud APIs from the Infinity plugin in Grafana, you can use the following details:

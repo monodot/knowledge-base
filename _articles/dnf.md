@@ -27,6 +27,12 @@ The package manager.
 
 Some things about dnf:
 
+### Update all packages
+
+```shell
+sudo dnf update
+```
+
 ### Searching for packages
 
 #### Searching with _yum_
@@ -391,5 +397,9 @@ Error: rpmdb open failed
 
 - This error seems to happen randomly. The yum package database is corrupt?
 - Move the corrupt database and get the server to rebuild it: `mv /var/lib/rpm/__db* /tmp && rpm --rebuilddb && yum upgrade`
+
+### "package foo from repo conflicts with foo2 provided by repo2 from reponame"
+
+Run `sudo dnf install <package> --allowerasing`
 
 [^1]: https://dnf.readthedocs.io/en/latest/modularity.html

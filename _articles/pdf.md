@@ -11,6 +11,12 @@ PDF tips and tricks.
     $ cd littlebirdy
     $ ./littlebirdy /path/to/your.pdf
 
+## Compressing a PDF
+
+Using GPL Ghostscript:
+
+    gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf
+
 ## Making a PDF look like a scanned document (Fedora)
 
 First install ImageMagick:

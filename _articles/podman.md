@@ -298,13 +298,14 @@ The process inside the container can't connect to web sites / has no DNS resolut
 - Test for DNS resolution with `bash`: `cat < /dev/tcp/smtp.mailgun.org/587`
 - Check whether DNS resolution info has been copied into the container: `cat /etc/resolv.conf`
 - Check whether the issue applies to a new container by running `ping` in an `alpine` container: `podman run -it docker.io/alpine ping -c 5 1.1.1.1`
+- If this is a rootless container, possibly the _slirp4netns_ process has died. Check `podman unshare --rootless-netns ip addr` and `ps auxww | grep slirp4netns`
 - Try to restart the container/upgrade Podman
 
 I can't do stuff inside the container which I can do as the user on the host system:
 
 - Rootless podman restricts access to the system by the user inside the container, to even tighter restrictions than the user on the host system.
 - To give the container the same permissions as the user who launched it, add `--privileged` to your podman command.
-- `priveleged` releaxes Seccomp, SELinux and restrictions on mounts in `/proc` and `/sys`.
+- `privileged` relaxes Seccomp, SELinux and restrictions on mounts in `/proc` and `/sys`.
 - Note that `privileged` in podman has a slightly different meaning from docker's `privileged`.
 
 Some corruption when trying to run `podman images` or deleting containers with `podman rm $(podman ps -aq)`, like _"container 2ab05ed139dc86b9a056e60ccc5cf768822d34db63db2c51b401c953c7d455d3 is the infra container of pod 17c359d0b1a5f312b80e240e9c2f3082f4cb647a895042ba97fbae33806cfca0 and cannot be removed without removing the pod"_

@@ -23,6 +23,8 @@ Sending data to Loki:
 - A **tenant** is a user in Loki. 
   - Loki runs in multi-tenant mode by default. This means that requests and data from tenant A are isolated from tenant B. [^3]
   - To disable multi-tenancy, set `auth_enabled: false` in the config file.
+- An **instant query** is a query that is executed exactly once and produces a single data point.
+- A **range query** is an instant query, that is executed multiple times, that generally produces a _metric_ suitable for plotting on a graph.
 
 ### Use cases
 

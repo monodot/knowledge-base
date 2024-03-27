@@ -5,6 +5,14 @@ title: jq
 
 ## jq cookbook
 
+### Generate a command for each entry in a map
+
+This will generate the command `python adduser.py $slug $username $password $email`:
+
+```
+cat document.json | jq -r '.users | to_entries[] | "python adduser.py \(.value.stack_slug) \(.value.username) \(.value.password) \(.value.email)"'
+```
+
 ### Get AWS EC2 InstanceIds
 
 Fetch a list of Amazon EC2 instances and get their InstanceID:
@@ -58,7 +66,6 @@ while read -r email slug; do
 done < <(jq --raw-output '.workshop_users | to_entries[] | "\(.key) \(.value | .stack_slug)"' myfile.json)
 ```
 
-
 ### Iterate over multiple JSON files and execute jq on each of them
 
 Example:
@@ -67,4 +74,20 @@ Example:
 for d in /workshops/provisioned-workshops/${WORKSHOP_NAME}/${WORKSHOP_NAME:0:3}*/; do
     jq -r '(.username + ":" + .password)' "$d/complete-config.json"
 done
+```
+
+### List all containers which deploy a certain image, and show their container CPU limits
+
+This will strip 'm' from the end of millicore values, add '000' to the end of (full-)core values and set 'N/A' if a limit is not set:
+
+```shell
+kubectl -n NAMESPACE get pod -o json | jq -r '.items[] | .metadata.name as $pod_name | .spec.containers[] | [$pod_name, .name, .image, (.resources.limits.cpu | if . == null then "N/A" elif . | endswith("m") then .[:-1] else . + "000" end)] | @tsv' | grep my-app-image
+```
+
+Example output:
+
+```
+ingester-0	ingester	myapp/my-app-image:v1.6.0	2000
+ingester-1	ingester	myapp/my-app-image:v1.6.0	2000
+ingester-2	ingester	myapp/my-app-image:v1.6.0	2000
 ```
