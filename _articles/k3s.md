@@ -121,6 +121,18 @@ If you want to view the cluster using the excellent `k9s`, you will need to pass
 k9s --kubeconfig /etc/rancher/k3s/k3s.yaml
 ```
 
+### Accessing a service remotely
+
+If you're running a service in a remote cluster, but you don't want to expose it with an Ingress, you can use a local port-forward and an SSH reverse tunnel service like localhost.run to access it from your local computer:
+
+```shell
+# assuming your app runs on port 8080. 8123 can be any port you like
+k3s kubectl -n namespace port-forward svc/my-app 8123:8080
+
+# 
+ssh -R 80:localhost:8123 nokey@localhost.run
+```
+
 ## Misc
 
 Some more info about k3s:
