@@ -7,6 +7,18 @@ Totally clueless newbie on this one.
 
 ## Syntax speedrun
 
+### Variables and consts
+
+```go
+// Assigning values to variables 
+var y int = 1  // most verbose way
+var y = 1      // assumes an int type, because 1 is an int literal
+x := 1         // this style can be used only within a function
+
+const x = 10 // an untyped constant declaration 
+const typedX int = 10 // can only be assigned where an int is expected 
+```
+
 ### Pointers
 
 - `*` is used to declare a pointer.
@@ -17,14 +29,6 @@ var x int = 1
 var y = &x // y holds variable x's memory address
 
 var y *int = &x
-```
-
-### Variables
-
-```go
-var x int = 1
-var x = 1
-x := 1
 ```
 
 ### Functions
