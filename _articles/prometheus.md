@@ -11,6 +11,66 @@ A time series database, for storing and serving metrics.
 
 - Prometheus runs on port 9090 by default.
 
+## Metric types
+
+### Histogram
+
+A histogram _"is a graphical representation of the distribution of numerical data. It is a type of bar chart that shows the frequency or number of observations within different numerical ranges, called bins."_ (or _buckets_, in Prometheus-speak).
+
+```
+Scores  | Distribution
+90-100  | **
+80-89   | ****
+70-79   | *****
+60-69   | ***
+50-59   | *
+```
+
+A **histogram metric** consists of a few metrics:
+
+- `_count`: the total number of measurements
+- `_sum`: the sum of the values of all measurements
+- `_bucket`: counters for each bucket, identified by a `le` label (a label that describes the upper bounds of a bucket)
+
+To use a histogram:
+
+- Use the `histogram_quantile` function to calculate quantiles from a histogram.
+
+Examples:
+
+- `http_request_duration_seconds_count`, `http_request_duration_seconds_sum`, `http_request_duration_seconds_bucket`
+
+### Counter
+
+- Counters end in `_total`
+
+### Gauge
+
+- Gauges end in `_bytes` or `_total`
+- `le` is a label for the upper bounds of a histogram bucket
+
+### Terminology, terms of art
+
+- A **vector** is a one-dimensional list, of which there are two types:
+  - **Instant vector** is a list of zero or more time series, each containing 1 **sample**, with its original timestamp and value.
+  - **Range vector** is a list of zero or more time series, each containing many samples for each time series
+  - You almost always use a range vector with a function like `rate` or `avg_over_time`
+- **Instant query** - produces a table-like view, where you want to show the result of a PromQL query at a single point in time. [2]
+- **Scalar** is a single numeric value, like `1.234`, often used as some argument in a query
+
+### Examples
+
+```
+# Instant vector selector
+process_resident_memory_bytes{job="node"}
+
+# Range vector - many samples for each time series
+rate(process_cpu_seconds_total[1m])
+
+# 'range:resolution' syntax - every 1 min for the last 30 min
+max_over_time( rate(http_requests_total[5m])[30m:1m] )
+```
+
 ### Deploying on OpenShift 3.x
 
 Deploying a wee Prometheus on OpenShift 3.11:
@@ -163,3 +223,4 @@ prometheus.io/port: "8672"
 ```
 
 [1]: https://www.robustperception.io/reduce-noise-from-disk-space-alerts/
+[2]: https://promlabs.com/blog/2020/06/18/the-anatomy-of-a-promql-query/
