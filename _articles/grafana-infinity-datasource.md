@@ -26,3 +26,27 @@ parse-json
 | scope "data"
 | 
 ```
+
+### How to validate parts of a YAML document
+
+To fetch a YAML document and then validate parts of it (e.g. evaluate some custom rules):
+
+- Type: UQL
+- Source: URL
+- Format: Table
+- URL: http://example.com/example.yaml
+
+Then in the UQL box, parse the YAML into JSON, and use the _jsonata_ function to evaluate expressions of your choosing:
+
+```
+parse-yaml
+| jsonata "{ \"memcached_host_configured\": $.chunk_store_config.chunk_cache_config.memcached_client.host != '', \"ruler_evaluation_interval\": $.ruler.evaluation_interval }"
+| project kv()
+```
+
+When displayed in a Table panel in Grafana, this should result in something like:
+
+| key | value |
+| --- | ----- |
+| is_memcached_host_configured | true |
+| ruler_evaluation_interval | 1m0s |
