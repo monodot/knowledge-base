@@ -31,6 +31,7 @@ class BoxListView(ListView):
 
 Then you can render a list in `box_list.html`:
 
+{% raw %}
 ```html
 {% block content %}
   <h1>Box List</h1>
@@ -47,4 +48,4 @@ Then you can render a list in `box_list.html`:
   {% endif %}
 {% endblock %}
 ```
-
+{% endraw %}
