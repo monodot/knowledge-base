@@ -203,6 +203,35 @@ gel {
 
 ## Cookbook
 
+### Create a token and test the Admin API
+
+For quick testing, create a token by dropping to an enterprise-logs pod:
+
+```shell
+enterprise-logs -config.file=/etc/loki/config/config.yaml -target=tokengen
+```
+
+Then test the admin-api directly:
+
+```shell
+kubectl -n $NAMESPACE port-forward svc/loki-enterprise-logs-admin-api 3100:3100
+
+export GEL_TOKEN=(the token above)
+curl --silent -u :$GEL_TOKEN localhost:3100/admin/api/v3/tenants | jq
+```
+
+Or test the gateway:
+
+```shell
+kubectl -n gel3-dev port-forward svc/loki-enterprise-logs-gateway 3101:80
+
+export GEL_TOKEN=(the token above)
+curl --silent -u :$GEL_TOKEN localhost:3101/admin/api/v3/tenants | jq
+
+# or test with logcli
+logcli --username=standard-applications --password=$GEL_TOKEN --addr="http://localhost:3101" series {}
+```
+
 ### Access policies and tokens
 
 #### Update an access policy (v3 API)
@@ -248,7 +277,6 @@ curl -u ":${GEL_ADMIN_TOKEN}" "http://${gel_public_ip}:8100/admin/api/v3/accessp
 }
 EOF
 ```
-
 
 #### Create a token
 

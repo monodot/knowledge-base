@@ -12,14 +12,13 @@ Loki is a time-series database for strings. [^1] Loki stores logs as strings exa
 Sending data to Loki:
 
 - Loki exposes an HTTP API for pushing, querying and tailing log data.
-- Loki is usually combined with _agents_ such as Promtail, which combine log lines into _streams_, assign labels, and push them to the Loki HTTP API.
-- Loki can be combined with Prometheus _Alertmanager_ to send notifications when events happen.
+- Loki is usually combined with an _agent_ such as Promtail or Grafana Alloy, which combine log lines into _streams_, assign labels, and push them to the Loki HTTP API.
+- Loki can be combined with Prometheus _Alertmanager_ to send alerts when certain events happen.
 
 ### Terminology
 
 - Logs are grouped into **streams**, which are indexed with **labels**.
-- A **log stream** is a combination of a **log source + a unique set of labels**.
-  - A set of log entries with the same labels applied, and grouped together.
+- A **log stream** is a combination of a **log source + a unique set of labels**. A log stream is a set of log entries with the same labels applied, and grouped together.
 - A **tenant** is a user in Loki. 
   - Loki runs in multi-tenant mode by default. This means that requests and data from tenant A are isolated from tenant B. [^3]
   - To disable multi-tenancy, set `auth_enabled: false` in the config file.
@@ -454,6 +453,35 @@ $ logcli series {}
 {app="oracle_exporter", cluster="my-cluster-1"}
 {container="myapp_frontend", namespace="myapp-dev", pod="my-pod-123abc"}
 ...
+```
+
+#### Query log volumes
+
+Show the volume of logs which have any `app` label:
+
+```shell
+$ logcli volume '{app=~".+"}' --since=10m
+2024/04/16 11:50:21 http://localhost:3100/loki/api/v1/index/volume?end=1713264621268821106&limit=30&query=%7Bapp%3D~%22.%2B%22%7D&start=1713264021268821106
+[
+  {
+    "metric": {
+      "app": "promtail"
+    },
+    "value": [
+      1713264621.269,
+      "3559780479"
+    ]
+  },
+  {
+    "metric": {
+      "app": "oracle-exporter"
+    },
+    "value": [
+      1713264621.269,
+      "343485"
+    ]
+  }
+]
 ```
 
 ### The API

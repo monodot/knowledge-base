@@ -187,16 +187,84 @@ predict_linear(node_filesystem_avail_bytes{job="node"}[1h], 8 * 3600) < 0
 
 [Source][1]
 
-### Joins
+### Inner joins (one-to-one)
+
+Joins in Prometheus are generally all about matching two _instant vectors_ together.
+
+From <https://www.robustperception.io/left-joins-in-promql/>:
+
+Basic syntax:
+
+- one-to-one matching only
 
 ```
-myapp_instance_request_count{region="eu"} by (cluster, id) * on (cluster, id) group_left(app_version, url) myapp_instance_info{}
+a * on (label1, label2) b
 ```
+
+### Left joins (many-to-one, one-to-many)
+
+Basic syntax:
+
+- keep all the labels from the left side
+- bring in `baz` from the right hand side
+- many-to-one matching: many samples on the left share `foo` and `bar` labels
+
+```
+a * on (foo, bar) group_left(baz) b
+```
+
+#### Get Kubernetes pods and their nodes running a given image
+
+Get all containers running some `nginx` image, and join to another series to get the `node` label:
+
+```
+kube_pod_container_info{image=~".*nginx.*"} 
+* 
+on (cluster, namespace, pod) 
+group_left(node)
+kube_pod_info{}
+```
+
+You'll get (in Table view in Grafana):
+
+| cluster | namespace | node | pod | value |
+| ------- | --------- | ---- | --- | ----- |
+| mycluster | myapp   | node-0 | myapp-1 | 1 |
+
+#### Add node CPU cores
+
+```
+(
+    kube_pod_container_info{image=~".*enterprise-traces.*"}
+  * on(cluster, namespace, pod) group_left(node)
+    (
+        kube_pod_info
+      * on(node) group_left()
+        kube_node_status_capacity_cpu_cores
+    )
+)
+```
+
+#### Get the app version and url for each instance of an app
+
+```
+myapp_instance_request_count{region="eu"} by (cluster, id)
+*
+on (cluster, id)
+group_left(app_version, url) 
+myapp_instance_info{}
+```
+
+#### Get the number of requests to an app, adding its slug label
 
 Another join, this time we're fetching the `slug` label from the right-hand metric, and using `topk` to reduce the number of results on the right-hand side to 1:
 
 ```
-myapp_instance_request_count{region="eu"} * on(cluster, id) group_left(slug) topk by(cluster, id) (1, myapp_instance_info)
+myapp_instance_request_count{region="eu"} 
+* 
+on(cluster, id) 
+group_left(slug) 
+topk by(cluster, id) (1, myapp_instance_info)
 ```
 
 ## Targets
