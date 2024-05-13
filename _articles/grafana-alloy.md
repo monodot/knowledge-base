@@ -194,11 +194,3 @@ subjects:
             - <NAMESPACE>
 ```
 
-
-
-Paddle rate limit bump:
-
-https://github.com/grafana/deployment_tools/pull/141482
-
-> May 13 20:00:42 dougal alloy[4107177]: ts=2024-05-13T19:00:42.059766768Z level=error msg="Exporting failed. Dropping data." component_path=/ component_id=otelcol.exporter.otlp.default error="no more retries left: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp: lookup otlp-gateway-prod-gb-south-0.grafana.net/otlp: no such host\"" dropped_items=35
-
