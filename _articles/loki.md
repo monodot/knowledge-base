@@ -446,7 +446,7 @@ cluster
 
 Get all log streams from the past hour (1hr lookback window is the default):
 
-```
+```shell
 $ logcli series {}
 2022/10/26 10:04:41 http://localhost:3100/loki/api/v1/series?end=1666775081260042673&match=%7B%7D&start=1666771481260042673
 {application="web_app", host="myhost123"}
@@ -457,9 +457,55 @@ $ logcli series {}
 
 #### Query log volumes
 
-Show the volume of logs which have any `app` label:
+Show the volume of logs which have any `app` label.
+
+Use `logcli` to understand your labels and then use `logcli volume` or `logcli stats`:
 
 ```shell
+$ logcli series {} --analyze-labels
+2024/05/31 11:07:23 http://localhost:3100/loki/api/v1/series?end=1717150043670613404&match=%7B%7D&start=1717146443670613404
+Total Streams:  734
+Unique Labels:  30
+
+Label Name                          Unique Values  Found In Streams
+filename                            263            397
+pod                                 242            397
+job                                 123            397
+pod_template_hash                   92             214
+service_name                        64             734
+container                           59             397
+name                                53             344
+controller_revision_hash            26             183
+statefulset_kubernetes_io_pod_name  24             54
+status_code                         13             334
+namespace                           12             397
+app                                 9              94
+http_method                         6              334
+pod_template_generation             6              129
+app_kubernetes_io_component         6              25
+__stream_shard__                    4              45
+k8s_app                             3              21
+service                             3              337
+error_level                         3              337
+app_kubernetes_io_name              3              27
+app_kubernetes_io_instance          2              26
+prometheus_io_label_app             1              34
+tempo_gossip_member                 1              19
+app_kubernetes_io_version           1              1
+target                              1              1
+component                           1              1
+cluster                             1              301
+gossip_ring_member                  1              71
+app_kubernetes_io_part_of           1              12
+application                         1              336
+$ logcli stats '{filename=~".+"}'
+2024/05/31 11:08:32 http://localhost:3100/loki/api/v1/index/stats?end=1717150112138993908&query=%7Bfilename%3D~%22.%2B%22%7D&start=1717146512138993908
+{
+  bytes: 25GB
+  chunks: 1572
+  streams: 240
+  entries: 43308450
+}
 $ logcli volume '{app=~".+"}' --since=10m
 2024/04/16 11:50:21 http://localhost:3100/loki/api/v1/index/volume?end=1713264621268821106&limit=30&query=%7Bapp%3D~%22.%2B%22%7D&start=1713264021268821106
 [
