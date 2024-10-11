@@ -88,6 +88,16 @@ List all branches (including remotes):
 git branch -a
 ```
 
+List all local branches with their most recent commit dates:
+
+```shell
+git for-each-ref --sort=-committerdate --format='%(refname:short) %(committerdate:relative)' refs/heads/
+# monodot/keycloak 2 minutes ago
+# main 2 weeks ago
+# monodot/config-update 2 weeks ago
+# monodot/update-scripts 8 weeks ago
+```
+
 Check out a new local branch `mybranch` which tracks the remote branch `mybranch` (if it exists):
 
 ```

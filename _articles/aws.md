@@ -54,7 +54,19 @@ It can be updated like this:
 brew upgrade awscli
 ```
 
-## Cookbook
+### Formatting commands
+
+Most of the time the AWS CLI will output your query in JSON. You can use `jq` to format it, or use awscli's own output formatting args:
+
+```shell
+aws route53 list-hosted-zones --output table --query 'HostedZones[*].[Name,Id]'
+
+aws route53 list-hosted-zones | jq -r '.HostedZones[] | [.Name, .Id] | @tsv'
+
+aws route53 list-hosted-zones | jq -r '.HostedZones[] | [.Name, .Id] | @tsv' | column --table --separator $'\t'
+```
+
+Cookbook
 
 ### Tool version
 
@@ -110,6 +122,12 @@ $ aws eks list-clusters --profile myprofile --region eu-west-1
         "cillablack"
     ]
 }
+```
+
+#### Connecting to a cluster
+
+```shell
+aws eks --region us-east-2 update-kubeconfig --name my-cluster-name
 ```
 
 #### Set up kubeconfig to authenticate to an EKS cluster

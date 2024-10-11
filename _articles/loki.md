@@ -580,6 +580,14 @@ quantile_over_time(0.95, {cluster="my-demo-cluster", namespace="development", pr
 {job="systemd-journal"} | logfmt | 
 ```
 
+#### Extract a key in nested JSON into a new label
+
+Use something like `line_format` combined with Go templates and the `fromJson` function to read the JSON from another label, extract a value, and set it into a new label:
+
+```
+sum by (request_url, response_status, response_reason) (count_over_time({container="nginx"} | logfmt | line_format "{{$b := fromJson .request_body}}{{ $b.a_field_in_the_request_body }}" [$__auto]))
+```
+
 ### Recording rules
 
 #### Count occurrences of a particular HTTP request
