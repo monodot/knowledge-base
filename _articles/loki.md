@@ -358,6 +358,32 @@ kubectl annotate serviceaccount ${KUBE_SA_NAME} \
 kubectl -n ${NAMESPACE} set sa sts/ge-logs ${KUBE_SA_NAME}
 ```
 
+## Alert and recording rules 
+
+### Example recording rules
+
+Some examples:
+
+`myapp:successful_requests:rate1m`
+
+    sum by (cluster) (rate({app="myapp"} | json | response_code=`200` [1m]))
+
+`myapp:total_requests:rate1m`
+
+    sum by (cluster) (rate({app="myapp"} | json [1m]))
+
+`myapp:data_processed` - track the total data processed by an imaginary batch job over time, broken down by host
+
+    sum by (host) (
+        sum_over_time(
+            {app="my_batch_job"} 
+            |= `event=stats` 
+            | logfmt 
+            | unwrap bytes(data_processed) 
+            | __error__=""
+        [2m])
+    )
+
 ## Operations
 
 ### Retention
@@ -528,6 +554,27 @@ $ logcli volume '{app=~".+"}' --since=10m
     ]
   }
 ]
+```
+
+#### Find labels, then query some example logs with stdin
+
+This example uses Grafana Cloud Logs but also applies to Loki OSS:
+
+```shell
+export LOKI_PASSWORD="eyJrI..."
+export LOKI_USERNAME="123456"
+export LOKI_ADDR="https://logs-prod-008.grafana.net"
+
+logcli series '{}' --analyze-labels
+
+logcli labels service_name
+
+# Find all service_name=website logs, then find in those results for logs containing `intellij`
+logcli query '{service_name="website"}' | logcli query '{service_name="website"} |= `intellij`' --stdin
+
+logcli query '{service_name="website"}' | logcli query 'rate({service_name="website"}[5m])' --stdin
+# 
+logcli query 'rate({service_name="website"}[5m])'
 ```
 
 ### The API

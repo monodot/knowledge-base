@@ -39,3 +39,7 @@ In the nginx logs: _2020/12/21 13:33:32 [error] 19947#0: *9567 FastCGI sent in s
 - Ensure that the site's conf file has a line like: `fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;`
 - Also ensure that the `root` is set correctly for this vhost, as the document root will be passed to PHP-FPM so it knows where the PHP script is.
  
+In the nginx logs: _"upstream sent too big header while reading response header from upstream"_
+
+- Seen with the Ingress NGINX Controller for Kubernetes when trying to access a Keycloak URL
+- Set `nginx.ingress.kubernetes.io/proxy-buffer-size: 16k`

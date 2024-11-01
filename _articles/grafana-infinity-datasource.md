@@ -5,26 +5,35 @@ title: Grafana Infinity Datasource
 
 A data source for getting REST APIs into a Grafana dashboard.
 
-## Settings and examples
+## Cookbook
 
-### Computed columns, Filter, Group By
-
-**Computed columns** (with parser: Backend) can have an expression which includes strings concatenation.
-
-Example: take the `Location` field from the API response, and the variable `google_project`, and use them to create an example command:
-
-```
-'gcloud container clusters get-credentials ' + Name + ' --location ' + Location + ' --project ${google_project}'
-```
-
-### UQL
+### Use UQL to iterate over a key in the JSON
 
 An example UQL expression which iterates over the key `data` in some JSON:
 
 ```
 parse-json
 | scope "data"
-| 
+```
+
+### Use UQL to convert an array into a map
+
+Converts, e.g. `{ "clusters": [ "a", "b", "c", "d" ] }` into `[ { name: "a", cmd: "aws eks" }]`
+
+```
+parse-json 
+| project "foo"=array_from_entries('name', "clusters") 
+| project "name"="name", "cmd"=strcat(str("aws eks update-kubeconfig --name "),"name",str(" --region ${region}"))
+```
+
+### Creating dynamic results with 'computed columns'
+
+**Computed columns** (with parser: Backend) can contain an expression which includes string concatenation.
+
+**Example:** take the `Location` field from the API response, and the dashboard variable `google_project`, and use them to create an example command:
+
+```
+'gcloud container clusters get-credentials ' + Name + ' --location ' + Location + ' --project ${google_project}'
 ```
 
 ### How to validate parts of a YAML document
