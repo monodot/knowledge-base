@@ -9,12 +9,35 @@ title: Grafana
 
 ## Correlations
 
-Some example correlations:
+### Example: Extract cluster label for Prometheus query
+- **Target**:
+  - Type: Query
+  - Data Source: Prometheus
+  - Query: `node_memory_MemAvailable_bytes{cluster="$cluster"}`
+- **Source**:
+  - Data Source: Loki
+  - Results Field: `Line`
+  - Transformation:
+    - Type: regular expression
+    - Field: `labels`
+    - Expression: `"cluster":"([^"]+)"`
+    - Map value: `cluster`
+- **What it does**: Extract the "cluster" label and use it in a Prometheus query
 
-| Target Type | Target DS | Target Query | Source DS | Source Results Field | Source Transformation Type | Source Transformation Field | Source Transformation Expression | Source Transformation Map Value | What it does |
-|------------|-----------|--------------|-----------|----------------------|----------------------------|-----------------------------|---------------------------------|--------------------------------|-----|
-| Query | Prometheus data source | `node_memory_MemAvailable_bytes{cluster="$cluster"}` | Loki data source | `Line` | regular expression | `labels` | `"cluster":"([^"]+)"` | `cluster` | Extract the "cluster" label and use it in a Prom query |
-| Query | Loki data source | `{cluster="vinson"} |= '${url}'` | Loki data source | `Line` | Regular expression | `Line` | `"GET (.*?) HTTP/1\.1"` | `url` | Parse an Apache log line for a URL and use it in another Loki query |
+### Example: Parse URL from Apache log for Loki query
+- **Target**:
+  - Type: Query
+  - Data Source: Loki
+  - Query: `{cluster="vinson"} |= '${url}'`
+- **Source**:
+  - Data Source: Loki
+  - Results Field: `Line`
+  - Transformation:
+    - Type: Regular expression
+    - Field: `Line`
+    - Expression: `"GET (.*?) HTTP/1\.1"`
+    - Map value: `url`
+- **What it does**: Parse an Apache log line for a URL and use it in another Loki query
 
 ## Troubleshooting
 
