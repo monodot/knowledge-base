@@ -19,6 +19,25 @@ $ podman ps
 CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
 ```
 
+## Compose
+
+### Tell Podman to explicitly use podman-compose instead of docker-compose
+
+This should also get Podman Compose working in WebStorm, IntelliJ, etc:
+
+```shell
+export PODMAN_COMPOSE_PROVIDER="/usr/bin/podman-compose"
+
+# or
+
+sudo echo -e "compose_providers=[\"/usr/bin/podman-compose\"]" >> /usr/share/containers/containers.conf
+
+# or 
+
+touch $HOME/.config/containers.conf
+echo -e "[engine]\ncompose_providers=[\"/usr/bin/podman-compose\"]" >> $HOME/.config/containers/containers.conf
+```
+
 ## Security 101
 
 ### Rootless podman
@@ -107,6 +126,18 @@ Which registries does podman search for images? podman uses the list of registri
     $ cat /etc/containers/registries.conf | grep 'registries ='
     registries = ['registry.access.redhat.com', 'docker.io', 'registry.fedoraproject.org', 'quay.io', 'registry.centos.org']
     ...
+
+## Building images
+
+To build multi-architecture images (e.g. for amd64 and arm64), try:
+
+```
+podman manifest create $registry/$image_name || true
+
+podman build --platform linux/amd64,linux/arm64  --manifest $registry/$image_name .
+
+podman manifest push $registry/$image_name
+```
 
 ## Volumes
 

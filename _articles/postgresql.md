@@ -37,13 +37,18 @@ To connect to a PostgreSQL instance, first install the `psql` command line tool 
 
 ### Special commands you need to know
 
+The list of bizarre commands you need to basically memorise to view database information.
+
 Once you're connected to the database, execute SQL or use the following commands:
 
+- `\du+` - list users
 - `\dt` - list tables
 - `\d table_name` - describe table
-- `\l` - list databases
+- `\l` - list all databases
+- `\l+` - list all databases, with a bit of extra info
 - `\c database_name` - connect to database
 - `\q` - quit
+- `\?` - help
 
 ### Users and permissions
 

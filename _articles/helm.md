@@ -29,7 +29,15 @@ Tracking the state of releases in the cluster:
 To dump the values.yaml for any Helm chart:
 
 ```
-helm show values stable/wordpress > values.yaml
+helm show values stable/wordpress --version 1.2.3 > values.yaml
+```
+
+### Get information about a deployed release
+
+```
+helm -n mynamespace list
+
+helm -n mynamespace get values RELEASE_NAME
 ```
 
 

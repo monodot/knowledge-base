@@ -5,6 +5,24 @@ lede: "Examples of LogQL queries for generating metrics from logs in Loki."
 ---
 
 
+## Parsing examples
+
+### Pattern parser
+
+```
+{service_name="recommendationservice"} | pattern `<_> Updated inventory for <_> (<product_id>)`
+```
+
+### Regexp parser
+
+Parse the WebKit version from NGINX logs, and draw a graph of sum totals:
+
+```
+{filename="/var/log/nginx/json_access.log"} | regexp `WebKit/(?P<webkit_version>[0-9]+\.[0-9]+)`
+
+sum by(webkit_version) (count_over_time({filename="/var/log/nginx/json_access.log"} | regexp `WebKit/(?P<webkit_version>[0-9]+\.[0-9]+)` | logfmt | __error__=`` [$__auto]))
+```
+
 ## Metric queries
 
 ### Using 'topk'

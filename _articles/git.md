@@ -41,6 +41,14 @@ git add <left_out_files>
 git commit --amend --no-edit
 ```
 
+### Search all branches for a string
+
+Find a string in all local **branch tips**:
+
+```
+git show-ref --heads -s | sort -u | xargs git grep "henlo"
+```
+
 ## Stashing
 
 Stash unfinished changes:

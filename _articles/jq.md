@@ -5,6 +5,14 @@ title: jq
 
 ## jq cookbook
 
+### Merge a JSON file with some other keys and wrap with a top level key
+
+```
+jq --arg job_title "Telephone Sanitiser" \
+  '{employee_wrapped: (. + {job_title: $contents})}' \
+  /path/to/employee.json
+```
+
 ### Generate a command for each entry in a map
 
 This will generate the command `python adduser.py $slug $username $password $email`:

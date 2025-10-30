@@ -18,7 +18,7 @@ The parsers are:
 
 Filter examples:
 
-- `state == 'Alerting'`
+- `state == 'Alerting' && folder == 'Grafana_Folder_Name/Subfolder'`
 
 Computed column examples:
 
@@ -45,6 +45,56 @@ Converts, e.g. `{ "clusters": [ "a", "b", "c", "d" ] }` into `[ { name: "a", cmd
 parse-json 
 | project "foo"=array_from_entries('name', "clusters") 
 | project "name"="name", "cmd"=strcat(str("aws eks update-kubeconfig --name "),"name",str(" --region ${region}"))
+```
+
+### Use UQL & JSONata to process a response from an AWS API
+
+Given a response like this:
+
+```json
+{
+    "NextToken": "AG9VOEF...FOryHEXAMPLE",
+    "Resources": [
+        {
+            "Arn": "arn:aws:iam::123456789012:policy/service-role/Policy-For-A-Service-Role",
+            "LastReportedAt": "2024-07-21T12:34:42Z",
+            "OwningAccountId": "111122223333",
+            "Region": ".....",
+            "Properties": [ { "Data": [ { "Key": "deployment_type", "Value": "deployable_env" }, { "Key": "resource_owner", "Value": "appenv-team" } } ]
+        }
+    ]
+}
+```
+
+You could use this UQL to just extract `Arn`, `Region` and `ResourceType` columns, and pull out the tag `resource_owner` from the resource's Data field:
+
+```
+parse-json 
+| jsonata "Resources.{ 'ARN': Arn, 'Account': OwningAccountId, 'Region': Region, 'Type': ResourceType, 'Owner': Properties.Data[Key='resource_owner'].Value}"
+```
+
+Or, split the ARN by the `/` character, like this:
+
+```
+parse-json 
+| jsonata "Resources.{ 'Name': $substringAfter(Arn, '/'), 'Account': OwningAccountId, 'Region': Region, 'Type': ResourceType, 'Owner': Properties.Data[Key='resource_owner'].Value}"
+```
+
+### Summarize totals
+
+```
+parse-json
+| scope "Resources"
+| summarize "number of clusters"=count() by "OwningAccountId", "Region"
+```
+
+Returns something like:
+
+```
+| OwningAccountId | Region    | number of clusters |
+| --------------- | --------- | ------------------ |
+| 8913000000      | us-east-1 |                 30 |
+| 8913000000      | us-west-2 |                 10 |
 ```
 
 ### Creating dynamic results with 'computed columns'
@@ -109,3 +159,61 @@ Issues/troubleshooting:
 - _input data must be a wide series but got type not (input refid)_ - follow the instructions above to convert your Infinity API response into a valid Table for Grafana Alerting.
 
 See also: https://grafana.com/docs/grafana/latest/alerting/fundamentals/alert-rules/queries-conditions/#alert-on-numeric-data 
+
+### How to visualise AWS resources
+
+- Auth type: **AWS**
+- Region: **us-east-1**
+- Service: **eks**
+- Access Key: (configured)
+- Secret Key: (configured)
+- Allowed hosts: `https://eks.us-east-1.amazonaws.com`, `https://resource-explorer-2.us-east-1.amazonaws.com`
+
+Then try a test URL.
+
+### How to display Grafana alert information with Infinity
+
+Configure the Infinity data source as follows:
+
+- Authentication:
+  - Type: **Bearer Token**
+  - Bearer Token: (paste in a Grafana service account token)
+  - Allowed Hosts: `https://yourslug.grafana.net`
+
+Then configure your panel query as follows:
+
+- Parsing options
+  - Rows/Root: `$.data.groups.rules.alerts`
+  - Columns:
+    - Selector `state` as `state`, format as `String`
+    - Selector `labels.alertname` as `alertname`, format as `String`
+    - Selector `labels.team` as `team`, format as `String`
+    - etc.
+- Computed columns, Filter, Group By
+  - Filter expression (optional): e.g. `folder == "!Critical Database Alerts" && service_name == "mythical_beasts" && state == "Alerting"`
+
+Try testing with this URL: GET `https://yourslug.grafana.net/api/prometheus/grafana/api/v1/rules`
+
+### How to convert the number of EKS clusters into a metric
+
+To get the count of all EKS clusters in your environment, grouped by a tag named `deployment_type`, configure a new Recording Rule in Grafana Cloud with the Infinity data source as follows:
+
+- Type: JSON
+- Parser: **Backend** (this is important)
+- Source: URL
+- Format: Data Frame
+- URL: `https://resource-explorer-2.us-east-1.amazonaws.com/ListResources`
+- Rows/Root: `Resources`
+- Columns:
+  - selector: `Properties.0.Data.#(Key=="deployment_type").Value`
+  - alias: `deployment_type`
+  - format as: _String_
+- Computed columns:
+  - Summarize: `count(deployment_type)`
+  - Summarize by: `deployment_type`
+  - Summarize alias: `total`
+
+## Troubleshooting
+
+_"sse.readDataError.. A got error: input data must be a wide series but got type not (input refid)"_
+

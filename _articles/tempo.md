@@ -16,6 +16,10 @@ lede: "Tempo is a database for storing distributed traces."
 - Increasing the slack time allows these "late" spans to have a metric generated for them
 - **BUT** it means that the granularity of the metrics is reduced, i.e. instead of periods of 30 seconds, now your granularity is 1m, 2m, or whatever is configured.
 
+You can find out exactly how many spans are affected:
+
+    sum by(reason) (rate(tempo_metrics_generator_spans_discarded_total{}[$__rate_interval]))
+
 ## Cookbook
 
 ### Fetch a trace from Grafana Cloud Traces
