@@ -5,13 +5,15 @@ title: .NET
 
 ## OpenTelemetry troubleshooting
 
-_Cannot install packages_
+### Cannot install packages (.NET Framework)
 
-- Ensure that "Include Prerelease" is checked in the NuGet Package Manager inside Visual Studio.
+Ensure that "Include Prerelease" is checked in the NuGet Package Manager inside Visual Studio.
 
-_Cannot install packages due to long file names_
+At the time of writing this, some of the underlying OpenTelemetry packages are pre-release versions ("beta", "rc") and pre-release needs to be explicitly allowed.
 
-- If your project folder is nested too deeply in your filesystem, then you'll hit Windows's "long path name" limit. So, add a file `nuget.config` with the contents below:
+### Cannot install packages, due to long file names
+
+If your project folder is nested too deeply in your filesystem, then you'll hit Windows's "long path name" limit. So, add a file `nuget.config` with the contents below:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
