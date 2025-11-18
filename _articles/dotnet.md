@@ -119,6 +119,14 @@ You should see the library in the list:
 
 ### Troubleshooting OpenTelemetry
 
+#### Look for log files in a Windows container (.NET Framework)
+
+If this is a Windows container, and you're not sure where log files are being written to, try looking for the log files using this Powershell command:
+
+```powershell
+Get-ChildItem -Path \ -Recurse -Filter *.log -ErrorAction SilentlyContinue
+```
+
 #### Cannot install packages (.NET Framework)
 
 Ensure that "Include Prerelease" is checked in the NuGet Package Manager inside Visual Studio.
