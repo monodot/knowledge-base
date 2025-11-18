@@ -63,7 +63,7 @@ namespace cheese_app.Controllers
 }
 ```
 
-### Zero-code instrumentation
+### Troubleshooting OpenTelemetry in .NET
 
 #### Enabling OpenTelemetry debug logs (zero-code instrumentation only)
 
@@ -90,7 +90,7 @@ $jsonContent = @"
 Set-Content -Path "C:\Windows\System32\inetsrv\OTEL_DIAGNOSTICS.json" -Value $jsonContent
 ```
 
-Note the levels are Critical, Error, Warning, Informational, Verbose.
+The allowed values for LogLevel are Critical, Error, Warning, Informational, Verbose.
 
 After a few seconds, you should see a file in `C:\Windows\Temp` like `w3wp.exe.1328.log`. This example should create a 1MB log file.
 
@@ -145,8 +145,6 @@ You should see the library in the list:
 ```
 1304 OpenTelemetry.AutoInstrumentation.Native.dll       C:\Program Files\OpenTelemetry .NET...
 ```
-
-### Troubleshooting OpenTelemetry
 
 #### Look for log files in a Windows container (.NET Framework)
 
