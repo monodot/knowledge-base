@@ -3,15 +3,75 @@ layout: page
 title: .NET
 ---
 
-## Zero-code OpenTelemetry in .NET
+## OpenTelemetry
 
-### Enabling OpenTelemetry debug logs
+### Custom span attributes example
+
+Here's an example of adding custom span attributes, either as constant values, or derived from an incoming HTTP header:
+
+```csharp
+using OpenTelemetry.Trace;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+
+namespace cheese_app.Controllers
+{
+    public class ValuesController : ApiController
+    {
+        // GET api/values
+        public IEnumerable<string> Get()
+        {
+            var span = Tracer.CurrentSpan;
+            span.SetAttribute("cheese.catalogue.size", 42);
+            span.SetAttribute("cheese.catalogue.updated", DateTime.UtcNow.ToString("o"));
+
+            return new string[] { "value1", "value2" };
+        }
+
+        // GET api/values/5
+        public string Get(int id)
+        {
+            var span = Tracer.CurrentSpan;
+            span.SetAttribute("cheese.store.origin", "FR");
+            span.SetAttribute("cheese.strength", 5);
+            span.SetAttribute("cheese.tasty", true);
+
+            return "value";
+        }
+
+        // POST api/values
+        public void Post([FromBody] string value)
+        {
+            var span = Tracer.CurrentSpan;
+
+            IEnumerable<string> headerValues;
+            if (Request.Headers.TryGetValues("X-Store-ID", out headerValues))
+            {
+                var headerValue = headerValues.FirstOrDefault();
+                if (!string.IsNullOrEmpty(headerValue))
+                {
+                    span.SetAttribute("cheese.store.id", headerValue);
+                }
+            }
+        }
+
+    }
+}
+```
+
+### Zero-code instrumentation
+
+#### Enabling OpenTelemetry debug logs
 
 _Environment variable: OTEL_LOG_LEVEL=debug_
 
 By setting the optional env var `OTEL_LOG_LEVEL`, you'll see some useful debug logs in `C:\Windows\Temp`. [See example logs](./logs-windows-sample.log)
 
-### Enabling OpenTelemetry diagnostic logs
+#### Enabling OpenTelemetry diagnostic logs
 
 _Create an OTEL_DIAGNOSTICS.json file in your working directory_
 
@@ -43,7 +103,7 @@ at logs of lower severities will be shown.
 {Invalid context}
 ```
 
-### No instrumentation happening at all?
+#### No instrumentation happening at all?
 
 Check that the OpenTelemetry DLL is even being loaded by your process:
 
@@ -57,15 +117,15 @@ You should see the library in the list:
 1304 OpenTelemetry.AutoInstrumentation.Native.dll       C:\Program Files\OpenTelemetry .NET...
 ```
 
-## OpenTelemetry troubleshooting
+### Troubleshooting OpenTelemetry
 
-### Cannot install packages (.NET Framework)
+#### Cannot install packages (.NET Framework)
 
 Ensure that "Include Prerelease" is checked in the NuGet Package Manager inside Visual Studio.
 
 At the time of writing this, some of the underlying OpenTelemetry packages are pre-release versions ("beta", "rc") and pre-release needs to be explicitly allowed.
 
-### Cannot install packages, due to long file names
+#### Cannot install packages, due to long file names
 
 If your project folder is nested too deeply in your filesystem, then you'll hit Windows's "long path name" limit. So, add a file `nuget.config` with the contents below:
 
