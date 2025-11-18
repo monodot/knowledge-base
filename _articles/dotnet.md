@@ -90,7 +90,15 @@ $jsonContent = @"
 Set-Content -Path "C:\Windows\System32\inetsrv\OTEL_DIAGNOSTICS.json" -Value $jsonContent
 ```
 
-After a few seconds you should see a file in `C:\Windows\Temp` like `w3wp.exe.1328.log`. It writes lines like this:
+After a few seconds, you should see a file in `C:\Windows\Temp` like `w3wp.exe.1328.log`.
+
+**If the file doesn't exist,** send a request to your app's API (e.g. with curl or via web browser) which should "wake up" the `w3wp` process. Then it should notice the OTEL_DIAGNOSTICS.json file, and you should see the log file be created in `C:\Windows\Temp`.
+
+```
+type w3wp.exe.1744.log | more
+```
+
+Example logs:
 
 ```
 If you are seeing this message, it means that the OpenTelemetry SDK has successfully created the log file used to write
