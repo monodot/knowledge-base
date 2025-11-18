@@ -65,7 +65,7 @@ namespace cheese_app.Controllers
 
 ### Zero-code instrumentation
 
-#### Enabling OpenTelemetry debug logs
+#### Enabling OpenTelemetry debug logs (zero-code instrumentation only)
 
 _Environment variable: OTEL_LOG_LEVEL=debug_
 
@@ -81,8 +81,8 @@ To enable diagnostic logs ([see documentation](https://github.com/open-telemetry
 $jsonContent = @"
 {
     "LogDirectory": "C:\Windows\Temp",
-    "FileSize": 32768,
-    "LogLevel": "Warning",
+    "FileSize": 1024,
+    "LogLevel": "Informational",
     "FormatMessage": "true"
 }
 "@
@@ -90,25 +90,46 @@ $jsonContent = @"
 Set-Content -Path "C:\Windows\System32\inetsrv\OTEL_DIAGNOSTICS.json" -Value $jsonContent
 ```
 
-After a few seconds, you should see a file in `C:\Windows\Temp` like `w3wp.exe.1328.log`.
+Note the levels are Critical, Error, Warning, Informational, Verbose.
+
+After a few seconds, you should see a file in `C:\Windows\Temp` like `w3wp.exe.1328.log`. This example should create a 1MB log file.
 
 **If the file doesn't exist,** send a request to your app's API (e.g. with curl or via web browser) which should "wake up" the `w3wp` process. Then it should notice the OTEL_DIAGNOSTICS.json file, and you should see the log file be created in `C:\Windows\Temp`.
+
+Type the log:
 
 ```
 type w3wp.exe.1744.log | more
 ```
 
-Example logs:
+Example logs - these logs show that the exporter failed to connect to a non-existent collector on localhost:4318:
 
 ```
-If you are seeing this message, it means that the OpenTelemetry SDK has successfully created the log file used to write
-self-diagnostic logs. This file will be appended with logs as they appear. If you do not see any logs following this lin
-e, it means no logs of the configured LogLevel is occurring. You may change the LogLevel to show lower log levels, so th
-at logs of lower severities will be shown.
-2025-11-13T18:46:15.0492550Z:Failed to inject activity context in format: '{0}', context: '{1}'.{TraceContextPropagator}
-{Invalid context}
-2025-11-13T18:47:15.0425619Z:Failed to inject activity context in format: '{0}', context: '{1}'.{TraceContextPropagator}
-{Invalid context}
+If you are seeing this message, it means that the OpenTelemetry SDK has successfully created the log file used to write self-diagnostic logs. This file will be appended with logs as they appear. If you do not see any logs following this line, it means no logs of the configured LogLevel is occurring. You may change the LogLevel to show lower log levels, so that logs of lower severities will be shown.
+2025-11-18T19:31:56.5040232Z:Exporter failed send data to collector to http://localhost:4318/v1/traces endpoint. Data will not be sent. Exception: System.Net.Http.HttpRequestException: An error occurred while sending the request. ---> System.Net.WebException: Unable to connect to the remote server ---> System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:4318
+   at System.Net.Sockets.Socket.InternalEndConnect(IAsyncResult asyncResult)
+   at System.Net.Sockets.Socket.EndConnect(IAsyncResult asyncResult)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.EndGetRequestStream(IAsyncResult asyncResult, TransportContext& context)
+   at System.Net.Http.HttpClientHandler.GetRequestStreamCallback(IAsyncResult ar)
+   --- End of inner exception stack trace ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at OpenTelemetry.Exporter.OpenTelemetryProtocol.Implementation.ExportClient.OtlpExportClient.SendHttpRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+   at OpenTelemetry.Exporter.OpenTelemetryProtocol.Implementation.ExportClient.OtlpHttpExportClient.SendExportRequest(Byte[] buffer, Int32 contentLength, DateTime deadlineUtc, CancellationToken cancellationToken)
+2025-11-18T19:32:03.5272472Z:Exporter failed send data to collector to http://localhost:4318/v1/traces endpoint. Data will not be sent. Exception: System.Net.Http.HttpRequestException: An error occurred while sending the request. ---> System.Net.WebException: Unable to connect to the remote server ---> System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:4318
+   at System.Net.Sockets.Socket.InternalEndConnect(IAsyncResult asyncResult)
+   at System.Net.Sockets.Socket.EndConnect(IAsyncResult asyncResult)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.EndGetRequestStream(IAsyncResult asyncResult, TransportContext& context)
+   at System.Net.Http.HttpClientHandler.GetRequestStreamCallback(IAsyncResult ar)
+   --- End of inner exception stack trace ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at OpenTelemetry.Exporter.OpenTelemetryProtocol.Implementation.ExportClient.OtlpExportClient.SendHttpRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+   at OpenTelemetry.Exporter.OpenTelemetryProtocol.Implementation.ExportClient.OtlpHttpExportClient.SendExportRequest(Byte[] buffer, Int32 contentLength, DateTime deadlineUtc, CancellationToken cancellationToken)
 ```
 
 #### No instrumentation happening at all?
