@@ -14,6 +14,16 @@ sudo apt install -y docker docker-compose
 sudo usermod -aG docker $USER
 ```
 
+### Installing Docker server and client on Windows
+
+You don't need Docker Desktop, despite what both Docker and Microsoft's documentation tells you.
+
+1.  If you need to build and run Windows containers, go to Add/Remove Features and enable the _Containers_ feature.
+
+2.  Follow the instructions here to install the Docker binaries for Windows: https://docs.docker.com/engine/install/binaries/#install-server-and-client-binaries-on-windows
+
+3.  Add `C:\Program Files\Docker` to your PATH.
+
 ## Simple demos
 
 ### Demo with docker aliased to podman on Fedora
