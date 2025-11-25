@@ -37,9 +37,6 @@ async def handle_message(update, context):
 def main() -> None:
     app = ApplicationBuilder().token(os.environ.get("TELEGRAM_BOT_TOKEN")).build()
 
-    # Add error handler - THIS IS KEY
-    app.add_error_handler(error_handler)
-
     app.add_handler(CommandHandler("hello", hello_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
