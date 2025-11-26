@@ -3,6 +3,14 @@ layout: page
 title: Tailscale
 ---
 
+## Basic administration
+
+### Start tailscale
+
+```sh
+sudo tailscale up
+```
+
 ## GitHub Actions workflow example
 
 You'll need to add a couple of sections like this to your Tailscale ACL, assuming you're tagging your GitHub OAuth client with `tag:ci` and your server with `tag:server`:
