@@ -382,5 +382,19 @@ To solve this for good: I just switched to Xfce desktop environment. _BIG SHRUG_
 - When sharing the desktop during a Zoom call, the system freezes, or it's fine during the sharing session, but it freezes once you *stop* sharing.
 - I never found the root cause of this. Perhaps it was Wayland? Anyway, to anyone who's reading this: to try to resolve this, and the other reason above, I switched my desktop environment to Xfce, and now the problem doesn't seem to happen anymore. _BIG SHRUG_
 
+### Video does not play in Firefox (e.g. YouTube, Reddit)
+
+In the Firefox web developer console, you might see this yellow warning: _"mozilla::MediaResult mozilla::FFmpegDataDecoder<61>::InitDecoder(AVCodec*, AVDictionary**): Couldn't open avcodec"_
+
+Possibly you're missing the correct ffmpeg codecs. To fix:
+
+```sh
+# Install RPMFusion repositories (which contain the full-featured ffmpeg with patented codecs)
+sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+# Swap out ffmpeg-free (limited codec support) with the full ffmpeg package
+sudo dnf swap ffmpeg-free ffmpeg --allowerasing
+```
+
 [searchprovider]: https://developer.gnome.org/SearchProvider/
 [nano]: https://fedoraproject.org/wiki/Changes/UseNanoByDefault
