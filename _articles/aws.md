@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Amazon Web Services (AWS)
+title: AWS
 ---
 
 ## Glossary
@@ -21,6 +21,35 @@ title: Amazon Web Services (AWS)
 : For delivering streaming data to S3, Redshift, Elasticsearch, Splunk.
 
 ## AWS CLI
+
+### Using SSO with multiple accounts
+
+First, set up your AWS CLI config file like this:
+
+```
+[profile acme-paperclips-department]
+sso_session = acme
+sso_account_id = 000000123456
+sso_role_name = AdministratorAccess
+[profile acme-cheeselets-department]
+sso_session = acme
+sso_account_id = 000002312341
+sso_role_name = AdministratorAccess
+[sso-session acme]
+sso_start_url = https://XXXXXXXXXX.awsapps.com/start/#
+sso_region = us-east-2
+sso_registration_scopes = sso:account:access
+```
+
+Then you can log on with:
+
+```sh
+aws sso login --sso-session acme
+
+export AWS_PROFILE=acme-paperclips-department
+# or:
+export AWS_PROFILE=acme-cheeselets-department
+```
 
 ### Using the awscli Docker image
 
