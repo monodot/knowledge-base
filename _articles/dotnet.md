@@ -5,6 +5,38 @@ title: .NET
 
 ## OpenTelemetry
 
+### Instrumenting the Confluent Kafka client
+
+You can instrument the Confluent Kafka client using the upstream 
+
+To enhance an application to add Confluent Kafka instrumentation, we use the `OpenTelemetry.Instrumentation.ConfluentKafka` package. See here for more info: https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.ConfluentKafka/README.md
+
+For a complete example, see: https://github.com/monodot/grafana-playground/tree/main/dotnet-kafka-otel 
+
+1.  Add the package:
+
+    ```sh
+    dotnet package add OpenTelemetry.Instrumentation.ConfluentKafka --prerelease
+    ```
+
+1.  Update the bootstrapping code:
+
+    ```csharp
+    // Create an instrumented consumer - this needs to be done before bootstrapping the OTel tracer provider
+    var instrumentedConsumerBuilder = new InstrumentedConsumerBuilder<string, string>(config);
+    
+    using var tracerProvider = Sdk.CreateTracerProviderBuilder()
+        .UseGrafana()
+        .AddKafkaConsumerInstrumentation(instrumentedConsumerBuilder)
+        .Build();
+    ```
+
+1.  Use the instrumented consumer:
+
+    ```csharp
+    using (var consumer = instrumentedConsumerBuilder.Build()) { ... }
+    ```
+
 ### Custom span attributes example
 
 Here's an example of adding custom span attributes, either as constant values, or derived from an incoming HTTP header:
