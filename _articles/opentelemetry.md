@@ -8,8 +8,8 @@ lede: Vendor-neutral telemetry for infra and applications.
 
 ### OTLP
 
-- The default network port for OTLP/gRPC is **4317**
-- The default network port for OTLP/HTTP is **4318**.
+- The default network port for OTLP/gRPC is **4317** - `http://localhost:4317` and `grpc`
+- The default network port for OTLP/HTTP is **4318** - `http://localhost:4318` and `http/protobuf` or `http/json`
 
 ## Terms of art
 
