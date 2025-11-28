@@ -9,7 +9,7 @@ title: .NET
 
 To enhance an application to add Confluent Kafka instrumentation, we can use the [`OpenTelemetry.Instrumentation.ConfluentKafka`](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/) package.
 
-Follow instructions below or see a complete example at: https://github.com/monodot/grafana-playground/tree/main/dotnet-kafka-otel 
+Follow instructions below or see a complete example at: <https://github.com/monodot/grafana-playground/tree/main/dotnet-kafka-otel>
 
 1.  Add the package:
 
