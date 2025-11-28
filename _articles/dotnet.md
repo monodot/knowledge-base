@@ -7,11 +7,9 @@ title: .NET
 
 ### Instrumenting the Confluent Kafka client
 
-You can instrument the Confluent Kafka client using the upstream 
+To enhance an application to add Confluent Kafka instrumentation, we can use the [`OpenTelemetry.Instrumentation.ConfluentKafka`](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/) package.
 
-To enhance an application to add Confluent Kafka instrumentation, we use the `OpenTelemetry.Instrumentation.ConfluentKafka` package. See here for more info: https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.ConfluentKafka/README.md
-
-For a complete example, see: https://github.com/monodot/grafana-playground/tree/main/dotnet-kafka-otel 
+Follow instructions below or see a complete example at: https://github.com/monodot/grafana-playground/tree/main/dotnet-kafka-otel 
 
 1.  Add the package:
 
