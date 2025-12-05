@@ -300,6 +300,22 @@ ssh -R 80:localhost:8899 nokey@localhost.run
 
 Then visit the web address shown in the output.
 
+## Neat tricks
+
+### Tunnel to a resource that's only accessible from the cluster using socat
+
+You can use a _socat_ pod to forward traffic to an IP address which is accessible only from the cluster. For example, this would create a tunnel to a postgresql database running on port 5432 at the specified `<database_ip>`:
+
+```sh
+kubectl run postgres-tunnel -it \
+    --image=docker.io/alpine/socat --tty --rm --expose=true --port=5432 \
+    tcp-listen:5432,fork,reuseaddr tcp-connect:<database_ip>:5432
+
+kubectl port-forward svc/postgres-tunnel 5432:5432
+```
+
+Now you can access the remote database using `localhost:5432` on your local machine.
+
 ## Troubleshooting
 
 Minikube: apiserver goes down (`apiserver: Stopped` in status):
