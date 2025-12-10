@@ -49,6 +49,7 @@ To view log files, go to _Help - Show Log in Files_ (or Finder, depending on pla
 
 - **Select In:** Alt+Shift+1\. To quickly select the current element in any view (Project view, Maven view, etc.)
 - **Quick Documentation:** Ctrl+Q. To view documentation for whatever object (class, type, etc.) currently at the caret.
+- **Quick Switch View Scheme:** Ctrl+`. Show popup to change theme, zoom, and more. See https://www.jetbrains.com/help/idea/ide-viewing-modes.html
 
 ## IntelliJ project files
 
