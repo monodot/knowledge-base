@@ -140,6 +140,10 @@ $ mvn thorntail:run -Dthorntail.debug.port=8000
 - Check that `maven-compiler-plugin` is configured correctly (e.g. with a version number)
 - Project wasn't imported correctly the first time round => Run the action _Reimport All Maven Projects_ (either from the Maven "tool window" or from the Actions popup (Ctrl+Shift+A))
 - Dependencies weren't imported, and Maven cached the failure and refuses to try again => Go to Settings - Maven and make sure "Always update snapshots" is **ticked** (despite the label saying 'snpashots' on the checkbox, this actually seemed to fix an issue when Maven refused to re-attempt to download a missing dependency.)
+- You're trying to add a Java project in a subdirectory, in a monorepo project, but the root (top-level) is configured with the wrong SDK.
+  - Right-click the sub-project ("module") and open settings (F4).
+  - In Project Settings > Project, ensure that the top-level project is configured with the SDK you want.
+  - Or, to override the SDK for a particular module, go to Project Settings > Modules, find the module you added, and on the Dependencies tab, set the Module SDK.
 
 ### Package names aren't resolving (classes can't see other classes, etc.)
 
