@@ -3,6 +3,14 @@ layout: page
 title: IntelliJ IDEA
 ---
 
+## Keyboard shortcuts and esoteric menus
+
+IntelliJ has some odd shortcuts and strange menus, which appear when you don't want them, but when you *do* want them, you don't know what they're called, or how to find them. Here are some useful ones:
+
+- **Select In:** Alt+Shift+1\. To quickly select the current element in any view (Project view, Maven view, etc.)
+- **Quick Documentation:** Ctrl+Q. To view documentation for whatever object (class, type, etc.) currently at the caret.
+- **Quick Switch View Scheme:** Ctrl+`. Show popup to change theme, zoom, and more. See https://www.jetbrains.com/help/idea/ide-viewing-modes.html
+
 ## Installation and upgrade
 
 To install:
@@ -44,12 +52,6 @@ $ sudo ln -s $IDEA_HOME/bin/idea.sh /usr/local/bin/idea
 To view log files, go to _Help - Show Log in Files_ (or Finder, depending on platform)
 
 - e.g. on Linux, my log files are in `~/.cache/JetBrains/IdeaIC...`
-
-## Nice keyboard shortcuts
-
-- **Select In:** Alt+Shift+1\. To quickly select the current element in any view (Project view, Maven view, etc.)
-- **Quick Documentation:** Ctrl+Q. To view documentation for whatever object (class, type, etc.) currently at the caret.
-- **Quick Switch View Scheme:** Ctrl+`. Show popup to change theme, zoom, and more. See https://www.jetbrains.com/help/idea/ide-viewing-modes.html
 
 ## IntelliJ project files
 
