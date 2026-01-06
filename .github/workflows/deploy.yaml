@@ -50,7 +50,7 @@ jobs:
           K8S_CONTROL_HOST: ${{ secrets.K8S_CONTROL_HOST }}
         run: |
           rsync -avz --delete \
-            -e "ssh" \
+            -e "ssh -o StrictHostKeyChecking=accept-new" \
             _site/ \
             "${K8S_CONTROL_USER}@${K8S_CONTROL_HOST}:/var/www/sites/knowledge-base/"
 
