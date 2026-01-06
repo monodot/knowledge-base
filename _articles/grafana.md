@@ -7,6 +7,22 @@ title: Grafana
 
 - If a particular data set has "child" sets with different data models, they are called **frames**. A **data frame** is a collection of **fields**.
 
+## Alerting & IRM
+
+- An **alert instance** can be Normal, Pending, Alerting, or Recovering
+- Define **contact points** to other systems: e.g. Grafana IRM (for complex routing, escalation, etc), Slack, simple email.
+- Define a **notification policy** which determines when to route alerts to each contact point.
+
+### IRM
+
+IRM specifically has its own concepts:
+
+- An **alert group** is a collection of related alert instances, bundled together to reduce notification noise. It has four possible states:
+  - Firing
+  - Acknowledged
+  - Resolved
+  - Silenced
+
 ## Correlations
 
 ### Example: Extract cluster label for Prometheus query
