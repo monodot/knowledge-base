@@ -4,7 +4,7 @@
 # Usage: ./publish.sh <env> <bundleCacheLocation>
 
 JEKYLL_ENV=${1:-production}
-BUNDLE_APP_CONFIG=${2:-/usr/local/bundle}
+BUNDLE_APP_CONFIG=${2:-.bundle}
 
 echo "Building site..."
 
@@ -15,6 +15,6 @@ podman run --rm \
     -v ${BUNDLE_APP_CONFIG}:/usr/local/bundle \
     -w /usr/src/site \
     -e JEKYLL_ENV=${JEKYLL_ENV} \
-    docker.io/library/ruby:2.7 /bin/bash -c "bundle install && bundle exec jekyll build"
+    docker.io/library/ruby:3.2.2 /bin/bash -c "bundle install && bundle exec jekyll build"
 
 echo "Site build complete."
