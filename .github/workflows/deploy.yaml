@@ -1,0 +1,72 @@
+name: Build and Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@b90be12699fdfcbee4440c2bba85f6f460446bb0 # v1.279.0
+        with:
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Build site
+        run: bundle exec jekyll build
+
+      - name: Create site tarball
+        run: tar czf _site.tgz -C _site/ .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.1.1
+        with:
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_DEPLOY_ROLE }}
+
+      - name: Upload site tarball to S3
+        run: |
+          aws s3 cp _site.tgz s3://${{ secrets.DIST_BUCKET_NAME }}/knowledge-base-latest.tgz
+
+  rollout:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+
+      # This requires a new OAuth 'trust credential' to be created in Tailscale.
+      # Scopes: Auth Keys (read/write) - then select 'tag:ci'
+      - name: Tailscale authenticate
+        uses: tailscale/github-action@53acf823325fe9ca47f4cdaa951f90b4b0de5bb9 # v4.1.1
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci  # comma-separated list of the tags applied to the ephemeral nodes that the GitHub Action creates
+          ping: ${{ secrets.K8S_CONTROL_HOST }}
+
+      # Uses tailscale ssh - no need for SSH keys
+      - name: Restart website
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.K8S_CONTROL_HOST }} >> ~/.ssh/known_hosts
+          ssh {{ secrets.K8S_CONTROL_USER }}@${{ secrets.K8S_CONTROL_HOST }} "
+            k3s kubectl -n kb-prod rollout restart deploy/knowledge-base
+            k3s kubectl -n kb-prod wait --for=condition=available deploy/knowledge-base --timeout=60s
+          "
