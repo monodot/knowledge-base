@@ -5,6 +5,8 @@ on:
   push:
     branches: [ main ]
 
+permissions: {}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,21 +43,24 @@ jobs:
           tags: tag:ci
           ping: ${{ secrets.K8S_CONTROL_HOST }}
 
-      - name: Configure SSH to remote host
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan ${{ secrets.K8S_CONTROL_HOST }} >> ~/.ssh/known_hosts
-
+      # Tailscale handles authentication
       - name: Deploy site files
+        env:
+          K8S_CONTROL_USER: ${{ secrets.K8S_CONTROL_USER }}
+          K8S_CONTROL_HOST: ${{ secrets.K8S_CONTROL_HOST }}
         run: |
           rsync -avz --delete \
             -e "ssh" \
             _site/ \
-            ${{ secrets.K8S_CONTROL_USER }}@${{ secrets.K8S_CONTROL_HOST }}:/var/www/sites/knowledge-base/
+            "${K8S_CONTROL_USER}@${K8S_CONTROL_HOST}:/var/www/sites/knowledge-base/"
 
+      # Tailscale handles authentication
       - name: Restart website
+        env:
+          K8S_CONTROL_USER: ${{ secrets.K8S_CONTROL_USER }}
+          K8S_CONTROL_HOST: ${{ secrets.K8S_CONTROL_HOST }}
         run: |
-          ssh {{ secrets.K8S_CONTROL_USER }}@${{ secrets.K8S_CONTROL_HOST }} "
+          ssh "${K8S_CONTROL_USER}@${K8S_CONTROL_HOST}" "
             k3s kubectl -n kb-prod rollout restart deploy/knowledge-base
             k3s kubectl -n kb-prod wait --for=condition=available deploy/knowledge-base --timeout=60s
           "
