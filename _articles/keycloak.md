@@ -33,7 +33,7 @@ Some built-in client scopes are:
 
 ### Evaluate scopes and view a generated access token
 
-Go to Clients -> (client name) -> Client scopes -> Evaluate.
+Go to **Clients -> (client name) -> Client scopes -> Evaluate**.
 
 This allows you to see **protocol mappers** in action, and effectively see what a generated access token would look like, with the current settings.
 
@@ -50,5 +50,5 @@ If you want to include group membership in a user's token, you can do so on a pe
     - Name: anything you like
     - Token Claim Name: `groups` (this is the key name it will appear under, in the JSON)
     - Click Save.
-5.  The new mapper should appear in the list as Category: Token mapper, Type: Group Membership, and click **Add**.
-6.  Verify the information is included in the user token by using the **Evaluate** tab (described above).
+5.  The new mapper should appear in the list as Category: Token mapper, Type: Group Membership.
+6.  Verify the information is included in the user token, by using the **Evaluate** tab (described above).
