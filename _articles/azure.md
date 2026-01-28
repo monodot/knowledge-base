@@ -36,7 +36,34 @@ Sources:
 
 ## Cookbook
 
-### RBAC
+### Spin up a Windows dev machine with Visual Studio for .NET development
+
+To have a Windows .NET environment for testing, especially for legacy frameworks like .NET Framework on Windows, you can spin up a virtual machine with the following settings (tested in Jan 2026):
+
+**1. Create the VM**
+
+- Virtual machine name: **yourname-dev-machine**
+- Zone options: (just pick 1 zone)
+- Image: **Visual Studio 2022 Community on Windows 11 Enterprise, version 25H2 (x64)**
+- Size: **Standard_D4s_v3** (4 vcpus, 16 GiB memory) - note that this costs $233/mo.
+- Public inbound ports: **None**
+- Disks: (accept the default, 127 GiB)
+- Networking tab:
+    - NIC network security group: **Advanced** (we'll allowlist your IP address after VM creation)
+    - Delete public IP and NIC when VM is deleted - **yes**
+- Accept the rest of the defaults and **Create**.
+
+**2. Update the Security Group**
+
+Azure always wants to open up RDP to the entire internet for some reason. So you'll need to lock it down. After creation:
+
+1. Edit the new Network Security Group (NSG) that is associated with the VM.
+1. Delete the default "allow all" inbound rule to port 3389
+1. Add a new rule: Settings > Inbound security rules > Add:
+    - Source: **My IP Address**
+    - Service: **RDP**
+
+### RBAC in Azure
 
 #### Working with App Registrations and Service Principals
 
