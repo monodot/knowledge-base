@@ -55,13 +55,21 @@ To have a Windows .NET environment for testing, especially for legacy frameworks
 
 **2. Update the Security Group**
 
-Azure always wants to open up RDP to the entire internet for some reason. So you'll need to lock it down. After creation:
+Azure always wants to open up RDP to the entire internet, for some reason. So you'll need to lock it down. Immediately after VM creation:
 
 1. Edit the new Network Security Group (NSG) that is associated with the VM.
 1. Delete the default "allow all" inbound rule to port 3389
 1. Add a new rule: Settings > Inbound security rules > Add:
     - Source: **My IP Address**
     - Service: **RDP**
+
+**3. Set up Visual Studio**
+
+1. From the desktop, launch **Visual Studio 2022** (first launch will take some time)
+2. Open your project (the `.sln` file)
+3. Build/rebuild the project or edit it as necessary.
+
+**4. Install Docker (if necessary)** - see [Docker](./docker.html) for steps.
 
 ### RBAC in Azure
 
