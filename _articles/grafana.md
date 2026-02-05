@@ -55,6 +55,27 @@ IRM specifically has its own concepts:
     - Map value: `url`
 - **What it does**: Parse an Apache log line for a URL and use it in another Loki query
 
+## Expressions
+
+### SQL Expressions
+
+Example SQL expression to join two Loki queries, with a `LEFT OUTER JOIN`. Where there are two queries, A and B:
+
+```sql
+SELECT
+  COALESCE(
+    JSON_EXTRACT(A.labels, '$.default_label'),
+    JSON_EXTRACT(A.labels, '$.fallback_label')
+  ) AS 'Action',
+  JSON_EXTRACT(A.labels, '$.some_label') AS 'Some Label',
+  JSON_EXTRACT(B.labels, '$.end_label') AS 'End Label',
+  MIN(starts.Time) AS 'Start time',
+  COALESCE(MAX(B.Time), '(in progress)') AS 'End time'
+FROM
+  A
+  LEFT OUTER JOIN B ON JSON_EXTRACT(A.labels, '$.pod') = JSON_EXTRACT(B.labels, '$.pod')
+```
+
 ## Troubleshooting
 
 ### Custom plugin seems to disappear from Grafana when developing locally
