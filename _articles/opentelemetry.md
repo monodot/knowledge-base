@@ -36,3 +36,9 @@ ADOT (AWS Distribution of OpenTelemetry):
   - `arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-18-0:1` - "legacy" layer which includes an embedded collector.
   - `arn:aws:lambda:eu-central-1:615299751070:layer:AWSOpenTelemetryDistroPython:21` - new-style layer which works with CloudWatch **only**. 
 
+[grafana/collector-lambda-extension](https://github.com/grafana/collector-lambda-extension/):
+
+- Custom distribution of the [opentelemetry-lambda collector](https://github.com/open-telemetry/opentelemetry-lambda/tree/main/collector) layer, built for Grafana Cloud
+- Designed to be used in conjunction with an opentelemetry-lambda instrumentation layer, like `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-nodejs-0_19_0:1`
+- ARNs like:
+  - `arn:aws:lambda:eu-west-2:050451360540:layer:opentelemetry-collector-grafana-arm64-v0_138_0:2`
