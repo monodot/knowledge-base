@@ -267,6 +267,32 @@ group_left(slug)
 topk by(cluster, id) (1, myapp_instance_info)
 ```
 
+### Discover cardinality or total time series
+
+Count every single unique time series currently stored (this one can be computationally expensive!):
+
+```promql
+count({__name__=~".+"})
+```
+
+Count series in a single metric:
+
+```promql
+count(target_info)
+```
+
+Count series in several metrics, showing the count of each:
+
+```promql
+count({__name__=~"target_info|traces_target_info"}) by (__name__)
+```
+
+Top 10 targets (job + instance) by series count:
+
+```promql
+topk(10, count by(job, instance)({job!=""}))
+```
+
 ## Targets
 
 ### Kubernetes
