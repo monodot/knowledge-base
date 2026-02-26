@@ -293,6 +293,20 @@ Top 10 targets (job + instance) by series count:
 topk(10, count by(job, instance)({job!=""}))
 ```
 
+Count the cardinality of `job+instance` for each `job`:
+
+```promql
+count by (job) (
+  count by (job, instance) ({__name__=~".+"})
+)
+```
+
+Get the top 10 metrics (by series count) for a given `job`:
+
+```promql
+topk(10, count by (__name__) ({__name__=~".+", job="my-namespace/foo-service"}))
+```
+
 ## Targets
 
 ### Kubernetes
