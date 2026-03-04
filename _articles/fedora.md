@@ -396,5 +396,29 @@ sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-rel
 sudo dnf swap ffmpeg-free ffmpeg --allowerasing
 ```
 
+### Login loop after installing a package or a system update
+
+After installing a package (e.g. SimpleScreenRecorder), the system reboots into a login loop. Some startup music might play briefly but then the system returns to the login screen. Multiple KDE processes (plasmashell, kded6, kaccess, org_kde_powerdevil, xwaylandvideobridge) are all crashing with `qt_assert(char const*, char const*, int)`.
+
+Probable cause: A system update was interrupted mid-way (e.g. by a reboot), leaving Qt6 and KDE Frameworks packages in a partially updated, inconsistent state. To investigate, drop to a TTY with `Ctrl+Alt+F2`, log in, then run:
+
+```sh
+journalctl -b | grep -i "core\|crash\|signal" | tail -30
+# If every KDE process is dying with the same `qt_assert` error, it's a broken Qt library, not a configuration issue.
+```
+
+Try running: `sudo dnf clean all && sudo dnf distro-sync --allowerasing`. (`distro-sync` resolves dependency conflicts and completes any interrupted updates. The `--allowerasing` flag allows it to remove conflicting packages as needed.) Reboot after completion.
+
+If KDE config is also corrupted (desktop loads but crashes immediately):
+
+```sh
+mv ~/.config/plasma-org.kde.plasma.desktop-appletsrc ~/.config/plasma-org.kde.plasma.desktop-appletsrc.bak
+mv ~/.config/kwinrc ~/.config/kwinrc.bak
+mv ~/.config/plasmashellrc ~/.config/plasmashellrc.bak
+```
+
+Log out and back in. KDE will regenerate these from defaults. Restore from `.bak` files afterwards if you want your customisations back.
+
+
 [searchprovider]: https://developer.gnome.org/SearchProvider/
 [nano]: https://fedoraproject.org/wiki/Changes/UseNanoByDefault
