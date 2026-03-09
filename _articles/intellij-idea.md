@@ -11,6 +11,10 @@ IntelliJ has some odd shortcuts and strange menus, which appear when you don't w
 - **Quick Documentation:** Ctrl+Q. To view documentation for whatever object (class, type, etc.) currently at the caret.
 - **Quick Switch View Scheme:** Ctrl+`. Show popup to change theme, zoom, and more. See https://www.jetbrains.com/help/idea/ide-viewing-modes.html
 
+### Esoteric actions
+
+- **Enable Coding Assistance for Node.js API** - this seems to pop up as a suggestion, if IntelliJ detects you're using Node.js's built-in APIs (like `http`). Not sure in which settings screen this option is actually buried, if you want to turn it on manually.
+
 ## Installation and upgrade
 
 To install:
