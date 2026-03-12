@@ -30,15 +30,14 @@ URL=$(aws lambda get-layer-version --layer-name $LAYER_ARN \
   && curl -s "$URL" -o /tmp/layer.zip && unzip -l /tmp/layer.zip
 ```
 
-### OpenTelemetry Lambda Layer (upstream)
+### OpenTelemetry instrumentation Layer (upstream)
 
-- https://github.com/open-telemetry/opentelemetry-lambda/releases
-- ARNs like:
+- Repo: <https://github.com/open-telemetry/opentelemetry-lambda/releases>
+- Example ARNs:
   - `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-javaagent-0_17_0:1`
   - `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-nodejs-0_19_0:1`
-  - `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-collector-<amd64|arm64>-0_12_0:1` (a stripped-down version of OTel Collector inside an AWS Extension Layer)
 
-#### What's inside
+Contents:
 
 ```shell
 export LAYER_ARN=arn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-javaagent-0_17_0
@@ -56,6 +55,26 @@ Gives:
  23944064                     2 files
 ```
 
+### OpenTelemetry Collector layer (upstream)
+
+- Example ARN: `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-collector-amd64-0_12_0:1`
+- A stripped-down version of OTel Collector inside an AWS Extension Layer
+- Lambda looks for extensions in the `/opt/extensions/` directory, interprets each file as an executable bootstrap for launching the extension
+- In this layer, there is an extension, `extensions/collector`, a ~50Mb binary.
+
+Contents:
+
+```terminaloutput
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  11-12-2024 21:11   collector-config/
+      375  11-12-2024 21:11   collector-config/config.yaml
+        0  11-12-2024 21:11   extensions/
+ 43831448  11-12-2024 21:11   extensions/collector
+---------                     -------
+ 43831823                     4 files
+```
+
 ### AWS Distro for OpenTelemetry (ADOT)
 
 - https://github.com/aws-observability/aws-otel-lambda
@@ -66,7 +85,7 @@ Gives:
   - `arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-18-0:1` - "legacy" layer which includes an embedded collector.
   - `arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroJava:9` - new-style layer which works with CloudWatch **only**. 
 
-#### What's inside - Layer with Collector embedded
+#### Layer with Collector embedded
 
 ```shell
 export LAYER_ARN=arn:aws:lambda:us-east-1:901920570463:layer:aws-otel-java-agent-amd64-ver-1-32-0
@@ -89,7 +108,7 @@ Gives:
  66010113                     7 files
 ```
 
-#### What's inside - New-style layer, exports in OTLP to X-Ray by default
+#### New-style layer, exports OTLP directly to X-Ray by default
 
 ```shell
 export LAYER_ARN=arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroJava
