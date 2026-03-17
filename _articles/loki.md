@@ -577,6 +577,14 @@ logcli query '{service_name="website"}' | logcli query 'rate({service_name="webs
 logcli query 'rate({service_name="website"}[5m])'
 ```
 
+#### Query a provided log file
+
+You can also use logcli to query and parse a log file. These logs don't have labels, so this command uses a trick: it looks for all logs with any value for `app` (whether set or unset):
+
+```shell
+cat beyla.log | logcli query '{app=~".+"}' --stdin
+```
+
 ### The API
 
 #### Store a single entry with curl

@@ -91,6 +91,38 @@ TF_REATTACH_PROVIDERS=...
 terraform apply
 ```
 
+### Debugging a provider with JetBrains GoLand
+
+```shell
+git clone https://github.com/grafana/terraform-provider-grafana
+cd terraform-provider-grafana
+go build -o terraform-provider-grafana .
+```
+
+Create the file `~/.tofurc`:
+
+```terraform
+provider_installation {
+  dev_overrides {
+    "grafana/grafana" = "/path/to/your/terraform-provider-grafana"
+  }
+
+  direct {}
+}
+```
+
+Start the provider in debug mode:
+
+```shell
+go run . -debug
+```
+
+Attach GoLand to the process:
+
+1.  Run -> Attach to Process
+2.  Find the debug provider by its process ID (PID)
+3.  GoLand attaches to the provider and it is paused, waiting for the first Terraform connect
+4.  Set breakpoints now
 
 ## Cookbook
 
