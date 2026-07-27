@@ -61,6 +61,30 @@ $ aws sts get-current-identity
 }
 ```
 
+### Using aws-vault for simple key storage with macOS Keychain
+
+```sh
+# Install packages first
+brew install awscli aws-vault
+
+# Create a new vault entry
+aws-vault add <profile-name>
+
+# Use the vault before executing a command that needs AWS keys
+aws-vault exec <profile-name> -- tofu init -upgrade
+
+# Or, start a new long-term session with:
+aws-vault exec <profile name> -- zsh
+```
+
+You should also set a default region and MFA device ID for the profile, in `~/.aws/config`:
+
+```sh
+[profile monodot]
+region = us-east-1
+mfa_serial = arn:aws:iam::<account-id>:mfa/<device-name>
+```
+
 ### Using SSO with multiple accounts
 
 First, set up your AWS CLI config file like this:
