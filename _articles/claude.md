@@ -27,3 +27,12 @@ screen -r claude
 # Then run `/remote-control` in the Claude Code session
 # To detach - Ctrl-a d
 ```
+
+To terminate sessions:
+
+```sh
+TERM=xterm screen -r <name>
+# then ctrl+D
+# OR:
+TERM=xterm screen -X -S <name> quit
+```
