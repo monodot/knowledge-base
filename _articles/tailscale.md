@@ -11,7 +11,15 @@ title: Tailscale
 sudo tailscale up
 ```
 
-## GitHub Actions workflow example
+## Using Tailscale in GitHub Actions
+
+To reach Tailscale resources from a Github Actions workflow:
+
+1.  Go to Settings -> Trust credentials -> Create credential. Set type to **OAuth** and set the description to something like `github-actions-REPONAME`. Set scopes to just **Keys -> Auth keys (read + write)** and set tags to **tag:ci** (or whatever tag you want your GitHub Actions runner to have)
+2.  Add the ACL rules defined below.
+3.  Add the Tailscale GitHub Action (example below)
+
+### Example Tailscale ACL
 
 You'll need to add a couple of sections like this to your Tailscale ACL, assuming you're tagging your GitHub OAuth client with `tag:ci` and your server with `tag:server`:
 
@@ -33,9 +41,12 @@ You'll need to add a couple of sections like this to your Tailscale ACL, assumin
 	],
 ```
 
+### Example GitHub Actions workflow
+
 Then this example workflow should work (example hostname here is `vinson`):
 
 ```yaml
+{% raw %}
 name: CI
 
 on:
@@ -70,5 +81,6 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H vinson >> ~/.ssh/known_hosts
           ssh root@vinson cat /etc/system-release
+{% endraw %}
 ```
 

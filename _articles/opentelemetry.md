@@ -20,7 +20,16 @@ lede: Vendor-neutral telemetry for infra and applications.
 
 ## Lambdas/serverless
 
-We can inspect what's inside each Lambda layer like this:
+### Java
+
+- There are two approaches: Java Agent or Wrapper.
+- If using the Agent, `OTEL_JAVA_AGENT_FAST_STARTUP_ENABLED=true` can improve cold start times, possibly at the expense of overall performance
+- Cold starts are an absolute performance killer - booting up OTel Collector and instrumentation can add 6-9 seconds to cold start time
+- Consider using **provisioned concurrency** and warmup requests to improve cold start times. See: https://github.com/open-telemetry/opentelemetry-lambda/tree/main/java
+
+### Dissecting a layer
+
+We can inspect what's inside a Lambda layer like this:
 
 ```shell
 URL=$(aws lambda get-layer-version --layer-name $LAYER_ARN \
@@ -30,11 +39,14 @@ URL=$(aws lambda get-layer-version --layer-name $LAYER_ARN \
   && curl -s "$URL" -o /tmp/layer.zip && unzip -l /tmp/layer.zip
 ```
 
-### OpenTelemetry instrumentation Layer (upstream)
+### Notable layers
+
+#### OpenTelemetry instrumentation Layer (upstream)
 
 - Repo: <https://github.com/open-telemetry/opentelemetry-lambda/releases>
 - Example ARNs:
   - `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-javaagent-0_17_0:1`
+  - `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-javawrapper-0_17_0:1`
   - `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-nodejs-0_19_0:1`
 
 Contents:
@@ -55,7 +67,7 @@ Gives:
  23944064                     2 files
 ```
 
-### OpenTelemetry Collector layer (upstream)
+#### OpenTelemetry Collector layer (upstream)
 
 - Example ARN: `arn:aws:lambda:<region>:184161586896:layer:opentelemetry-collector-amd64-0_12_0:1`
 - A stripped-down version of OTel Collector inside an AWS Extension Layer
@@ -75,7 +87,7 @@ Contents:
  43831823                     4 files
 ```
 
-### AWS Distro for OpenTelemetry (ADOT)
+#### AWS Distro for OpenTelemetry (ADOT)
 
 - https://github.com/aws-observability/aws-otel-lambda
 - ADOT is a **downstream repo of opentelemetry-lambda**
@@ -85,7 +97,7 @@ Contents:
   - `arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-18-0:1` - "legacy" layer which includes an embedded collector.
   - `arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroJava:9` - new-style layer which works with CloudWatch **only**. 
 
-#### Layer with Collector embedded
+##### Layer with Collector embedded
 
 ```shell
 export LAYER_ARN=arn:aws:lambda:us-east-1:901920570463:layer:aws-otel-java-agent-amd64-ver-1-32-0
@@ -108,7 +120,7 @@ Gives:
  66010113                     7 files
 ```
 
-#### New-style layer, exports OTLP directly to X-Ray by default
+##### New-style layer, exports OTLP directly to X-Ray by default
 
 ```shell
 export LAYER_ARN=arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroJava
