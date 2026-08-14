@@ -57,6 +57,8 @@ To view log files, go to _Help - Show Log in Files_ (or Finder, depending on pla
 
 - e.g. on Linux, my log files are in `~/.cache/JetBrains/IdeaIC...`
 
+To see logs from the AI Chat/Assistant, see the AI Chat context menu and then choose _Show ACP Logs_.
+
 ## IntelliJ project files
 
 Removing all IntelliJ project files:
@@ -181,3 +183,11 @@ $ mvn thorntail:run -Dthorntail.debug.port=8000
 Ensure that Go Modules are enabled:
 
 - Settings -> Languages & Frameworks -> Go -> Go Modules. Ensure **Enable Go modules integration** is checked.
+
+### Cannot authenticate Claude Agent inside AI Chat panel
+
+- When you try to authenticate Claude Agent, a terminal window briefly flashes up but then disappears before you can read anything, then the AI Chat panel says "Authentication Required".
+- To see the actual logs from the issue, go to the AI Chat panel's context menu, then click _Get ACP Logs_.
+- The problem is that IntelliJ attempts to install the claude-agent-acp package, but it doesn't exist locally, and it uses the flag `--no-yes` (lol) which means it will never ask to install this package either.
+- Install manually: `~/.cache/JetBrains/IntelliJIdea2026.2/acp-agents/.runtimes/node/24.13.0/bin/npx -y @agentclientprotocol/claude-agent-acp@0.67.0 --version`
+- Related YouTrack issue: https://youtrack.jetbrains.com/projects/LLM/issues/LLM-28665/ - apparently an alternative solution is to wipe the `_npx` directory.
