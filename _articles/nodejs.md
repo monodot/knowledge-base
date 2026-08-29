@@ -17,7 +17,6 @@ Troubleshooting: _"The operation would result in switching of module 'nodejs' st
 
 - This might happen because your CentOS enables the nodejs `10` module by default, even if you've not already installed it.
 - `dnf module list --enabled` should confirm this.
-- 
 
 ### Installation on Fedora
 
@@ -59,6 +58,15 @@ Show all installed versions using `nvm`:
     node -> stable (-> v8.1.2) (default)
     stable -> 8.1 (-> v8.1.2) (default)
     iojs -> N/A (default)
+
+Install the latest Node LTS release and make it the default:
+
+    nvm install --lts
+    nvm alias default 'lts/*'
+    # then verify
+    nvm current
+    node -v
+    npm -v
 
 Switch to a different version using `nvm`:
 
