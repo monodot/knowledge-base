@@ -15,6 +15,16 @@ For an Xcode project with an independent Watch target, you should select the Wat
 2.  Select the **physical watch** as the **Destination**.
 3.  Click **Run** (or Cmd+R).
 
+## Screenshots
+
+### Take a screenshot
+
+To take a screenshot from a physical device:
+
+1.  From Xcode, open **Window > Devices & Simulators**
+2.  Select the device in question.
+3.  Click **Take Screenshot**.
+
 ## Troubleshooting
 
 ### Cannot test target “APP_NAME” on “Any iOS Simulator Device”: Tests must be run on a concrete device
