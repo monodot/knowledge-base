@@ -6,6 +6,10 @@ lede: Developing apps for iPhone and iPad
 
 ## Monetisation and In-App Purchases
 
+### Terminology
+
+- **off-device-buy:** this is where a transaction was not initiated on the local device/app session, so the app should be able to detect and handle a previously completed purchase (e.g. Restore Purchases)
+
 ### .storekit files
 
 `.storekit` file is a way to have a local mock of the App Store during development. If this file is active, StoreKit in your app doesn't talk to Apple's servers, but reads product details from the local file.
