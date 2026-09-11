@@ -1,0 +1,16 @@
+---
+layout: page
+title: iOS Development
+lede: Developing apps for iPhone and iPad
+---
+
+## Monetisation and In-App Purchases
+
+### .storekit files
+
+`.storekit` file is a way to have a local mock of the App Store during development. If this file is active, StoreKit in your app doesn't talk to Apple's servers, but reads product details from the local file.
+
+A `.storekit` file can also be optionally synced with App Store Connect, which just makes it easier to test with a list of products you've already defined "for real" in ASC, without having to type them all in locally.
+
+- **synced** configs are fine for running an app (e.g. on a physical device), **NOT** for programmatic tests.
+- **unsynced** configs are preferred for programmatic tests
