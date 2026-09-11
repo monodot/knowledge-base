@@ -44,3 +44,7 @@ To take a screenshot from a physical device:
 You can't run tests on the _Any iOS Simulator Device_ pseudo-device (which is usually found under the _Build_ heading).
 
 In the navigator bar at the top of Xcode, choose a specific iOS Simulator device (like "iPhone 16"), or a real physical device.
+
+## "A build only device cannot be used to run this target." or "Tests must be run on a concrete device"
+
+In the Scheme/Target Navigator at the top of Xcode, make sure you've selected a named make/model, under **iOS Simulators**.
