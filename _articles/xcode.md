@@ -4,6 +4,11 @@ title: Xcode
 lede: Xcode is the worst IDE of all time.
 ---
 
+## Terminology
+
+- A **Scheme** is a runnable configuration that tells _Xcode_ which target to build, which to run, which tests to execute, etc.
+- A **Target** is a product within an Xcode project: an iOS app, a test bundle, extension, framework, Watch app, etc.
+
 ## Running and debugging
 
 ### Test changes to a Watch app on a physical Watch
@@ -14,6 +19,13 @@ For an Xcode project with an independent Watch target, you should select the Wat
 1.  In Xcode, select the **watch app** from the **Scheme** dropdown at the top of the IDE.
 2.  Select the **physical watch** as the **Destination**.
 3.  Click **Run** (or Cmd+R).
+
+## In-App Purchases
+
+### Troubleshooting IAPs
+
+- First, use **StoreKit** in your app. Add the `.storekit` file to your Test target.
+- Use the **StoreKit Transactions** window to see and refund transactions.
 
 ## Screenshots
 
