@@ -24,3 +24,11 @@ A `.storekit` file can also be optionally synced with App Store Connect, which j
 
 - **synced** configs are fine for running an app (e.g. on a physical device), **NOT** for programmatic tests.
 - **unsynced** configs are preferred for programmatic tests
+
+## Troubleshooting
+
+### Provisioning profile "iOS Team Store Provisioning Profile: com.example.Bundle" doesn't include the com.apple.xxx entitlement
+
+- The local distribution provisioning profiles are out-of-date - they are missing some new capabilities that the app now needs (e.g. Push Notifications)
+- Remove existing cached provisioning profiles: `rm ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles`
+
