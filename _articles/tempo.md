@@ -20,6 +20,16 @@ You can find out exactly how many spans are affected:
 
     sum by(reason) (rate(tempo_metrics_generator_spans_discarded_total{}[$__rate_interval]))
 
+## TraceQL
+
+### Find traces with no root span
+
+```
+{ trace:rootService = "" }
+{ trace:rootService = "" && resource.service.name = "foo-auth" }
+{ trace:rootService = "" } | count_over_time() by (resource.service.name)
+```
+
 ## Cookbook
 
 ### Fetch a trace from Grafana Cloud Traces
