@@ -30,6 +30,14 @@ You can find out exactly how many spans are affected:
 { trace:rootService = "" } | count_over_time() by (resource.service.name)
 ```
 
+### Print all spans from a trace, with their attributes
+
+Print a table of spans under one trace, with columns for Name, k8s.deployment.name, k8s.pod.ip, service.name:
+
+```
+{trace:id="aaaaaaaaaaaaaaaaaaaaaaaaaa"} | select(resource.k8s.deployment.name, resource.k8s.pod.ip, resource.service.name)
+```
+
 ## Cookbook
 
 ### Fetch a trace from Grafana Cloud Traces
