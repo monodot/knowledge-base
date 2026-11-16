@@ -583,6 +583,10 @@ You can also use logcli to query and parse a log file. These logs don't have lab
 
 ```shell
 cat beyla.log | logcli query '{app=~".+"}' --stdin
+
+cat beyla.log | logcli instant-query \
+    'sum by (cmd) (count_over_time({app=~".+"} | logfmt | msg=`instrumenting process` | cmd!=`` [1h]))' \
+    --stdin
 ```
 
 ### The API

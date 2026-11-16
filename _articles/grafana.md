@@ -7,6 +7,13 @@ title: Grafana
 
 - If a particular data set has "child" sets with different data models, they are called **frames**. A **data frame** is a collection of **fields**.
 
+## Visualisations
+
+### Node Graph
+
+For this you'll need two datasets: **nodes** and **edges**.
+
+
 ## Alerting & IRM
 
 - An **alert instance** can be Normal, Pending, Alerting, or Recovering
