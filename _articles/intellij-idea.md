@@ -3,6 +3,49 @@ layout: page
 title: IntelliJ IDEA
 ---
 
+## Installation and upgrade
+
+To install:
+```
+curl -o intellij-idea.tar.gz -L https://download.jetbrains.com/idea/ideaIC-2020.1.tar.gz
+mkdir -p /opt/idea
+tar -C /opt/idea -xvf intellij-idea.tar.gz
+```
+
+## Use cases
+
+### Using IntelliJ as a multi-repository IDE with Claude Code (my setup in late 2026)
+
+You can use IntelliJ to manage agents across multiple repositories. This setup allows you to roughly mimic the Claude Desktop app but with a better IDE:
+
+- work on a project that spans across multiple repositories
+- use Claude Code (Terminal mode only)
+- use `/add-dir` in Claude Code, to pull in context from other locations on your computer
+- switch between all your Claude Code sessions in the left sidebar, while maintaining full IDE access
+- never forget a session you opened!
+
+To do it:
+
+1.  Create a workspace directory, and symlink your typical repos into it:
+
+    ```sh
+    mkdir -p ~/workspaces/petclinic
+    cd ~/workspaces/petclinic
+    ln -s ~/repos/petclinic-backend .
+    ln -s ~/repos/petclinic-frontend .
+    ```
+
+2.  Open `~/workspaces/petclinic` in IntelliJ. It will detect each child repository and give it a coloured icon in the Git surfaces.
+
+3.  Install and enable the Air plugin to manage agents.
+
+4.  Open the Air sidebar and set:
+
+    - Show current project only: **Unticked** (shows Claude Code chats from all directories on your machine)
+    - Manage Agents: **Enable Claude, and choose Terminal mode for it.** (allows you to use Claude Code proprietary commands like `/add-dir`)
+
+If you don't want to use Claude Code, you can plug in adaptors for other agents like Codex, pi, Kimi Code, etc.
+
 ## Keyboard shortcuts and esoteric menus
 
 IntelliJ has some odd shortcuts and strange menus, which appear when you don't want them, but when you *do* want them, you don't know what they're called, or how to find them. Here are some useful ones:
@@ -14,15 +57,6 @@ IntelliJ has some odd shortcuts and strange menus, which appear when you don't w
 ### Esoteric actions
 
 - **Enable Coding Assistance for Node.js API** - this seems to pop up as a suggestion, if IntelliJ detects you're using Node.js's built-in APIs (like `http`). Not sure in which settings screen this option is actually buried, if you want to turn it on manually.
-
-## Installation and upgrade
-
-To install:
-```
-curl -o intellij-idea.tar.gz -L https://download.jetbrains.com/idea/ideaIC-2020.1.tar.gz
-mkdir -p /opt/idea
-tar -C /opt/idea -xvf intellij-idea.tar.gz
-```
 
 ### Adding to GNOME Applications menu
 
